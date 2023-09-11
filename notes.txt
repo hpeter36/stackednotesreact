@@ -1,0 +1,331 @@
+
+a legfontosabb hogy ezt a projektet nagyon alaposan egészben kitalálni mi hogyan fog működni
+	rajzolni is mindent, fejben tudni kell mindent
+	teljes architect kell
+	a leggyorsaban így fog elkészülni a projekt
+
+*animációk
+*lenyitás opacity ha nincs van elem
+szép külső
+input szöveg sortörések
+*night day theme
+db
+szerver side store, load
+milliónyi template
+import notes
+users implement
+marketing opening page
+többi feature
+
+body bg sec
+notes bg primary
+btn, note header accent
+color font c
+
+prim-sec kontr
+accent-font-c kontraszt
+accent prim sec közé
+
+jegyzetelő app a sok txt helyett
+	kitalálni a teljes architechtúrát, GUI-t, működést
+	korlátlan mennyiségű jegyzet kezelése tetszőleges témákban
+	az összes meglévő jegyzetemet kell tudnia kezelni
+	import export funkció
+	tanfolyamokhoz, könyvhöz
+	jegyzetek közötti linkek
+	linkek behívása ha pl egy video, kattinthatóság
+	kategórizálás, keresés stb.
+		kereséskor csak a találatokat mutatja + highlighting mint a vs code, 
+		minden behúzásban, hierarchiában, kategóriában lehet keresni akár az egész jegyzetben is(minden hierach egy kereső)
+		lehetne kódokat is bevinni és VS Code szerűen keresni benne
+		minden jó dolgot átvenni VS codeból, sok hotkey, keresés, majd azonnal odanavigál, ne kelljen egeret használni
+	táblázatos elrendezés is
+		pld. checksheatek
+	képek, videók, ábrák stb beszúrása
+	hierachiák gyors navigálása, keresése
+	egyszerű, letisztult design, nappali, éjszakai mód
+	key shortcutok amivel egér nélkül is használható az app emészthető mértékű mennyiségben logikusan
+	készre jelent(zöld háttér), törlés funkciók
+	prioritás, fontosság bold ill különféle háttérszínekkel, az egyes elemeknek csoportoknak, rendezhető legyen prio sorrendben, adott fontosságon belül egy order szám is jelezze a fontosságot
+	fontosnak jelölve egy külön listán látszódik az entry
+	jegyzet áthelyezése más hierarchiába
+	linkelés lehetősége, csak a titleje fog beszúródni vagy egy custom text, átírható a title
+	többféle elem szöveg, table, chart, kép, stb
+	crtl c,v-vel is beilleszthető és automatikusan megcsinálja a hierarchiákat
+	1 entrybe tetszőleges objok mixelve is
+	szerkesztéskor az opciók eltünnek + csak mouseover esetén látszódnak
+	drag and dropal fel le, egymásba mozgathatóak az entryk
+		trashcanbe, fenti menu
+	kinyitva egy jegyzetet, a headerje sötétebb-re vált
+	végtelen színsémák colorhuntról, megfelelő színek applyolása a megfelelő
+		css változókba, brightness szerint vagy név szerint leszedegetni
+	pin jegyzet, kereséskor nem tűnik el
+	2 oldalas mód
+	ne csak egymás alá, hanem tetszőlegesen a képernyőre mint egy tábla, videókat, képeket, kézi jegyzeteket, stb
+	több useres szerkesztés, jegyzet megosztás
+	lista mint elem 1 entryként vagy több?
+	egy olyan nézet is kell ahol csak a titleket látom és tudok fel le mozogni nyilakkal a hierarchiában és kiválasztani az adott elemet és belenavigálni
+	context menu jobb klickre
+	betumeret beallitható, tartalom meg fittelődik, egy csúszkával állíthatjuk
+	képletek, chartok bevitele
+	ne csak vertikális legyen az elrendezés pld chartok mellett szöveg
+	kép,videó linkben és esetleg feltöltve is
+	ha túl hosszú egy note akkor jelezze amikor fölé viszem az egeret hogy hova tartozik, path-t
+	majd ha drag and drop megy, egy adott csoportot, noteot subnoteokkal megragadva áttenni beljebbi kiljebbi struktúrába
+	crtl + V-vel beilleszthető legyen a megfelelő elem alá, manuális jegyzetbevitelhez hasznos lehet
+	prioritásokat, fontosságokat megadni amiket oldalt láthatok 
+	keresésnél az is megadható legyen miben keresek hogy szűkítsük a találatokat
+	a sorrendje legyen állandó(order db col) a jegyzeteknek pld. egymással egy kategben lévő jegyzetek egymás alatt
+		lehessen ezt az ordert változtatni is drag and droppal
+	bizonyos hashtagek hozzáadása a noteokhoz pld. fontos, saját gondolat, stb
+	gyakran használt jegyzeteket lehessen pin-elni
+	nonnfig svg design szinezheto olyan legyen mint egy cuki jegyzetfüzet
+		egy jegyzetfüzet háttér minta a notes contba, többféle ismétléssel bg, sötétebb mintakitöltés 
+	a fő topicokhoz amiket mutatna oldalt # tagolni kellene és az alapján szűrni és a # alapján ugrani a tartalomra belső linkel, nem feltétlen kell maximalizálni 
+		a content ablak heightját mondjuk ajánlott lehet
+
+root elem, +,˘,edit,x hozzáadás, kibontás, törlés elemek headerben, bodyban a childek
+ugyanaz az alapelem, margin left, kis padding, ha nincs child csak header, kibontás inaktív
+szerintem elég egy local js varban is tárolni, de le is kérdezhető sql-el az adat
+import jegyzet, tabok, spacek vizsgálata
+note tábla id, parent id, html_text
+
+db kiolv -> adatstruct létrehoz -> gui épít
+
+https://colorhunt.co/
+https://medium.com/random-noise/methods-for-measuring-color-lightness-in-python-84df593d0786
+
+
+infinite scrollal lapozható minden szinten, lehet nincs is rá szükség
+#hastagelés és keresés algo. programing, stb
+fel le navigálás, illetve nav. menu
+többoldalas nézet ahol áthelyezhetőek tetszőlegesen a jegyzetek
+
+1) megfeleő db struktúra
+	parent, child, order egy elemen belül
+2)alap megjel
+3)navigációs sáv bal oldalt minden jegyzet, tree struct, le fel nyitogatni, jobb oldalt a megnyitott jegyzet
+	minden elemnek csak az első elemét mutatja
+4)bejegyzések hozzáadása, szerkesztése, törlése
+5)import funkció
+6)kereső
+	mint a vs code, hihglightolni a találatokat, minden sorban keresni
+	mutassa a pathet is hol találta
++többi feat
+
+szerver alapú futtatás, alap gui megnyitása
+load all notes, add, edit, remove notes to db (user alapon majd később)
+import notes, elég python alapon nem kell gui egyenlőre(algo trading notesot bevinni)
+oldalsáv, kereső,drag and drop stb
+
+1)jegyzetek kézi bevitele elemenként tetszőleges sub elemmel
+	kattintásra parent kijelölése
+	egy textareába
+		esetleg mutatni a resultot tényleges hozzáadás előtt
+		később drag and drop áthelyezhetőség, kiírni épp en mit fog csinálni vagy mutatni vizuálisan
+2)kereső
+---------------------------------------
+note text import
+	async fgv call
+	loading screen mig hozzáad
+
+2)hashtagelés
+	tartalomjegyzék egy bizonyos hashtag alapján
+	a tartalomjegyzék # mindig pl. piros a többinek hozzáadás sorrend szerint kül szinek(d3 scale)
+	a header felső részében kicsi betűvel mutatni
+	select menu input szerkeszthetőséggel, újat hozzáadva db-hez ad, kiválaszt
+
+3)oldalnavigáció, tartalomjegyzék
+	bizonyos hastag alapján
+	nyitható összecsukható
+	az elemek sima clickre collapse, open funkciók
+	dupla clickre navigál
+	load note opció, ilyenkor csak a parenttől tölt be
+		a loadnode generalizálása
+		általánossában a betöltésen kellene optimalizálni, mondjuk egy infinitescroll
+
+1)kidolgozottabb note kód architektúra kellene ahol kezelhető minden funkció classból
+	noteok összecsukása nyitása rekurzívan híva
+		minden note collapse, open
+		noteok szerverről betöltése lenyitáskor
+	parent child-ek a fel le navigációhoz
+	node struct generálása adott parenttől
+	minden funciót ezeken kersztül érjünk el beleértve az eventeket
+	eltárolni listába a noteokat(notemanager)(lehet nem is kell) és az eventeknél hivatkozunk az adott példányra ahogy eddig is
+
+4)note megjelenés opt
+	kinyitás, összecsukás opciók
+		ilyenkor is server load?
+	mikor töltsön szerverről mikor ne
+
+-1)drag and drop áthelyezés
+	az ordert is kell tudni változtatni, nem csak a parentet
+
+backup sched job az egész db-re
+
+adott elemre click ami selected deselect
+parent -> chhild drag not allowed
+vagy ha ugyanabba a parentbe huzom calcel
+
+hoover drag eventkor nem tökéletes, a szerkesztős currculum projektben talán van solution
+
+pin funkció is elég lenne a #tag helyett kezdetben
+
+kijelölve a noteot látszódjon halványan amit magába foglal
+
+linkelni noteokat egy másikba, pld egy feladatlistába belinkelni egy adott projekt jegyzeteit
+
+kódrepo és keresni benne mint vs-code, agent ransack?
+
+template entry, pld. egy szöveg + example mezők propramozás tutorial esetén
+
+hastag böngészés, tárolás js object szerűen kategóriába rendezve subelem lehetséges
+képletek, videók, képek, adott prog nyelv példakódok, stb tárolása
+	akár egy print screen is
+	méretezhető, kidobható, áthelyezhető stb
+sorok összevonása ha kijelölöm őket
+jobbklikk context menu, mindig más opció attól függően mi a context
+hotkey segédlet ha lenyomok egy kulcshotkey-t akkor alul jelenjen meg egy help mik a lehetőségek "+ x bill - action y"
+
+idézet mint elem egy bejegyzésben, kiemelések, szövegméret megfontolandó
+
+ha össze van zárva node, csak látszólag van így csak átlátszó, nem tünik le blokkolja a képernyőt
+	a height 0 nem megy le a childrenekre, height + opacity-vel kell megoldani
+	egyenlőre parenten display none, block
+
+ami össze van zárva és van mögötte content, ott valahogy jelezni kellene
+
+ne mutasson minden contentet csak a kiválasztottat
+
+egy search bar jó lenne
+	mutassa melyik témában xxxx/yyy/..., a találatot kiemelve, kontextusban x karakter jobbra balra
+
+a hatékony szövegbevitel-t hogyan érem el mint egy txt-nél?
+
+filefeltöltés is, pld. ebookokat egy aloldalra tenni, file + szöveg, alapból a filenév, csak belehúzom
+	a megfelelő cellába és feltölti, a cella színe jelzi is hogy melyikbe töltődik fel
+
+egy alap bold kiemelés fontos entry-n belül
+
+a jegyzetek mozgatásának, áthelyezésének nagyon hatékonynak kell lennie
+	sokszor lesz rá szükség
+
+egy adott topic belinkelhető több topoicba is de csak 1 helyen tárolódik
+	olyan dolgok amik több helyre is oda illenek
+
+komment egy adott bejegyzésnek ami keresésnél látszódik
+	témakörnek a leírására szolgál
+	ha nem tudom a címből miről van szó ez segít
+
+beépített naptár a fontos időpontokkal mikor kinek milyen alkalom, mutatja 5 napra előre pld.
+
+jegyzet fel le mozgatása
+	pld. resourceok, linkek a tematika elejére
+
+egy adott topichoz kell majd egy könyvjelző ahol kattintva villámgyorsan tudok navigálni egy adott témán belül
+	esetleg egy belső fel le navigáció ezen belül hogy gyorsan tudjak a hierarchiában navigálni
+	pl a Gann jegyzetem amikor egy megjegyzést át akarok helyezni
+		ilyenkor egy külön gomb és felugrik at adott téma hierarchiája és egy kattintással áthelyezhető
+
+linkelni lehessen note-ot mert több kategóriára is releváns lehet egy notes
+
+előre, hátra gombok a historikus actionok között navigálni
+
+fel le nagiváció gomb, hotkey az adott pillanatban legmélyebben benyitott szinttől számolva
+
+doksikat is lehessen belinkelni, tárolni pld. egy adott jegyzethez a lementett pdf oldal, be is linkeljük +ba az eredeti source-ot
+
+a kereső legfelül azokat a bejegyzéseket/topicokat mutatja ahol a legtöbb child van, alul ahol kevesebb
+	azt is mutatni a találatok között mely parent(topic)-ben helyezkedik el
+
+egy struktúra átláthatóság kell, ha x childje van min azokat mutatni
+
+belinkelni egy adott jegyzetet egy másikba, mutatni a szövegét mint egy web link esetén
+
+estleg egy cheat sheat template kell egységes cheat sheatek gyártása
+	vagy csak becsatolni és mutatni a képet pdf-et
+		kép csatolás linkként, kattolásra foregroundba mutatja, x-el eltávolítható mint egy gallery képnézegetés
+
+pdf esetén szintén vagy feltölteni a szerverre vagy csak dl és mutatni egy foreground ablakban
+
+egy beépített cheat sheat, adott nekem tetsző struktúrával, lehet elég a sima entry objektum is
+	a legfontosabb dolgokat gyűjtögetni
+
+db export a meglévő sime tabulált txt, json,etc...
+
+egy thumb kép egy entry elejére, kategóriák könnyű felismerhetősége miatt hasznos amikor az összezárt elemeket(témákat) bönggésszük
+
+egy kvíz mód egy adott témához, feldob egy témát és eldöntöm tudom-e
+	úgy kellene működnie mint a szókártyának
+
+egy aktív note-on mutassa a note location-t(breadcumb)
+
+referencia tétele egy noteba(link) másik note(címe általában)
+
+úgy kellene működnie mint a notepad, belekattintva odaugrik a kurzor, bár ez lehet kicsit felesleges
+	mobilról is könnyen kezelhető legyen
+	ki kell találni az egyedi működését a kül mouse, key eventekre
+	
+tudjon source kódot is eltárolni mutatni, ez külön entry type
+
+teljesen úgy kell működnie mint a notepadnak enter tab stb, de a fenti extra funkciókkal
+	a szerkesztés egyszerűségét meg kell hagyni
+	vagy akkor ne legyen extra effort törölni áthelyezni noteokat
+
+bookmarkolás, kedvencekhez adás funkció, mint a listám a dump.txt-ben
+	egy listában hierarchikusan kezeli
+	hozzá lehet adni hahtaget vagy group készítése
+	lehet ez elég is lenne a topicok kezeléséhez
+	speciális hashtag pld. "#title" és akkor látszódik abban a listában, tartalomjegyzékben
+
+3rd party lib-et csak-is bonyolult inputokhoz használok
+
+kiválasztott noteok mergelése funkció
+
+átgondolni milyen felhasználási módokat lehet az appal kielégíteni
+	pld. bevásárló lista, egyetemi jegyzet, tanuláshoz, általános jegyzetelés, stb
+
+2 oldal benyitása és navigálás közöttük mint vs-codeban?
+	jegyzet mozgatás könyebb lenne
+
+egy lokális dir vagy file linkje és kattintásra megnyitja ha úgy értékeli hogy lokál file
+
+kell cachelni, egy helyi cache objektumból szedje ki a szükséges adatokat
+mobilhoz egy mások mód kell egy kompakt
+
+----------------------szükséges minimum
+fenti dolgokból mit tegyek bele még a minimumhoz?
+tömör feature lista a fentiekből hogy jobban tervezhessem a base appot
+
+base vision
+	meglévő jegyzetek bevitele, 
+	új jegyzetek bevitele könnyedén
+	könnyű kereshetőség, navigálás
+	jól átlátható, duplikáció mentes jegyzetek
+	könnyű jegyzet rendezés, áthelyezés, átnevezés, törlés
+	egy laikus szemnek elfogadható(nem gagyi) design
+	telefonon is jól működjön
+
+fő kérdések
+	mindent jegyzetet letöltsek az elején egyszerre vagy csak részleteiben?
+	lehet kellene egy okos class ami cacheli folyamatosan a letöltött dolgokat
+
+user handling nextauth
+	új usernek egy sample notes
+notepad++ működés megvalósítása
+	szerkesztés dinamikája ugyanaz + extrák(meglévő app funkciói is)
+böngészni a jegyzetekben
+	esetleg egy infinite scroll betöltés jegyzetekre
+	simán görgetve is betölti folyamatában azonos szinten lévőket is
+hashtag készítése, kiválasztás listából, legördülő kereséssel
+	autocomplete
+	bármelyik elem hashtagelhető
+hashtag alapján, illetve általános kereső
+	"topic" speciális hashtag a fő témákhoz -> tartalomjegyzék
+kell egy olyan böngészési mód amivel átlátom a fő topicokat, amivel az áthelyezés probléma mentessé válik
+	egy általános megoldás kellene amivel a keresési találat része is megoldható illetve maga a böngészés
+	lenyitható topicok ahol elem_c > 2
+	miket tudjon ez a general jegyzet mutató?
+	jobb oldalt mutatni összezárt jegyzet elemen a topic countokat, elem countokat
+	felhasználási módok szerint megalkotni a komponenst, minden bekonfigolható
+		lehet jobb külön megcsinálni, nagyon nagy a funkcionális eltérés
