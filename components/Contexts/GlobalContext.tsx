@@ -1,24 +1,32 @@
-import React, {useState, createContext} from 'react'
+import React, { useState, createContext } from "react";
+import { NoteElementInput } from "../NoteElement";
 
 type GlobalContextData = {
-	selectedId: number,
-	setSelectedID: (id: number) => void
-}
+  selectedNoteElementData: NoteElementInput | null;
+  setSelectedNoteElementData: (noteData: NoteElementInput | null) => void | null;
+};
 
-export const globalContext = createContext<GlobalContextData>({selectedId: -1, setSelectedID: (id: number) => {}});
+const defSelectedNoteElement: GlobalContextData = {
+	selectedNoteElementData: null,
+	setSelectedNoteElementData: (noteData: NoteElementInput | null) => {},
+  }
 
-const GlobalContext = ({children}: {children: React.ReactNode}) => {
-	const [selectedId, setSelectedId] = useState(-1);
+export const globalContext = createContext<GlobalContextData>(defSelectedNoteElement);
 
-	const setSelectedID = (id: number) => {
-		setSelectedId(id);
-	};
-  
-	return (
-	  <globalContext.Provider value={{ selectedId: selectedId, setSelectedID: setSelectedID }}>
-		{children}
-	  </globalContext.Provider>
-	);
-}
+const GlobalContext = ({ children }: { children: React.ReactNode }) => {
+  const [selectedNoteElementData, setSelectedId] = useState<NoteElementInput | null>(defSelectedNoteElement.selectedNoteElementData);
 
-export default GlobalContext
+  const setSelectedNoteElementData = (noteData: NoteElementInput | null) => {
+    setSelectedId(noteData);
+  };
+
+  return (
+    <globalContext.Provider
+      value={{ selectedNoteElementData: selectedNoteElementData, setSelectedNoteElementData: setSelectedNoteElementData }}
+    >
+      {children}
+    </globalContext.Provider>
+  );
+};
+
+export default GlobalContext;

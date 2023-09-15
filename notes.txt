@@ -310,22 +310,99 @@ fő kérdések
 	mindent jegyzetet letöltsek az elején egyszerre vagy csak részleteiben?
 	lehet kellene egy okos class ami cacheli folyamatosan a letöltött dolgokat
 
-user handling nextauth
-	új usernek egy sample notes
-notepad++ működés megvalósítása
-	szerkesztés dinamikája ugyanaz + extrák(meglévő app funkciói is)
-böngészni a jegyzetekben
-	esetleg egy infinite scroll betöltés jegyzetekre
-	simán görgetve is betölti folyamatában azonos szinten lévőket is
-hashtag készítése, kiválasztás listából, legördülő kereséssel
-	autocomplete
-	bármelyik elem hashtagelhető
-hashtag alapján, illetve általános kereső
-	"topic" speciális hashtag a fő témákhoz -> tartalomjegyzék
 kell egy olyan böngészési mód amivel átlátom a fő topicokat, amivel az áthelyezés probléma mentessé válik
 	egy általános megoldás kellene amivel a keresési találat része is megoldható illetve maga a böngészés
 	lenyitható topicok ahol elem_c > 2
 	miket tudjon ez a general jegyzet mutató?
 	jobb oldalt mutatni összezárt jegyzet elemen a topic countokat, elem countokat
-	felhasználási módok szerint megalkotni a komponenst, minden bekonfigolható
+	felhasználási módok szerint megalkotni a komponenst(NoteElement), minden bekonfigolható
 		lehet jobb külön megcsinálni, nagyon nagy a funkcionális eltérés
+
+jegyzetelés technikája
+	"topic" tagek meg amikben childek vannak legyenek tömörek
+
+megcsinálni
+	mind le\betöltése containerbe
+		loading screen, minden db műveletkor
+		fehér opacity háttér középen egy svg loaderrel
+	import adott childhez
+		loading screen progress barral
+		percent mutatása esetleg az act/total darabszám
+		a parentet esetleg lehet más színnel jelölni
+			kijelölt parent a previewban is ki van jelölve...
+		változtatva a parentet, contentet renderelődjön újra a preview újra click esetén
+			ha nem adom hozzá, hanem változtatok a contenten
+		oldalt külön ablakban ez is
+		töltsük be a containerbe import után
+	sql backup gombnyomásra, letölthető
+	note áthelyezés, drag and drop
+	note cahche, megjelenítés a containerben
+		böngészni a jegyzetekben
+			esetleg egy infinite scroll betöltés jegyzetekre
+			simán görgetve is betölti folyamatában azonos szinten lévőket is
+		oljduk meg cachelt illetve aktív letöltéssel is az adatbetöltést
+		root, azaz a 0. elemnek elemnek nem kellene látszódnia vagy valami flag?
+			ha nem root csak a kezdő akkor látszódhat
+		bezárt node-ot jelölni valahogy -> (xxx) a childek száma, esetleg valami külön szín
+			külön szín is kéne
+		egy változat
+			tartalomjegyzék -> elem kiválasztás -> db load legyen?
+				minden alapból bezárva -> behaviour: {...} input NoteElement-nek? 
+					minden elem lenyitása a hierarchiában control panel element?
+				lazy db loading a ki nem nyitott elemekre?
+		külön ablakba benyitni noteokat kb mint a windows, vagy a vs code és egymás mellé stackelni az ablakokat?
+	note taggelés
+		jobb oldalt pici kereső felette apró label add tags
+		belekattolva mutatja az x leggyakoribbat
+		keresésre autotype db-ből kattra kiválasztás hozzáadás
+		noteon alul mutatni apro szöveggel eltérő színekkel
+		ha beírva nem találja meg a tag-et akkor egy button hogy create & add
+			megcsinálja a háttérben a hastaget és hozzá is adja
+	gyors keresés
+		oldalmenü a speciális "topic" tagekkel
+			nézet itt is hierarchikus
+			#id navigálás egyenlőre
+		hashtag alapján, illetve általános kereső
+			"topic" speciális hashtag a fő témákhoz -> tartalomjegyzék
+		topicokat childes elemek szövegét rövidítsük le "szöveg blabla..." mintával egy max len szerint
+	user handling nextauth
+		új usernek egy sample notes
+		az api szerverbe egy JWT authentikáció
+	glass design
+		sok- sok animáció, ide húzom-oda,stb...
+	telefonon egyedi nézet kell hozzá
+		mobilon ne taboljon be hierarchikusan(akkor hogyan???)
+			oldal irányban legyenek az azonos szinten lévő elemek, lehet hülyeség???
+		elemek jobban összezárva vagy csak az aktív elem legyen kinyitva
+		contol panel is változhat
+		több touch hotkeyel könnyíteni pld dupla touch szerkeszt, szimpla kijelöl
+	nyitólap + login + user handling
+		egy hero section valami fancy webgl vagy animált mozgó háttérrel
+		úszkáló skeleton notes-ok feltünnek eltünnek
+	notepad++ működés megvalósítása
+		szerkesztés dinamikája ugyanaz + extrák(meglévő app funkciói is)
+		sok hotkey
+
+glass design kellene blurozott átlátszó elemekkel
+	egy mintás háttér html blury elemekkel mint developed by ed videoban
+	az alábbi dolgok kipróbálása
+
+	Glassmorphism
+		container, card example
+			1) draw the shape rounded forms
+			2) gradient fill with opacity, eg. #fff 0.4 -> #fff 0.1
+			3) add bg. blur, value around 20
+			4) add gradient border, eg. #fff 0.5 -> #fff 0 -> #ff48DB 0 -> #ff48DB 0.5
+			5) apply shadow #000 opacity 0.1 x 0 y 1 blur 24 spread -1
+			6) fill with content with opacity with overlay blending mode
+			7) add noise layer fill, opacity 0.2, blending mode to overlay
+
+	developedbyed
+		egy linear gradient enyhe színátmenet
+		background: linear-gradient rgba(opacity megadás is) megadással
+		hátteren objektumok absolute positioningal
+		backdrop-filter: blur(2rem)
+
+3d, design
+	css olyan animált háttér mint az OverWatchban alap shapek gradinetel mozognak eltünnek feltünnek
+	mint az apple id login olyan fancy animált svg-k
