@@ -10,7 +10,10 @@ import {
   FaAngleDown,
   FaAngleUp,
   FaWindowClose,
+  FaFacebook,
 } from "react-icons/fa";
+
+import { TagsManager } from ".";
 
 export type NoteElementDataDb = {
   id: number;
@@ -19,12 +22,20 @@ export type NoteElementDataDb = {
   parent_id: number;
 };
 
+export type NoteTagsDataDb = {
+  note_id: number;
+  parent_id: number;
+  note_order: number;
+  tag_name: string;
+};
+
 export type NoteElementInput = {
   id: number;
   parentId: number;
   title: string;
   actLevel: number;
   parentOrder: number;
+  tags: string[];
   childrenElements: NoteElementInput[];
   parentActions: {
     removeElementWithId: (noteId: number) => void;
@@ -50,6 +61,8 @@ const NoteElement = (inputs: NoteElementInput) => {
     NoteElementInput[]
   >(() => initNoteChildElementsData()); // initNoteChildElementsData()
   const [addedNoteText, setAddedNoteText] = useState(inputs.title);
+  const [tags, setTags] = useState(inputs.tags);
+
   const [selected, setSelected] = useState(false);
   const [isOnEdit, setIsOnEdit] = useState(() =>
     inputs.title === "" ? true : false
@@ -65,8 +78,8 @@ const NoteElement = (inputs: NoteElementInput) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // selected elem
-  const { selectedNoteElementData, setSelectedNoteElementData } =
-    useContext(globalContext);
+  const ctx = useContext(globalContext);
+  const { selectedNoteElementData, setSelectedNoteElementData } = ctx;
 
   // init, focus on input
   useEffect(() => {
@@ -123,7 +136,6 @@ const NoteElement = (inputs: NoteElementInput) => {
             title: newTextValue,
           });
         }
-
       }
 
       setIsOnEdit(false);
@@ -165,8 +177,6 @@ const NoteElement = (inputs: NoteElementInput) => {
 
   //add new empty note element, "+" clicked
   const onClickPlusIconEvent = (e: React.MouseEvent<HTMLDivElement>) => {
-    // add to element data list !!! not the final data values
-
     !isAddNewElement &&
       setNoteChildElementsData((prev) => [
         ...prev,
@@ -176,6 +186,7 @@ const NoteElement = (inputs: NoteElementInput) => {
           title: "",
           actLevel: inputs.actLevel + 1,
           parentOrder: prev.length,
+          tags: [],
           childrenElements: [],
           parentActions: {
             removeElementWithId: removeElementDataWithId,
@@ -218,6 +229,20 @@ const NoteElement = (inputs: NoteElementInput) => {
 
   const onMouseOutElement = (e: React.MouseEvent) => {
     setIsElementActionsVisible(false);
+  };
+
+  // to TagManager input
+  const addTagToNote = (tagName: string) => {
+    // add tag to note if not present and increment the counter by 1
+    const f = async () => {
+      const respData: ApiResponse = await fetch(
+        `/api/add_tag_to_note?note_id=${inputs.id}&tag_name=${tagName}`
+      ).then((resp) => resp.json());
+    };
+    f();
+
+    // add tag to state
+    if (tags.indexOf(tagName) === -1) setTags((prev) => [...prev, tagName]);
   };
 
   // ----------------------- parent events
@@ -269,6 +294,32 @@ const NoteElement = (inputs: NoteElementInput) => {
 
           <div className={!isOnEdit ? "p-5" : "hidden p-5"}>
             <span>{addedNoteText}</span>
+            {tags.map((d, i) => (
+              <div key={i}>
+                <span className=" bg-red-500">{`${d} `}</span>
+                {/* delete tag */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+
+                    if (confirm("Are you sure you want to delete this tag?")) {
+                      //delete from db
+                      const f = async () => {
+                        const respData: ApiResponse = await fetch(
+                          `/api/delete_tag_from_note?note_id=${inputs.id}&tag_name=${d}`
+                        ).then((resp) => resp.json());
+                      };
+                      f();
+
+                      // remove from state
+                      setTags((prev) => prev.filter((tag) => tag !== d));
+                    }
+                  }}
+                >
+                  x
+                </button>
+              </div>
+            ))}
           </div>
         </div>
         {/* element control panel */}
@@ -287,8 +338,12 @@ const NoteElement = (inputs: NoteElementInput) => {
             <FaAngleUp className="w-6 h-6" onClick={onClickCollapseEvent} />
           )}
           <FaWindowClose className="w-6 h-6" onClick={onClickDeleteEvent} />
+          <TagsManager
+            showTagsByDefCount={5}
+            parentActions={{ addTagToNote: addTagToNote }}
+          />
           {isCollapsed && <span>({noteChildElementsData.length})</span>}
-          
+
           {/* --- debug */}
           <span>id {inputs.id}</span>
           <span>parentId {inputs.parentId}</span>
@@ -308,6 +363,7 @@ const NoteElement = (inputs: NoteElementInput) => {
             title={d.title}
             actLevel={inputs.actLevel + 1}
             parentOrder={i}
+            tags={d.tags}
             childrenElements={d.childrenElements}
             parentActions={{
               removeElementWithId: removeElementDataWithId,

@@ -2,7 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 
 import { ApiResponse } from "@/types";
 import { NoteElement } from ".";
-import { NoteElementInput, NoteElementDataDb } from "./NoteElement";
+import {
+  NoteElementInput,
+  NoteElementDataDb,
+  NoteTagsDataDb,
+} from "./NoteElement";
 
 const NoteContainer = () => {
   // esetleg itt lehet majd az aktuális root element id-t menteni amitől épp betöltjük a nodeokat
@@ -35,10 +39,24 @@ const NoteContainer = () => {
           title: noteDb.note,
           actLevel: 0, // will be set in NoteElement
           parentOrder: 0, // will be set in NoteElement
+          tags: [],
           childrenElements: [], // will be set in next step
           parentActions: null, // will be set in NoteElement
         };
       });
+
+      // get tags from db
+      respData = await fetch(
+        `/api/get_all_tags_from_id?from_note_id=${rootNodeId}`
+      ).then((resp) => resp.json());
+      const allTagsDb = respData.data as NoteTagsDataDb[];
+
+      // fill the tags
+      for (let i = 0; i < noteDataTemp.length; i++) {
+        noteDataTemp[i].tags = allTagsDb.filter(
+          (d) => d.note_id === noteDataTemp[i].id
+        ).map((d) => d.tag_name);
+      }
 
       // flat arry to hierarchical, fill childrenElements
       for (let i = 0; i < noteDataTemp.length; i++) {
@@ -60,6 +78,7 @@ const NoteContainer = () => {
           title: "root",
           actLevel: 0,
           parentOrder: 0,
+          tags: [],
           childrenElements: [], // will be filled later
           parentActions: null,
         },
@@ -79,6 +98,7 @@ const NoteContainer = () => {
         title: "",
         actLevel: 0,
         parentOrder: prev.length,
+        tags: [],
         childrenElements: [],
         parentActions: {
           removeElementWithId: removeElementWithId,
@@ -128,6 +148,7 @@ const NoteContainer = () => {
               parentOrder={d.parentOrder}
               title={d.title}
               actLevel={d.actLevel}
+              tags={[]}
               childrenElements={notesData}
               parentActions={d.parentActions}
             />

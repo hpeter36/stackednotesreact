@@ -11,8 +11,8 @@ import { ApiResponse } from "@/types";
 const NoteElementImport = () => {
   const [textCont, setTextCont] = useState("");
   const [notesData, setNotesData] = useState<NoteElementInput[]>([]);
-  const { selectedNoteElementData, setSelectedNoteElementData } =
-    useContext(globalContext);
+  const ctx = useContext(globalContext);
+  const { selectedNoteElementData, setSelectedNoteElementData } = ctx;
 
   //const [appendToRoot, setAppendToRoot] = useState(false);
   const appendToRoot = useRef(false);
@@ -93,6 +93,7 @@ const NoteElementImport = () => {
         title: r,
         actLevel: actLevel,
         parentOrder: 0,
+        tags: [],
         childrenElements: [],
         parentActions: null,
       });
@@ -242,6 +243,7 @@ const NoteElementImport = () => {
               }
               actLevel={0}
               parentOrder={0}
+              tags={[]}
               childrenElements={notesData}
               parentActions={null}
             />

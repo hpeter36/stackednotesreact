@@ -349,25 +349,44 @@ megcsinálni
 			tartalomjegyzék -> elem kiválasztás -> db load legyen?
 				minden alapból bezárva -> behaviour: {...} input NoteElement-nek? 
 					minden elem lenyitása a hierarchiában control panel element?
+					felokosítani ezekhez hasonló praktikus inputokkal
 				lazy db loading a ki nem nyitott elemekre?
 		külön ablakba benyitni noteokat kb mint a windows, vagy a vs code és egymás mellé stackelni az ablakokat?
+		le fel lépkedni a noteok között hiearchikusan betölteni
+			infinite loading se lenne rossz
+		böngésző mód (tömör tab hierach. nézet)
+			minden note elérése tag megadás nélkül is
+			ez töltődik be a nyitólapon
+			oldalmenuből elérhető
+			customizált noteelementel megoldható lazy loading, collapsed
+			kívülről haladunk befelé, mindent ki kell nyitogatni
+		vertikális nézet
+			mobilnézethez elsősorban
+			fent a headerben egy bizonyos levelig hogy melyik parentekben lépkedek, itt lehet fel le lépkedni
+			mindig csak 1 van nyitva listaszerűen,  headerben lehet navigálni vagy a listából belemenni más tree-be
+			az aktuális depth lista, a többi headerben, a környezete x db 3 vagy 5
+			1d-s listával is megoldható könnyen
+			tag tartalomjegyzékhez is jó
+			lazy note loading
 	note taggelés
-		jobb oldalt pici kereső felette apró label add tags
-		belekattolva mutatja az x leggyakoribbat
-		keresésre autotype db-ből kattra kiválasztás hozzáadás
-		noteon alul mutatni apro szöveggel eltérő színekkel
-		ha beírva nem találja meg a tag-et akkor egy button hogy create & add
-			megcsinálja a háttérben a hastaget és hozzá is adja
 	gyors keresés
 		oldalmenü a speciális "topic" tagekkel
 			nézet itt is hierarchikus
-			#id navigálás egyenlőre
+			#id navigálás?
+			betölteni db-ből a topictól "lefelé"
 		hashtag alapján, illetve általános kereső
 			"topic" speciális hashtag a fő témákhoz -> tartalomjegyzék
+		általános kereső mint a vscode, parentet rövidítve mutatni mint group alatta a találatok a groupban
+			találatra kattolva a parenttől betölti db-ből
 		topicokat childes elemek szövegét rövidítsük le "szöveg blabla..." mintával egy max len szerint
+		fent 2 fül, by tag, by content
+			drowdown tagek, csak 1 kiválaszt -> hierach rövidíett topicok
+			search input includes működés, kiemelni a matchet max x hosszúság
+				flat hierach -> parent rövidített header, elemek benne a találatok a környezetét belefoglalni 
+					max x méretben, olyan legyen mint egy doboz egy adott parentben lévő találatok 
 	user handling nextauth
 		új usernek egy sample notes
-		az api szerverbe egy JWT authentikáció
+	az api szerverbe egy JWT authentikáció
 	glass design
 		sok- sok animáció, ide húzom-oda,stb...
 	telefonon egyedi nézet kell hozzá
@@ -382,6 +401,23 @@ megcsinálni
 	notepad++ működés megvalósítása
 		szerkesztés dinamikája ugyanaz + extrák(meglévő app funkciói is)
 		sok hotkey
+
+extra sürgós featureok
+	oldalmenübe tartalomjegyzék, kereső, import, stb
+		mehetne fentre is h-max-al
+		vertikális menü, rákattolva kinyílik az aktív ami nyiva volt esetleg összezáródik
+	gyors keresés taggel, általános kereső
+		containerbe db-ből load a kiválasztottak
+	import verify, db add után töltse be a containerbe
+	sql backup zipben letöltve a tábla adatokat
+
+az általános tagnélküli, tages, keresést, böngészést, hiearch tömör(collapsed), tág(nyitott), vertikális nézetet kellene közös nevezőre hozni
+	ne kelljen tag a teljes böngészéshez, átjárható legyen a teljes hierachia
+
+megint túl sok db connection hiba
+be is cacheli a queryket..., de inkább a http request
+
+egyszerű műveletekhez sqlalchemy
 
 glass design kellene blurozott átlátszó elemekkel
 	egy mintás háttér html blury elemekkel mint developed by ed videoban

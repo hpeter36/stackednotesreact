@@ -21,6 +21,52 @@ def get_all_note_element():
 
     return jsonify(db_my_sql.get_all_note_element(from_note_id))
 
+@api.route('/api/v1/resources/get_all_tags_from_id', methods=['GET'])
+def get_all_tags_from_id():
+
+    from_note_id = request.args.get('from_note_id')
+    return jsonify(db_my_sql.get_all_tags_from_id(from_note_id))
+
+@api.route('/api/v1/resources/get_tag_defs', methods=['GET'])
+def get_tag_defs():
+
+    return jsonify(db_my_sql.get_tag_defs())
+
+@api.route('/api/v1/resources/add_new_tag_def', methods=['GET'])
+def add_new_tag_def():
+
+    tag_name = request.args.get('tag_name')
+    if tag_name is None:
+        return jsonify({'error': 'Error when adding new tag definition, the tag_name is not specified'})
+
+    return jsonify(db_my_sql.add_new_tag_def(tag_name))
+
+@api.route('/api/v1/resources/add_tag_to_note', methods=['GET'])
+def add_tag_to_note():
+
+    note_id = request.args.get('note_id')
+    if note_id is None:
+        return jsonify({'error': 'Error when adding new tag to note, the note_id is not specified'})
+
+    tag_name = request.args.get('tag_name')
+    if tag_name is None:
+        return jsonify({'error': 'Error when adding new tag to note, the tag_name is not specified'})
+
+    return jsonify(db_my_sql.add_tag_to_note(note_id, tag_name))
+
+@api.route('/api/v1/resources/delete_tag_from_note', methods=['GET'])
+def delete_tag_from_note():
+
+    note_id = request.args.get('note_id')
+    if note_id is None:
+        return jsonify({'error': 'Error when adding new tag to note, the note_id is not specified'})
+
+    tag_name = request.args.get('tag_name')
+    if tag_name is None:
+        return jsonify({'error': 'Error when adding new tag to note, the tag_name is not specified'})
+
+    return jsonify(db_my_sql.delete_tag_from_note(note_id, tag_name))
+
 
 @api.route('/api/v1/resources/add_edit_note_element', methods=['GET'])
 def add_edit_note_element():
