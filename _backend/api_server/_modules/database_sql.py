@@ -8,6 +8,7 @@ class DataBaseSql():
 
 #---------------notes
 
+    # recursively
     def get_all_note_element(self, from_id):  # minden usernek kellene egy dummy note ami a root lesz parent_id = 0-val
 
         # get the root id if 'from_id' not specified
@@ -48,6 +49,12 @@ class DataBaseSql():
         
         # return datas
 
+        return df.to_dict(orient='records')
+
+    def get_notes_with_tag(self, tag_name):
+
+        sql = f'''select n.id, n.parent_id, n.note, n.note_order from notes n join tags t on n.id = t.note_id join tag_defs td on t.tagdef_id = td.id where td.name = "{tag_name}"'''
+        df = pd.read_sql(sql, db_session.bind)
         return df.to_dict(orient='records')
 
     def add_edit_note_element(self, note_id, parent_id, note):
@@ -134,6 +141,7 @@ class DataBaseSql():
 
 #---------------tags
 
+    # recursive
     def get_all_tags_from_id(self, from_id):
 
         # get the root id if 'from_id' not specified

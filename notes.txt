@@ -368,6 +368,28 @@ megcsinálni
 			1d-s listával is megoldható könnyen
 			tag tartalomjegyzékhez is jó
 			lazy note loading
+			tag keresőhöz note containerhez külön megcsin
+			csak a parent kell a headerbe rákattolva egy szintet fel lép
+		kell külön nézet componens 
+			a noteelement csak önálló egység childek nélkül
+			a nézet fogja managelni a kettejük kommunikációját relációját
+		az általános tagnélküli, tages, keresést, böngészést, hiearch tömör(collapsed), tág(nyitott), vertikális nézetet kellene közös nevezőre hozni
+			ne kelljen tag a teljes böngészéshez, átjárható legyen a teljes hierachia
+			nézeteket keresést önálló komp ként kell megoldani, tól sok az eltérés
+				plusz jövőbeli lehetséges eltérés a működésben
+				a közös jól működő dolgokat persze meg lehet hagyni
+				nem kell túl tolni az újra felhasználhatóságot
+		cahcelést valahogy egy flat tömbbel [{},..] kellene megoldani
+			a lényeg hogy ne kelljen letölteni minden egyes kérésre a dolgokat
+			folyamatosan bele pakolni ebbe a tömmbe, ha minden megvan akkor csak kivenni innen
+			kb mint az input adataim most NoteElementInput []
+			ha megvan a lekért root parent akkpr nem kell dl, egy adott paretnttől pakoljuk bele ebbe a listába
+				dl után csak a nem létező elemek insert(merge)
+			egy adott elem egyértelműen beazonosítható a listában parent id child id
+				content típusa nem is légyeges
+			nézetek innen szedik majd ki az adatot ha benne van illetve ide rakják bele
+		db
+			ha minden adatot letöltök nem kell a rekurzió
 	note taggelés
 	gyors keresés
 		oldalmenü a speciális "topic" tagekkel
@@ -376,6 +398,18 @@ megcsinálni
 			betölteni db-ből a topictól "lefelé"
 		hashtag alapján, illetve általános kereső
 			"topic" speciális hashtag a fő témákhoz -> tartalomjegyzék
+			hastag search
+				hierarchikus, vertical nézet
+				mind2-nek select * where tag =...
+				vertical
+					virtuális root tag, a db-s is jó
+					ahol nincs meg a parent id ott parent id = root id
+						legjobb lenne csekkolni rekurzívan melyik közvetett meglévő parentidhoz tartozik
+						fellépkedni a parentokon amíg talál egy meglévőt vagy ha nem akkor root
+							js-ben impl
+					az adott parentid-hoz tartozó elemeket mutatja a lista
+
+
 		általános kereső mint a vscode, parentet rövidítve mutatni mint group alatta a találatok a groupban
 			találatra kattolva a parenttől betölti db-ből
 		topicokat childes elemek szövegét rövidítsük le "szöveg blabla..." mintával egy max len szerint
@@ -411,13 +445,18 @@ extra sürgós featureok
 	import verify, db add után töltse be a containerbe
 	sql backup zipben letöltve a tábla adatokat
 
-az általános tagnélküli, tages, keresést, böngészést, hiearch tömör(collapsed), tág(nyitott), vertikális nézetet kellene közös nevezőre hozni
-	ne kelljen tag a teljes böngészéshez, átjárható legyen a teljes hierachia
+	*container load
+	*refresh tag search
+	*import note load to container
+	cache
 
-megint túl sok db connection hiba
-be is cacheli a queryket..., de inkább a http request
+hibák
+	megint túl sok db connection hiba
+	be is cacheli a queryket..., de inkább a http request
 
-egyszerű műveletekhez sqlalchemy
+változtatni
+	egyszerű műveletekhez sqlalchemy
+	context csak ott ahol kell és csak az a felelősségi kör
 
 glass design kellene blurozott átlátszó elemekkel
 	egy mintás háttér html blury elemekkel mint developed by ed videoban

@@ -12,18 +12,23 @@ const NoteElementImport = () => {
   const [textCont, setTextCont] = useState("");
   const [notesData, setNotesData] = useState<NoteElementInput[]>([]);
   const ctx = useContext(globalContext);
-  const { selectedNoteElementData, setSelectedNoteElementData } = ctx;
+  const { selectedNoteElementData, setActiveRootNodeId } = ctx;
 
   //const [appendToRoot, setAppendToRoot] = useState(false);
   const appendToRoot = useRef(false);
   const rootElemId = useRef(0);
 
-  // parent node is selected/changed
+  // parent node is selected/changed -> set root note id
   useEffect(() => {
+    // note selected
     if (selectedNoteElementData)
       rootElemId.current = selectedNoteElementData.id;
+
+    // note is not selected -> 0 root node id
     if (!selectedNoteElementData) rootElemId.current = 0;
   }, [selectedNoteElementData]);
+
+  // -----------funcs
 
   function getTabCount(row: string) {
     let c = 0;
@@ -36,6 +41,8 @@ const NoteElementImport = () => {
     }
     return c;
   }
+
+    // -----------events
 
   const onClickPreview = (e: React.MouseEvent<HTMLButtonElement>) => {
     // no selected parent
@@ -131,7 +138,7 @@ const NoteElementImport = () => {
   const onClickApprove = (e: React.MouseEvent<HTMLButtonElement>) => {
     const f = async () => {
       
-      // init
+      // init, set first(root) element
       const addedIdsToDb: { idTmp: number; idDb: number }[] = [
         { idTmp: rootElemId.current, idDb: rootElemId.current },
       ];
@@ -140,8 +147,10 @@ const NoteElementImport = () => {
       for (const noteParent of notesData) {
         // insert to db if not already
         if (addedIdsToDb.findIndex((d) => d.idTmp === noteParent.id) === -1) {
+          
+          // get parent id
           const parentId = addedIdsToDb.find(
-            (d) => d.idTmp === noteParent.parentId
+            (dDb) => dDb.idTmp === noteParent.parentId
           );
           if (!parentId){
             console.error(
@@ -150,6 +159,7 @@ const NoteElementImport = () => {
             return
           }
 
+          // add note to db
           const respData: ApiResponse = await fetch(
             `/api/add_edit_note_element?parent_id=${parentId.idDb}&note=${noteParent.title}`
           ).then((resp) => resp.json());
@@ -160,7 +170,10 @@ const NoteElementImport = () => {
         // process parents(2nd level)
         for (const noteChild of noteParent.childrenElements) {
           // insert to db if not already
+
           if (addedIdsToDb.findIndex((d) => d.idTmp === noteChild.id) === -1) {
+            
+            // get parent id
             const parentId = addedIdsToDb.find(
               (d) => d.idTmp === noteChild.parentId
             );
@@ -171,6 +184,7 @@ const NoteElementImport = () => {
               return
             }
   
+            // add note to db
             const respData: ApiResponse = await fetch(
               `/api/add_edit_note_element?parent_id=${parentId.idDb}&note=${noteChild.title}`
             ).then((resp) => resp.json());
@@ -182,14 +196,16 @@ const NoteElementImport = () => {
     };
     f();
 
-    window.location.reload()
+    setActiveRootNodeId(rootElemId.current)
 
-    //setTextCont("");
-    //setNotesData([]);
+    setTextCont("");
+    setNotesData([]);
   };
 
   // change "Append to root node" option
   const onChangeAppendToRootCbx = (e: React.ChangeEvent<HTMLInputElement>) => {
+    
+    // append to root -> root note id = 0
     appendToRoot.current = e.currentTarget.checked;
     if (appendToRoot.current) rootElemId.current = 0;
     // if unchecked, set the selected element id if it is selected
@@ -199,27 +215,32 @@ const NoteElementImport = () => {
 
   return (
     <div className="w-full flex justify-center items-center mt-10">
-      <div className="w-5/6 h-[500px]">
+      <div className="w-5/6">
         {/* input area */}
         <textarea
-          className="w-full h-full"
+          className="w-full h-[500px]"
           onChange={(e) => setTextCont(e.target.value)}
           value={textCont}
         />
         {/* control panel */}
         <div>
+          {/* append to root cbx */}
           <input
             id="append_to_root_cbx"
             type="checkbox"
             onChange={onChangeAppendToRootCbx}
           />
           <label htmlFor="append_to_root_cbx">Append to root node</label>
+          
+          {/* Preview btn */}
           <button
             className="bg-blue-300 rounded p-3 text-lg border-2 border-black"
             onClick={onClickPreview}
           >
             Preview
           </button>
+
+          {/* Approve btn */}
           {notesData.length > 0 && (
             <button
               className="bg-blue-300 rounded p-3 text-lg border-2 border-black ml-5"
@@ -229,9 +250,13 @@ const NoteElementImport = () => {
             </button>
           )}
         </div>
-        {/* preview */}
+        {/* notes preview */}
         <div>
+
+          {/* overlay to disable input */}
           <div className="absolute w-full h-full z-10 bg-transparent"></div>
+          
+          {/* notes nodes */}
           {notesData.length > 0 && (
             <NoteElement
               id={rootElemId.current}

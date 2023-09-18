@@ -79,7 +79,7 @@ const NoteElement = (inputs: NoteElementInput) => {
 
   // selected elem
   const ctx = useContext(globalContext);
-  const { selectedNoteElementData, setSelectedNoteElementData } = ctx;
+  const { selectedNoteElementData, setSelectedNoteElementData, setNoteTagsChanged } = ctx;
 
   // init, focus on input
   useEffect(() => {
@@ -243,6 +243,9 @@ const NoteElement = (inputs: NoteElementInput) => {
 
     // add tag to state
     if (tags.indexOf(tagName) === -1) setTags((prev) => [...prev, tagName]);
+
+    setNoteTagsChanged(true)
+
   };
 
   // ----------------------- parent events
@@ -297,7 +300,7 @@ const NoteElement = (inputs: NoteElementInput) => {
             {tags.map((d, i) => (
               <div key={i}>
                 <span className=" bg-red-500">{`${d} `}</span>
-                {/* delete tag */}
+                {/* delete tag btn */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -313,6 +316,8 @@ const NoteElement = (inputs: NoteElementInput) => {
 
                       // remove from state
                       setTags((prev) => prev.filter((tag) => tag !== d));
+
+                      setNoteTagsChanged(true)
                     }
                   }}
                 >

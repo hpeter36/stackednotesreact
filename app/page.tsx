@@ -1,16 +1,17 @@
 "use client";
 
-import { NoteContainer, NoteElementImport, SideMenu } from "@/components";
+import { NoteContainer, SideMenu } from "@/components";
 
 import { GlobalContext } from "@/components/Contexts";
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <div className=" min-w-full h-screen">
       <GlobalContext>
-        <NoteContainer />
-        <NoteElementImport />
-        <SideMenu />
+        <div className="flex">
+          <SideMenu />
+          <NoteContainer />
+        </div>
       </GlobalContext>
     </div>
   );

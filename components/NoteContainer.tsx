@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
+import { globalContext } from "./Contexts";
 
 import { ApiResponse } from "@/types";
 import { NoteElement } from ".";
@@ -8,14 +9,18 @@ import {
   NoteTagsDataDb,
 } from "./NoteElement";
 
+import {NoteElementImport }from "@/components";
+
 const NoteContainer = () => {
-  // esetleg itt lehet majd az aktuális root element id-t menteni amitől épp betöltjük a nodeokat
-  // "add new note" az aktuális kiválasztáshoz ad hozzá
-  const rootNodeId = 0;
-  const rootNodeParentId = -1;
+
+  // !!! cachle obj
+
+  const ctx = useContext(globalContext)
+  const {activeRootNodeId, setActiveRootNodeId} = ctx  
 
   const [rootNotesData, setRootNotesData] = useState<NoteElementInput[]>([]);
   const [notesData, setNotesData] = useState<NoteElementInput[]>([]); // nem túl performant megoldás
+  const [isShowImport, setIsShowImport] = useState(false)
 
   const tempId = useRef(-2);
 
@@ -24,7 +29,7 @@ const NoteContainer = () => {
       // get all notes
       // !!! elég lassan kezdi el tölteni a useffect sokáig tart
       let respData: ApiResponse = await fetch(
-        `/api/get_notes?from_note_id=${rootNodeId}`
+        `/api/get_notes?from_note_id=${activeRootNodeId}`
       ).then((resp) => resp.json());
 
       // get db data
@@ -47,7 +52,7 @@ const NoteContainer = () => {
 
       // get tags from db
       respData = await fetch(
-        `/api/get_all_tags_from_id?from_note_id=${rootNodeId}`
+        `/api/get_all_tags_from_id?from_note_id=${activeRootNodeId}`
       ).then((resp) => resp.json());
       const allTagsDb = respData.data as NoteTagsDataDb[];
 
@@ -70,31 +75,30 @@ const NoteContainer = () => {
       setNotesData(noteDataTemp);
 
       // set the data of the root element
-      setRootNotesData((prev) => [
-        ...prev,
+      setRootNotesData([
         {
-          id: rootNodeId,
-          parentId: rootNodeParentId,
-          title: "root",
+          id: noteDataTemp[0].id, // activeRootNodeId
+          parentId: noteDataTemp[0].parentId,  // -1
+          title: noteDataTemp[0].title,
           actLevel: 0,
           parentOrder: 0,
-          tags: [],
-          childrenElements: [], // will be filled later
+          tags: noteDataTemp[0].tags,
+          childrenElements: noteDataTemp[0].childrenElements, 
           parentActions: null,
         },
       ]);
     };
-    init();
-  }, []);
+    activeRootNodeId !== -1 && init();
+  }, [activeRootNodeId]);
 
   // --------------events
   // click on add new note button, add note to root
-  const onClickAddNewNote = () => {
+  const onClickAddNewNote = (e:React.MouseEvent<HTMLButtonElement>) => {
     setRootNotesData((prev) => [
       ...prev,
       {
         id: tempId.current - 1,
-        parentId: rootNodeId,
+        parentId: activeRootNodeId,
         title: "",
         actLevel: 0,
         parentOrder: prev.length,
@@ -110,6 +114,10 @@ const NoteContainer = () => {
 
     tempId.current -= 1;
   };
+
+  const onClickImportNotes = (e:React.MouseEvent<HTMLButtonElement>) => {
+    setIsShowImport((prev) => !prev)
+  }
 
   // ------------------- parent events
 
@@ -127,18 +135,28 @@ const NoteContainer = () => {
   };
 
   return (
-    <div>
+    <div className="w-full">
       {/* control panel */}
-      <div>
-        <button
+      <div className="w-full">
+        {/* Add new note */}
+        <button disabled ={activeRootNodeId === -1 ? true: false}
           className="bg-blue-300 rounded p-3 text-lg border-2 border-black ml-5"
           onClick={onClickAddNewNote}
         >
           Add new note
         </button>
+        {/* Import nodes */}
+        <button
+          className="bg-blue-300 rounded p-3 text-lg border-2 border-black ml-5"
+          onClick={onClickImportNotes}
+        >
+          Import notes
+        </button>
       </div>
+      {/* import notes container */}
+      {isShowImport && <NoteElementImport />}
       {/* notes container */}
-      <div>
+      <div className="w-full max-h-screen overflow-scroll">
         {rootNotesData.length > 0 &&
           rootNotesData.map((d) => (
             <NoteElement
@@ -148,7 +166,7 @@ const NoteContainer = () => {
               parentOrder={d.parentOrder}
               title={d.title}
               actLevel={d.actLevel}
-              tags={[]}
+              tags={d.tags}
               childrenElements={notesData}
               parentActions={d.parentActions}
             />

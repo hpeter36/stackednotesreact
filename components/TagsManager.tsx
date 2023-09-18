@@ -31,21 +31,19 @@ const TagsManager = (inputs: TagsManagerInput) => {
   //--------- funcs
 
   const filterTags = (val: string) => {
-	return val === ""
-	? getDefSearch()
-	: tagDefs.filter((d) => d.name.indexOf(val) !== -1)
-  }
+    return val === ""
+      ? getDefSearch()
+      : tagDefs.filter((d) => d.name.indexOf(val) !== -1);
+  };
 
   //--------- events
 
   const onFocusInput = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsFocused(true);
-	setFilteredTags(filterTags(searchVal));
+    setFilteredTags(filterTags(searchVal));
   };
 
-  const unFocusInput = (e: React.FocusEvent<HTMLInputElement>) => {
-    
-  };
+  const unFocusInput = (e: React.FocusEvent<HTMLInputElement>) => {};
 
   const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.currentTarget.value;
@@ -61,7 +59,7 @@ const TagsManager = (inputs: TagsManagerInput) => {
 
     // set input state
     setSearchVal("");
-	setIsFocused(false);
+    setIsFocused(false);
     inputRef.current?.blur();
   };
 
@@ -82,37 +80,45 @@ const TagsManager = (inputs: TagsManagerInput) => {
 
     // set input state
     setSearchVal("");
-	setIsFocused(false);
+    setIsFocused(false);
     inputRef.current?.blur();
   };
 
   const onClickClearSearch = (e: React.MouseEvent<HTMLSpanElement>) => {
     setSearchVal("");
-	setIsFocused(false);
+    setIsFocused(false);
   };
 
   return (
     <div>
-      <input
-        ref={inputRef}
-        type="text"
-		value={searchVal}
-        onFocus={onFocusInput}
-        onBlur={unFocusInput}
-        onChange={onChangeInput}
-      />
-      {searchVal.length > 0 && filteredTags.length === 0 && (
-        <button onClick={onClickAddNewTagDef}>Add new tag</button>
-      )}
-      {isFocused && <button onClick={onClickClearSearch}>x</button>}
-      <div className="absolute">
-        {isFocused &&
-          filteredTags.length > 0 &&
-          filteredTags.map((tag, i) => (
-            <div key={i}>
-              <span onClick={onClickAddExistingTagToNote}>{tag.name}</span>
-            </div>
-          ))}
+      <div>
+        {/* input field */}
+        <input
+          ref={inputRef}
+          type="text"
+          value={searchVal}
+          onFocus={onFocusInput}
+          onBlur={unFocusInput}
+          onChange={onChangeInput}
+        />
+        {/* Add new tag */}
+        {searchVal.length > 0 && filteredTags.length === 0 && (
+          <button onClick={onClickAddNewTagDef}>Add new tag</button>
+        )}
+        {/* clear input btn */}
+        {isFocused && <button onClick={onClickClearSearch}>x</button>}
+      </div>
+      {/* dropdown tag list */}
+      <div className="relative">
+        <div className="absolute">
+          {isFocused &&
+            filteredTags.length > 0 &&
+            filteredTags.map((tag, i) => (
+              <div key={i}>
+                <span onClick={onClickAddExistingTagToNote}>{tag.name}</span>
+              </div>
+            ))}
+        </div>
       </div>
     </div>
   );
