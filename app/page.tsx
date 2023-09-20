@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <div className=" min-w-full h-screen">
       <GlobalContext>
-        <div className="flex">
+        <div>
           <SideMenu />
           <NoteContainer />
         </div>

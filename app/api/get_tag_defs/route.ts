@@ -1,45 +1,26 @@
 import { NextResponse } from "next/server";
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
+import { getApiResponse } from "@/utils/api_helpers";
+import { dbOrm } from "@/db";
 
 export async function GET(request: Request) {
   try {
-
-    // construct uri
-    let uriStr = `http://${process.env.DATA_SERVER}:${process.env.DATA_SERVER_PORT}/api/v1/resources/get_tag_defs`;
-    const respData = await fetch(uriStr).then((res) => res.json());
-
-    // return data
-    return NextResponse.json(
-      {
-        data: respData,
-        status: EnumApiResponseStatus[EnumApiResponseStatus.STATUS_OK],
-      },
-      { status: 200 }
-    );
+    const tagDefs = await dbOrm.tag_defs.findAll();
+    return getApiResponse(tagDefs, EnumApiResponseStatus.STATUS_OK, 200);
   } catch (e) {
     // error handling
+    // itt logolni kell db-be !!!
     if (typeof e === "string")
-      // itt logolni kell db-be !!!
-      return NextResponse.json(
-        {
-          data: e,
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR
-            ],
-        },
-        { status: 500 }
+      return getApiResponse(
+        e,
+        EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR,
+        500
       );
     else if (e instanceof Error)
-      return NextResponse.json(
-        {
-          data: e.message,
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR
-            ],
-        },
-        { status: 500 }
+      return getApiResponse(
+        e.message,
+        EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR,
+        500
       );
   }
 }

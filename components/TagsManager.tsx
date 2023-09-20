@@ -67,7 +67,8 @@ const TagsManager = (inputs: TagsManagerInput) => {
     // add new tag to tagdefs db table if not exist
     const f = async () => {
       const respData: ApiResponse = await fetch(
-        `/api/add_new_tag_def?tag_name=${searchVal}`
+        `/api/add_new_tag_def?tag_name=${searchVal}`,
+        { method: "POST" }
       ).then((resp) => resp.json());
     };
     f();

@@ -20,7 +20,8 @@ const SearchByTag = () => {
     const f = async () => {
       // load data with tags
       const respData: ApiResponse = await fetch(
-        `/api/get_notes_with_tag?tag_name=${selectedTagName}`
+        `/api/get_notes_with_tag?tag_name=${selectedTagName}`,
+        { method: "GET" }
       ).then((resp) => resp.json());
       let data = respData.data as NoteElementDataDb[];
       data = [

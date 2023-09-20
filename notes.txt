@@ -453,10 +453,32 @@ extra sürgós featureok
 hibák
 	megint túl sok db connection hiba
 	be is cacheli a queryket..., de inkább a http request
+	miért nem rakott semmit a dev dependencies-be?
 
 változtatni
-	egyszerű műveletekhez sqlalchemy
 	context csak ott ahol kell és csak az a felelősségi kör
+	
+	nextauth
+	login nyitólap
+	apihoz kell egy user related access
+	notes user binding
+
+	0 kezdőelemmel is menjen az app
+	db backup to import
+
+	design + mobile resp
+	hero kezdőlap
+	
+	update to nextjs 13.5
+	unused import + deploy, prod teendők
+	docker mariadb + nextjs deploy
+
+gyakori linkek to check programming
+	https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+
+összes js mastery cheat sheat átnézése a legjobb toolok miatt, bomba workflow össszerakása
+	leírni
+	Postman
 
 glass design kellene blurozott átlátszó elemekkel
 	egy mintás háttér html blury elemekkel mint developed by ed videoban
@@ -481,3 +503,7 @@ glass design kellene blurozott átlátszó elemekkel
 3d, design
 	css olyan animált háttér mint az OverWatchban alap shapek gradinetel mozognak eltünnek feltünnek
 	mint az apple id login olyan fancy animált svg-k
+
+-------------deploy
+npm install sequelize-auto --save--dev
+sequelize-auto -h localhost -d stacked_notes_react -u root -x sr -p 3306 --dialect mariadb --lang ts --tables notes tag_defs tags themes  -o D:\Programozas\StackedNotesReact\stackednotesreact\db\models

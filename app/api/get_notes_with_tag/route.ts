@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
+import { QueryTypes } from "sequelize";
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
+import { getApiResponse } from "@/utils/api_helpers";
+import { sequelizeAdapter } from "@/db";
 
 export async function GET(request: Request) {
   try {
@@ -8,55 +11,34 @@ export async function GET(request: Request) {
     const tag_name = searchParams.get("tag_name");
 
     // input validation
-    if (!tag_name) {
-      return NextResponse.json(
-        {
-          data: "No 'tag_name' is specified!",
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_MISSING_PARAM
-            ],
-        },
-        { status: 400 }
+    if (!tag_name)
+      return getApiResponse(
+        "Error when getting notes with tag, no 'tag_name' is specified!",
+        EnumApiResponseStatus.STATUS_ERROR_MISSING_PARAM,
+        400
       );
-    }
 
-    // construct uri
-    let uriStr = `http://${process.env.DATA_SERVER}:${process.env.DATA_SERVER_PORT}/api/v1/resources/get_notes_with_tag?tag_name=${tag_name}`;
-    const respData = await fetch(uriStr).then((res) => res.json());
+    const results = await sequelizeAdapter.query(
+      `select n.id, n.parent_id, n.note, n.note_order from notes n join tags t on n.id = t.note_id join tag_defs td on t.tagdef_id = td.id where td.name = :tag_name`,
+      { plain: false, raw: true, type: QueryTypes.SELECT, replacements: { tag_name: tag_name}}
+    );
 
     // return data
-    return NextResponse.json(
-      {
-        data: respData,
-        status: EnumApiResponseStatus[EnumApiResponseStatus.STATUS_OK],
-      },
-      { status: 200 }
-    );
+    return getApiResponse(results, EnumApiResponseStatus.STATUS_OK, 200);
   } catch (e) {
     // error handling
+    // itt logolni kell db-be !!!
     if (typeof e === "string")
-      // itt logolni kell db-be !!!
-      return NextResponse.json(
-        {
-          data: e,
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR
-            ],
-        },
-        { status: 500 }
+      return getApiResponse(
+        e,
+        EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR,
+        500
       );
     else if (e instanceof Error)
-      return NextResponse.json(
-        {
-          data: e.message,
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR
-            ],
-        },
-        { status: 500 }
+      return getApiResponse(
+        e.message,
+        EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR,
+        500
       );
   }
 }

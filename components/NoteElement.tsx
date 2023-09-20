@@ -79,7 +79,11 @@ const NoteElement = (inputs: NoteElementInput) => {
 
   // selected elem
   const ctx = useContext(globalContext);
-  const { selectedNoteElementData, setSelectedNoteElementData, setNoteTagsChanged } = ctx;
+  const {
+    selectedNoteElementData,
+    setSelectedNoteElementData,
+    setNoteTagsChanged,
+  } = ctx;
 
   // init, focus on input
   useEffect(() => {
@@ -109,7 +113,8 @@ const NoteElement = (inputs: NoteElementInput) => {
       if (isAddNewElement) {
         const f = async () => {
           const respData: ApiResponse = await fetch(
-            `/api/add_edit_note_element?parent_id=${inputs.parentId}&note=${newTextValue}`
+            `/api/add_edit_note_element?parent_id=${inputs.parentId}&note=${newTextValue}`,
+            { method: "POST" }
           ).then((resp) => resp.json());
           const insertedNote = respData.data as NoteElementDataDb;
           if (inputs.parentActions) {
@@ -126,7 +131,8 @@ const NoteElement = (inputs: NoteElementInput) => {
       else {
         const f = async () => {
           const respData: ApiResponse = await fetch(
-            `/api/add_edit_note_element?parent_id=${inputs.parentId}&note=${newTextValue}&note_id=${inputs.id}`
+            `/api/add_edit_note_element?parent_id=${inputs.parentId}&note=${newTextValue}&note_id=${inputs.id}`,
+            { method: "POST" }
           ).then((resp) => resp.json());
         };
         f();
@@ -214,7 +220,8 @@ const NoteElement = (inputs: NoteElementInput) => {
       // db op.
       const f = async () => {
         const respData: ApiResponse = await fetch(
-          `/api/delete_note_and_sub_notes?note_id_from=${inputs.id}`
+          `/api/delete_note_and_sub_notes?note_id_from=${inputs.id}`,
+          { method: "DELETE" }
         ).then((resp) => resp.json());
       };
       f();
@@ -236,7 +243,8 @@ const NoteElement = (inputs: NoteElementInput) => {
     // add tag to note if not present and increment the counter by 1
     const f = async () => {
       const respData: ApiResponse = await fetch(
-        `/api/add_tag_to_note?note_id=${inputs.id}&tag_name=${tagName}`
+        `/api/add_tag_to_note?note_id=${inputs.id}&tag_name=${tagName}`,
+        { method: "POST" }
       ).then((resp) => resp.json());
     };
     f();
@@ -244,8 +252,7 @@ const NoteElement = (inputs: NoteElementInput) => {
     // add tag to state
     if (tags.indexOf(tagName) === -1) setTags((prev) => [...prev, tagName]);
 
-    setNoteTagsChanged(true)
-
+    setNoteTagsChanged(true);
   };
 
   // ----------------------- parent events
@@ -309,7 +316,8 @@ const NoteElement = (inputs: NoteElementInput) => {
                       //delete from db
                       const f = async () => {
                         const respData: ApiResponse = await fetch(
-                          `/api/delete_tag_from_note?note_id=${inputs.id}&tag_name=${d}`
+                          `/api/delete_tag_from_note?note_id=${inputs.id}&tag_name=${d}`,
+                          { method: "DELETE" }
                         ).then((resp) => resp.json());
                       };
                       f();
@@ -317,7 +325,7 @@ const NoteElement = (inputs: NoteElementInput) => {
                       // remove from state
                       setTags((prev) => prev.filter((tag) => tag !== d));
 
-                      setNoteTagsChanged(true)
+                      setNoteTagsChanged(true);
                     }
                   }}
                 >

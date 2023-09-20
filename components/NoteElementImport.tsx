@@ -7,6 +7,8 @@ import NoteElement, {
   NoteElementInput,
 } from "./NoteElement";
 import { ApiResponse } from "@/types";
+//import JSZip from "jszip";
+//import { saveAs } from "file-saver";
 
 const NoteElementImport = () => {
   const [textCont, setTextCont] = useState("");
@@ -30,6 +32,54 @@ const NoteElementImport = () => {
 
   // -----------funcs
 
+  function createDbBackup() {
+
+    // regular usernek egy feltölthető formátum kell majd amit be tud tölteni ismét
+
+	// save file
+	// writeFile(`/tmp/${path}.txt`, content);
+	// writeFile(`/tmp/${path}`)
+
+    // table schema
+    // sequelize.getQueryInterface().showAllSchemas().then((tableObj) => {
+
+    // ez csak nekem mint adminnak, ha username xxx, egy gombra kattolva
+    // fetch api, sequelize all table json ret
+
+    // const [loading, setLoading] = useState(false);
+
+    // setLoading(true);
+    // try {
+    //   const zip = new JSZip();
+    //   const remoteZips = files.map(async (file) => {
+    //     const response = await fetch(file.url);
+    //     const data = await response.blob();
+    //     zip.file(`${file.name}.${file.type}`, data);
+
+    //     return data;
+    //   });
+
+    //   Promise.all(remoteZips)
+    //     .then(() => {
+    //       zip.generateAsync({ type: "blob" }).then((content) => {
+    //         // give the zip file a name
+    //         saveAs(content, "zip-download-next-js.zip");
+    //       });
+    //       setLoading(false);
+    //     })
+    //     .catch(() => {
+    //       setLoading(false);
+    //     });
+
+    //   setLoading(false);
+    // } catch (error) {
+    //   setLoading(false);
+    // }
+  //};
+
+    
+  }
+
   function getTabCount(row: string) {
     let c = 0;
 
@@ -42,7 +92,7 @@ const NoteElementImport = () => {
     return c;
   }
 
-    // -----------events
+  // -----------events
 
   const onClickPreview = (e: React.MouseEvent<HTMLButtonElement>) => {
     // no selected parent
@@ -137,7 +187,6 @@ const NoteElementImport = () => {
   // apply/start import
   const onClickApprove = (e: React.MouseEvent<HTMLButtonElement>) => {
     const f = async () => {
-      
       // init, set first(root) element
       const addedIdsToDb: { idTmp: number; idDb: number }[] = [
         { idTmp: rootElemId.current, idDb: rootElemId.current },
@@ -147,21 +196,21 @@ const NoteElementImport = () => {
       for (const noteParent of notesData) {
         // insert to db if not already
         if (addedIdsToDb.findIndex((d) => d.idTmp === noteParent.id) === -1) {
-          
           // get parent id
           const parentId = addedIdsToDb.find(
             (dDb) => dDb.idTmp === noteParent.parentId
           );
-          if (!parentId){
+          if (!parentId) {
             console.error(
               `Error when inserting notes to db, db parent id cannot be retrieved from tmp parent id(${noteParent.parentId})`
             );
-            return
+            return;
           }
 
           // add note to db
           const respData: ApiResponse = await fetch(
-            `/api/add_edit_note_element?parent_id=${parentId.idDb}&note=${noteParent.title}`
+            `/api/add_edit_note_element?parent_id=${parentId.idDb}&note=${noteParent.title}`,
+            { method: "POST" }
           ).then((resp) => resp.json());
           const noteDb = respData.data as NoteElementDataDb;
           addedIdsToDb.push({ idTmp: noteParent.id, idDb: noteDb.id });
@@ -172,21 +221,21 @@ const NoteElementImport = () => {
           // insert to db if not already
 
           if (addedIdsToDb.findIndex((d) => d.idTmp === noteChild.id) === -1) {
-            
             // get parent id
             const parentId = addedIdsToDb.find(
               (d) => d.idTmp === noteChild.parentId
             );
-            if (!parentId){
+            if (!parentId) {
               console.error(
                 `Error when inserting notes to db, db parent id cannot be retrieved from tmp parent id(${noteChild.parentId})`
               );
-              return
+              return;
             }
-  
+
             // add note to db
             const respData: ApiResponse = await fetch(
-              `/api/add_edit_note_element?parent_id=${parentId.idDb}&note=${noteChild.title}`
+              `/api/add_edit_note_element?parent_id=${parentId.idDb}&note=${noteChild.title}`,
+              { method: "POST" }
             ).then((resp) => resp.json());
             const noteDb = respData.data as NoteElementDataDb;
             addedIdsToDb.push({ idTmp: noteChild.id, idDb: noteDb.id });
@@ -196,7 +245,7 @@ const NoteElementImport = () => {
     };
     f();
 
-    setActiveRootNodeId(rootElemId.current)
+    setActiveRootNodeId(rootElemId.current);
 
     setTextCont("");
     setNotesData([]);
@@ -204,7 +253,6 @@ const NoteElementImport = () => {
 
   // change "Append to root node" option
   const onChangeAppendToRootCbx = (e: React.ChangeEvent<HTMLInputElement>) => {
-    
     // append to root -> root note id = 0
     appendToRoot.current = e.currentTarget.checked;
     if (appendToRoot.current) rootElemId.current = 0;
@@ -214,7 +262,7 @@ const NoteElementImport = () => {
   };
 
   return (
-    <div className="w-full flex justify-center items-center mt-10">
+    <div className="w-[500px] flex justify-center items-center bg-blue-300">
       <div className="w-5/6">
         {/* input area */}
         <textarea
@@ -231,7 +279,7 @@ const NoteElementImport = () => {
             onChange={onChangeAppendToRootCbx}
           />
           <label htmlFor="append_to_root_cbx">Append to root node</label>
-          
+
           {/* Preview btn */}
           <button
             className="bg-blue-300 rounded p-3 text-lg border-2 border-black"
@@ -252,10 +300,9 @@ const NoteElementImport = () => {
         </div>
         {/* notes preview */}
         <div>
-
           {/* overlay to disable input */}
           <div className="absolute w-full h-full z-10 bg-transparent"></div>
-          
+
           {/* notes nodes */}
           {notesData.length > 0 && (
             <NoteElement

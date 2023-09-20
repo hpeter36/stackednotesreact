@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
+import { QueryTypes } from "sequelize";
+import { getApiResponse } from "@/utils/api_helpers";
+import { sequelizeAdapter } from "@/db";
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
   try {
     // get input
     const { searchParams } = new URL(request.url);
@@ -10,69 +13,77 @@ export async function GET(request: Request) {
     const tag_name = searchParams.get("tag_name");
 
     // input validation
-    if (!note_id) {
-      return NextResponse.json(
-        {
-          data: "No 'note_id' is specified!",
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_MISSING_PARAM
-            ],
-        },
-        { status: 400 }
+    if (!note_id)
+      return getApiResponse(
+        "Error when adding tag to note, no 'note_id' is specified!",
+        EnumApiResponseStatus.STATUS_ERROR_MISSING_PARAM,
+        400
       );
-    }
 
-    if (!tag_name) {
-      return NextResponse.json(
-        {
-          data: "No 'tag_name' is specified!",
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_MISSING_PARAM
-            ],
-        },
-        { status: 400 }
+    if (!tag_name)
+      return getApiResponse(
+        "Error when adding tag to note, no 'tag_name' is specified!",
+        EnumApiResponseStatus.STATUS_ERROR_MISSING_PARAM,
+        400
       );
-    }
 
-    // construct uri
-    let uriStr = `http://${process.env.DATA_SERVER}:${process.env.DATA_SERVER_PORT}/api/v1/resources/add_tag_to_note?note_id=${note_id}&tag_name=${tag_name}`;
+    // és ha a note id, tagdef nem létezik??? !!!
 
-    const respData = await fetch(uriStr).then((res) => res.json());
+    // check if note has the tag already
+    const results = await sequelizeAdapter.query(
+      `select count(*) as c from notes n 
+      inner join tags t on n.id = t.note_id 
+      inner join tag_defs td  on t.tagdef_id  = td.id
+      where n.id  = :note_id and td.name = :tag_name`,
+      {
+        plain: false,
+        raw: true,
+        type: QueryTypes.SELECT,
+        replacements: { note_id: note_id, tag_name: tag_name },
+      }
+    );
+    let resIds = results as any[];
+    if (resIds[0]["c"] > 0)
+      return getApiResponse(
+        "Error when adding tag to note, the tag already exists on the note!",
+        EnumApiResponseStatus.STATUS_ERROR_CREATED_ALREADY,
+        400
+      );
+
+    // insert tag to note
+    const [resInsert, metaIns] = await sequelizeAdapter.query(
+      `insert into tags (note_id, tagdef_id) values(:note_id, (select id from tag_defs where name = :tag_name))`,
+      { replacements: { note_id: note_id, tag_name: tag_name } }
+    );
+    //console.log(resInsert) // inserted id
+    //console.log(metaIns)  // affected rows
+
+    // update count for tag def.
+    const resUpdate = await sequelizeAdapter.query(
+      `update tag_defs set usage_count = (select count(*) from tags where tagdef_id = (select id from tag_defs where name = :tag_name)) where name = :tag_name`,
+      { replacements: { tag_name: tag_name } }
+    );
 
     // return data
-    return NextResponse.json(
-      {
-        data: respData,
-        status: EnumApiResponseStatus[EnumApiResponseStatus.STATUS_OK],
-      },
-      { status: 200 }
+    return getApiResponse(
+      { affectedRows: metaIns },
+      EnumApiResponseStatus.STATUS_CREATED,
+      201
     );
   } catch (e) {
     // error handling
+    // itt logolni kell db-be !!!
     if (typeof e === "string")
-      // itt logolni kell db-be !!!
-      return NextResponse.json(
-        {
-          data: e,
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR
-            ],
-        },
-        { status: 500 }
+      return getApiResponse(
+        e,
+        EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR,
+        500
       );
     else if (e instanceof Error)
-      return NextResponse.json(
-        {
-          data: e.message,
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR
-            ],
-        },
-        { status: 500 }
+      return getApiResponse(
+        e.message,
+        EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR,
+        500
       );
   }
 }

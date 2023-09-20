@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
+import { QueryTypes } from "sequelize";
+import { getApiResponse } from "@/utils/api_helpers";
+import { sequelizeAdapter } from "@/db";
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
   try {
     // get input
     const { searchParams } = new URL(request.url);
@@ -9,56 +12,57 @@ export async function GET(request: Request) {
     const tag_name = searchParams.get("tag_name");
 
     // input validation
-    if (!tag_name) {
-      return NextResponse.json(
-        {
-          data: "No 'tag_name' is specified!",
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_MISSING_PARAM
-            ],
-        },
-        { status: 400 }
+    if (!tag_name)
+      return getApiResponse(
+        "Error when adding new tagdef, no 'tag_name' is specified!",
+        EnumApiResponseStatus.STATUS_ERROR_MISSING_PARAM,
+        400
       );
-    }
 
-    // construct uri
-    let uriStr = `http://${process.env.DATA_SERVER}:${process.env.DATA_SERVER_PORT}/api/v1/resources/add_new_tag_def?tag_name=${tag_name}`;
+    // check for existing tag name
+    const results = await sequelizeAdapter.query(
+      `select count(*) as c from tag_defs where name = :tag_name`,
+      {
+        plain: false,
+        raw: true,
+        type: QueryTypes.SELECT,
+        replacements: { tag_name: tag_name },
+      }
+    );
+    let resIds = results as any[];
+    if (resIds[0]["c"] > 0)
+      return getApiResponse(
+        "Error when adding new tagdef, the tagdef already exists!",
+        EnumApiResponseStatus.STATUS_ERROR_CREATED_ALREADY,
+        400
+      );
 
-    const respData = await fetch(uriStr).then((res) => res.json());
+    // insert new tagdef
+    const [insertedId, affectedRows] = await sequelizeAdapter.query(
+      `Insert into tag_defs (name, usage_count) values(:tag_name,0)`,
+      { replacements: { tag_name: tag_name } }
+    );
 
     // return data
-    return NextResponse.json(
-      {
-        data: respData,
-        status: EnumApiResponseStatus[EnumApiResponseStatus.STATUS_OK],
-      },
-      { status: 200 }
+    return getApiResponse(
+      { affectedRows: affectedRows },
+      EnumApiResponseStatus.STATUS_CREATED,
+      201
     );
   } catch (e) {
     // error handling
+    // itt logolni kell db-be !!!
     if (typeof e === "string")
-      // itt logolni kell db-be !!!
-      return NextResponse.json(
-        {
-          data: e,
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR
-            ],
-        },
-        { status: 500 }
+      return getApiResponse(
+        e,
+        EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR,
+        500
       );
     else if (e instanceof Error)
-      return NextResponse.json(
-        {
-          data: e.message,
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR
-            ],
-        },
-        { status: 500 }
+      return getApiResponse(
+        e.message,
+        EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR,
+        500
       );
   }
 }

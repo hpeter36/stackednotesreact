@@ -1,62 +1,49 @@
 import { NextResponse } from "next/server";
+import { QueryTypes } from "sequelize";
+import { getApiResponse } from "@/utils/api_helpers";
+import { sequelizeAdapter } from "@/db";
+
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
 
 export async function GET(request: Request) {
   try {
     // get input
     const { searchParams } = new URL(request.url);
-    const from_note_id = searchParams.get("from_note_id");
+    let from_note_id = searchParams.get("from_note_id");
 
-    // input validation
-    if (!from_note_id) {
-      return NextResponse.json(
-        {
-          data: "No 'from_note_id' is specified!",
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_MISSING_PARAM
-            ],
-        },
-        { status: 400 }
-      );
-    }
+    if (!from_note_id) from_note_id = "0";
 
-    // construct uri
-    let uriStr = `http://${process.env.DATA_SERVER}:${process.env.DATA_SERVER_PORT}/api/v1/resources/get_all_note_element?from_note_id=${from_note_id}`;
-    const respData = await fetch(uriStr).then((res) => res.json());
+    const results = await sequelizeAdapter.query(
+      `with RECURSIVE cte AS 
+      (
+      SELECT n.id, n.parent_id, n.note, n.note_order
+      FROM notes n
+      WHERE n.id = :from_note_id
+      UNION ALL
+      SELECT n.id, n.parent_id, n.note, n.note_order
+      FROM notes n JOIN cte c ON n.parent_id = c.id
+      )
+      select id, parent_id, note, note_order
+      FROM cte order by parent_id asc, note_order asc`,
+      { plain: false, raw: true, type: QueryTypes.SELECT, replacements: {from_note_id: from_note_id} }
+    );
 
     // return data
-    return NextResponse.json(
-      {
-        data: respData,
-        status: EnumApiResponseStatus[EnumApiResponseStatus.STATUS_OK],
-      },
-      { status: 200 }
-    );
+    return getApiResponse(results, EnumApiResponseStatus.STATUS_OK, 200);
   } catch (e) {
     // error handling
+    // itt logolni kell db-be !!!
     if (typeof e === "string")
-      // itt logolni kell db-be !!!
-      return NextResponse.json(
-        {
-          data: e,
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR
-            ],
-        },
-        { status: 500 }
+      return getApiResponse(
+        e,
+        EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR,
+        500
       );
     else if (e instanceof Error)
-      return NextResponse.json(
-        {
-          data: e.message,
-          status:
-            EnumApiResponseStatus[
-              EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR
-            ],
-        },
-        { status: 500 }
+      return getApiResponse(
+        e.message,
+        EnumApiResponseStatus.STATUS_ERROR_SERVER_ERROR,
+        500
       );
   }
 }
