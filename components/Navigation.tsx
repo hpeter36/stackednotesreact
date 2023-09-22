@@ -1,10 +1,12 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { navLinks, LoginState } from "@/config/constants";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type PageLinksMetaArrKeys = "home" | "notes" | "common";
+type PageLinksMetaArrKeys = "home" | "notes" | "common" | "otherpage";
 
 const Navigation = () => {
   const [active, setActive] = useState("Home");
@@ -21,8 +23,8 @@ const Navigation = () => {
         return "notes";
 
       // commmon pages
-      //   case "/other_page":
-      //     return "otherpage";
+        case "/other_page":
+          return "otherpage";
 
       // common
       case "common":
@@ -33,76 +35,77 @@ const Navigation = () => {
   }
 
   return (
-    <nav>
-      <div>
-        <ul className="flex list-style-none">
-          {/* menu items for the current page */}
-          {navLinks[getPageLinksMetaArrKey(pathName)].map((navObj) => {
-            if (
-              (navObj.auth === LoginState.LOGOUT && !session) || // logout only pages
-              (navObj.auth === LoginState.LOGIN && session) || // login only pages
-              navObj.auth === LoginState.BOTH
-            ) {
-              return (
-                <li className="pl-2" key={navObj.id}>
-                  <Link
-                    href={navObj.url}
-                    onClick={(e) => setActive(navObj.title)}
-                  >
-                    {navObj.title}
-                  </Link>
-                </li>
-              );
-            }
-          })}
+    <nav className="z-10 flex items-center justify-between w-full py-2 ">
+      <div className="flex flex-wrap items-center justify-between w-full px-3">
+        {/* menu items for the current page */}
+        <div className="flex basis-auto flex-grow items-center">
+          <ul className="flex list-style-none">
+            {navLinks[getPageLinksMetaArrKey(pathName)].map((navObj) => {
+              if (
+                (navObj.auth === LoginState.LOGOUT && !session) || // logout only pages
+                (navObj.auth === LoginState.LOGIN && session) || // login only pages
+                navObj.auth === LoginState.BOTH
+              ) {
+                return (
+                  <li className="pl-2" key={navObj.id}>
+                    <Link
+                      href={navObj.url}
+                      onClick={(e) => setActive(navObj.title)}
+                    >
+                      {navObj.title}
+                    </Link>
+                  </li>
+                );
+              }
+            })}
 
-          {/* not logged in and "/" route, show log in link */}
-          {pathName === "/" && !session && (
-            <li className="pl-2">
-              <Link
-                href="/api/auth/signin"
-                onClick={(e) => {
-                  e.preventDefault();
-                  signIn(undefined, {
-                    redirect: true,
-                    callbackUrl: `${window.location.origin}/notes`,
-                  });
-                }}
-              >
-                Sign in
-              </Link>
-            </li>
-          )}
-        </ul>
-      </div>
+            {/* not logged in and "/" route, show log in link */}
+            {pathName === "/" && !session && (
+              <li className="pl-2">
+                <Link
+                  href="/api/auth/signin"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    signIn(undefined, {
+                      redirect: true,
+                      callbackUrl: `${window.location.origin}/notes`,
+                    });
+                  }}
+                >
+                  Sign in
+                </Link>
+              </li>
+            )}
+          </ul>
+        </div>
 
-      {/* common links */}
-      <div>
-        <ul className="flex list-style-none">
-          {navLinks["common"].map((navObj) => {
-            if (
-              (navObj.auth === LoginState.LOGOUT && !session) || // logout only pages
-              (navObj.auth === LoginState.LOGIN && session) || // login only pages
-              navObj.auth === LoginState.BOTH
-            ) {
-              return (
-                <li className="pl-2" key={navObj.id}>
-                  <Link
-                    href={navObj.url}
-                    onClick={(e) => setActive(navObj.title)}
-                  >
-                    {navObj.title}
-                  </Link>
-                </li>
-              );
-            }
-          })}
-        </ul>
-        {/* User related elements */}
-        <ul className="flex list-style-none">
-          <li className="pl-2" data-te-nav-item-ref>
-			 {/* Logged out */}
-			 {!session && (
+        {/* common links */}
+        <div className="flex basis-auto flex-grow items-center">
+          <ul className="flex list-style-none">
+            {navLinks["common"].map((navObj) => {
+              if (
+                (navObj.auth === LoginState.LOGOUT && !session) || // logout only pages
+                (navObj.auth === LoginState.LOGIN && session) || // login only pages
+                navObj.auth === LoginState.BOTH
+              ) {
+                return (
+                  <li className="pl-2" key={navObj.id}>
+                    <Link
+                      href={navObj.url}
+                      onClick={(e) => setActive(navObj.title)}
+                    >
+                      {navObj.title}
+                    </Link>
+                  </li>
+                );
+              }
+            })}
+          </ul>
+          {/* User related elements */}
+          <ul className="flex list-style-none">
+            <li className="pl-2" data-te-nav-item-ref>
+              {/* Logged out */}
+              {!session && (
                 <div>
                   <Link
                     href={`/api/auth/signin`}
@@ -119,8 +122,8 @@ const Navigation = () => {
                 </div>
               )}
 
-			  {/* Logged in */}
-			  {session?.user && (
+              {/* Logged in */}
+              {session?.user && (
                 <>
                   {/* logged in user related functions */}
 
@@ -146,8 +149,9 @@ const Navigation = () => {
                   </div>
                 </>
               )}
-		  </li>
-        </ul>
+            </li>
+          </ul>
+        </div>
       </div>
     </nav>
   );

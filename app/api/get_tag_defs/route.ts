@@ -1,10 +1,20 @@
 import { NextResponse } from "next/server";
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
-import { getApiResponse } from "@/utils/api_helpers";
+import { getApiResponse } from "../api_helpers";
 import { dbOrm } from "@/db";
+import { getUserOnServer } from "../api_helpers";
 
 export async function GET(request: Request) {
   try {
+    // user checking
+    const user = await getUserOnServer();
+    if (!user)
+      return getApiResponse(
+        "Error when getting tag defs, the user is not authenticated",
+        EnumApiResponseStatus.STATUS_ERROR_NOT_AUTHENTICATED,
+        401
+      );
+
     const tagDefs = await dbOrm.tag_defs.findAll();
     return getApiResponse(tagDefs, EnumApiResponseStatus.STATUS_OK, 200);
   } catch (e) {

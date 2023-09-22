@@ -1,11 +1,22 @@
 import { NextResponse } from "next/server";
 import { QueryTypes } from "sequelize";
-import { getApiResponse } from "@/utils/api_helpers";
+import { getApiResponse } from "../api_helpers";
 import { sequelizeAdapter } from "@/db";
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
+import { getUserOnServer } from "../api_helpers";
 
 export async function POST(request: Request) {
   try {
+
+    // user checking
+    const user = await getUserOnServer();
+    if (!user)
+      return getApiResponse(
+        "Error when adding new tagdef, the user is not authenticated",
+        EnumApiResponseStatus.STATUS_ERROR_NOT_AUTHENTICATED,
+        401
+      );
+
     // get input
     const { searchParams } = new URL(request.url);
 

@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { userAgent } from "next/server";
-
 //import { withAuth } from "next-auth/middleware"
 import { getToken } from "next-auth/jwt";
-
 import { authOptions } from "@/config/auth";
 import { getServerSession } from "next-auth/next";
+import { EnumApiResponseStatus } from "./types";
 
 // ez replaceli a next js middlewarejét és csak akkor futtatja ha be van jelentkezve a user
 // export default withAuth(
@@ -21,6 +20,17 @@ import { getServerSession } from "next-auth/next";
 // 	  },
 // 	}
 //   )
+
+const getApiResponse = (dataIn: any, respStatus: EnumApiResponseStatus, respStatusCode: number) =>
+{
+  return NextResponse.json(
+	{
+	  data: dataIn,
+	  status: EnumApiResponseStatus[respStatus],
+	},
+	{ status: respStatusCode }
+  );
+}
 
 // Next JS middleware uses Edge as driver
 // runs on page, api, file loads
@@ -53,7 +63,7 @@ export async function middleware(request: NextRequest) {
 
   // user logged in
   if (token) {
-    console.log("JSON Web Token", JSON.stringify(token, null, 2));
+    //console.log("JSON Web Token", JSON.stringify(token, null, 2));
 
     // ez nemigen kell a getToken-hez
     // user token expired
@@ -78,23 +88,32 @@ export async function middleware(request: NextRequest) {
 
   // user not logged in
   else {
+    // sign out route -> "/"
+    if (requestedPath.startsWith("/api/auth/signout")) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
+    }
 
-  // sign out route -> "/"
-  if (requestedPath.startsWith("/api/auth/signout")) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/";
-    return NextResponse.redirect(url);
-  }
+    // protected pages
 
-	// protected pages
-
-	  // '/notes' -> login page
+    // '/notes' -> login page
     if (requestedPath == "/notes") {
-		const url = request.nextUrl.clone();
-		url.pathname = "/api/auth/signin";
-		return NextResponse.redirect(url);
-	  }
+      const url = request.nextUrl.clone();
+      url.pathname = "/api/auth/signin";
+      return NextResponse.redirect(url);
+    }
 
+    // api access without login
+    // '/api/xxx' -> 403 response
+    const isAuth = requestedPath.startsWith("/api/auth")
+    if (!isAuth && requestedPath.startsWith("/api")) {
+      return getApiResponse(
+        "Error when accessing API, the user is not authenticated",
+        EnumApiResponseStatus.STATUS_ERROR_NOT_AUTHENTICATED,
+        401
+      );
+    }
   }
 
   return NextResponse.next();

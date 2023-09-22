@@ -451,27 +451,35 @@ extra sürgós featureok
 	cache
 
 hibák
-	megint túl sok db connection hiba
-	be is cacheli a queryket..., de inkább a http request
 	miért nem rakott semmit a dev dependencies-be?
 
 változtatni
 	context csak ott ahol kell és csak az a felelősségi kör
 	
-	nextauth
-	login nyitólap
-	apihoz kell egy user related access
-	notes user binding
-
-	0 kezdőelemmel is menjen az app
-	db backup to import
-
+	alap teszt
+		0 kezdőelemmel is menjen az app
+			0-s index no owner, nem törölhető	
 	design + mobile resp
-	hero kezdőlap
-	
-	update to nextjs 13.5
-	unused import + deploy, prod teendők
-	docker mariadb + nextjs deploy
+		hero kezdőlap
+	biztonsági elemzés
+	deploy
+		https://www.youtube.com/watch?v=3WCIyNOrzwM - How I Made My Website Load in 0.364 Seconds | Build and Deploy
+		update to nextjs 13.5
+		unused import + deploy, prod teendők
+		docker mariadb + nextjs deploy
+	system test
+
+import usereknek, ahol csv-t lehet behúzni, illetve az ehhez szükséges export
+
+ML job kompetenciák
+	MLOps, GCP/Azure/AWS cloud, Apache Spark, 
+	AWS szolgáltatások Cognito, Lambda, CloudWatch, ECR , Athena
+	AWS OSS
+	AWS SageMaker, MLflow gépi tanulás
+	Infrastructure-as-Code (IAC) -> Terraform, Pulumi, AWS CloudFormation
+	Kubernetes / Helm
+
+tag kereső, adott tree és childjei illetve csak az adott level checkbox-al
 
 gyakori linkek to check programming
 	https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
@@ -506,4 +514,4 @@ glass design kellene blurozott átlátszó elemekkel
 
 -------------deploy
 npm install sequelize-auto --save--dev
-sequelize-auto -h localhost -d stacked_notes_react -u root -x sr -p 3306 --dialect mariadb --lang ts --tables notes tag_defs tags themes  -o D:\Programozas\StackedNotesReact\stackednotesreact\db\models
+sequelize-auto -h localhost -d stacked_notes_react -u root -x sr -p 3306 --dialect mariadb --lang ts --tables notes tag_defs tags themes account session user verificationtoken -o D:\Programozas\StackedNotesReact\stackednotesreact\db\models

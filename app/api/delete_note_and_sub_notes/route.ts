@@ -1,11 +1,21 @@
 import { NextResponse } from "next/server";
 import { QueryTypes } from "sequelize";
-import { getApiResponse } from "@/utils/api_helpers";
+import { getApiResponse } from "../api_helpers";
 import { sequelizeAdapter } from "@/db";
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
+import { getUserOnServer } from "../api_helpers";
 
 export async function DELETE(request: Request) {
   try {
+    // user checking
+    const user = await getUserOnServer();
+    if (!user)
+      return getApiResponse(
+        "Error when deleting note and subnotes, the user is not authenticated",
+        EnumApiResponseStatus.STATUS_ERROR_NOT_AUTHENTICATED,
+        401
+      );
+
     // get input
     const { searchParams } = new URL(request.url);
 
@@ -19,19 +29,25 @@ export async function DELETE(request: Request) {
         400
       );
 
+    // get note id-s to delete
     const results = await sequelizeAdapter.query(
       `with RECURSIVE cte AS 
           (
-          SELECT n.id
+          SELECT n.id, n.user_id
           FROM notes n
           WHERE n.id = ${note_id_from}
           UNION ALL
-          SELECT n.id
+          SELECT n.id, n.user_id
           FROM notes n JOIN cte c ON n.parent_id = c.id
           )
-          select id
-          FROM cte`,
-      { plain: false, raw: true, type: QueryTypes.SELECT, replacements: {note_id_from: note_id_from}}
+          select c.id
+          FROM cte c where c.user_id = :user_id`,
+      {
+        plain: false,
+        raw: true,
+        type: QueryTypes.SELECT,
+        replacements: { note_id_from: note_id_from, user_id: user.id },
+      }
     );
 
     if (results.length === 0)
@@ -46,12 +62,14 @@ export async function DELETE(request: Request) {
 
     // delete tags
     let [resDel, meta] = await sequelizeAdapter.query(
-      `delete from tags where note_id in (:to_del_ids)`, {replacements: {to_del_ids: resIds.join(",")}}
+      `delete from tags where note_id in (:to_del_ids)`,
+      { replacements: { to_del_ids: resIds.join(",") } }
     );
 
     // delete notes
     [resDel, meta] = await sequelizeAdapter.query(
-      `delete from notes where id in (:to_del_ids)`, {replacements: {to_del_ids: resIds.join(",")}}
+      `delete from notes where id in (:to_del_ids) and user_id = :user_id`,
+      { replacements: { to_del_ids: resIds.join(","), user_id: user.id } }
     );
 
     // return data

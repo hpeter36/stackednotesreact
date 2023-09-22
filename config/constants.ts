@@ -29,7 +29,7 @@ export const navLinks = {
   // ...
 
   // common pages
-  //otherpage: navLinksLoggedIn,
+  otherpage: navLinksLoggedIn,
 
   // shows common links(not real link)
   common: [
@@ -39,11 +39,11 @@ export const navLinks = {
       url: "/",
       auth: LoginState.LOGOUT,
     },
-    // {
-    //   id: "common_other_page",
-    //   title: "Other page",
-    //   url: "/other_page",
-    //   auth: LoginState.BOTH,
-    // },
+    {
+      id: "common_other_page",
+      title: "Other page",
+      url: "/other_page",
+      auth: LoginState.BOTH,
+    },
   ],
 };

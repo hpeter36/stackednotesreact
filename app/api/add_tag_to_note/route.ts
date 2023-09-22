@@ -1,11 +1,21 @@
 import { NextResponse } from "next/server";
 import { QueryTypes } from "sequelize";
-import { getApiResponse } from "@/utils/api_helpers";
-import { sequelizeAdapter } from "@/db";
+import { getApiResponse } from "../api_helpers";
+import { sequelizeAdapter, dbOrm } from "@/db";
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
+import { getUserOnServer } from "../api_helpers";
 
 export async function POST(request: Request) {
   try {
+    // user checking
+    const user = await getUserOnServer();
+    if (!user)
+      return getApiResponse(
+        "Error when adding tag to note, the user is not authenticated",
+        EnumApiResponseStatus.STATUS_ERROR_NOT_AUTHENTICATED,
+        401
+      );
+
     // get input
     const { searchParams } = new URL(request.url);
 
@@ -29,17 +39,32 @@ export async function POST(request: Request) {
 
     // és ha a note id, tagdef nem létezik??? !!!
 
+    // check if not belongs to the user
+    const foundNote = await dbOrm.notes.findOne({
+      where: { user_id: user.id, id: note_id },
+    }); // and connection
+    if (!foundNote)
+      return getApiResponse(
+        "Error when adding tag to note, the note does not belong to the user or the note does not exist",
+        EnumApiResponseStatus.STATUS_ERROR_NOT_AUTHORIZED,
+        403
+      );
+
     // check if note has the tag already
     const results = await sequelizeAdapter.query(
       `select count(*) as c from notes n 
       inner join tags t on n.id = t.note_id 
       inner join tag_defs td  on t.tagdef_id  = td.id
-      where n.id  = :note_id and td.name = :tag_name`,
+      where n.id  = :note_id and td.name = :tag_name and n.user_id = :user_id`,
       {
         plain: false,
         raw: true,
         type: QueryTypes.SELECT,
-        replacements: { note_id: note_id, tag_name: tag_name },
+        replacements: {
+          note_id: note_id,
+          tag_name: tag_name,
+          user_id: user.id,
+        },
       }
     );
     let resIds = results as any[];

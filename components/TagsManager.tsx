@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { globalContext } from "./Contexts";
 import { TagDefData } from "./Contexts/GlobalContext";

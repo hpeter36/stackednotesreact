@@ -7,14 +7,17 @@ import NoteElement, {
   NoteElementInput,
 } from "./NoteElement";
 import { ApiResponse } from "@/types";
-//import JSZip from "jszip";
-//import { saveAs } from "file-saver";
+import { useSession } from "next-auth/react";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 const NoteElementImport = () => {
   const [textCont, setTextCont] = useState("");
   const [notesData, setNotesData] = useState<NoteElementInput[]>([]);
   const ctx = useContext(globalContext);
   const { selectedNoteElementData, setActiveRootNodeId } = ctx;
+
+  const { data: session, status } = useSession();
 
   //const [appendToRoot, setAppendToRoot] = useState(false);
   const appendToRoot = useRef(false);
@@ -31,54 +34,6 @@ const NoteElementImport = () => {
   }, [selectedNoteElementData]);
 
   // -----------funcs
-
-  function createDbBackup() {
-
-    // regular usernek egy feltölthető formátum kell majd amit be tud tölteni ismét
-
-	// save file
-	// writeFile(`/tmp/${path}.txt`, content);
-	// writeFile(`/tmp/${path}`)
-
-    // table schema
-    // sequelize.getQueryInterface().showAllSchemas().then((tableObj) => {
-
-    // ez csak nekem mint adminnak, ha username xxx, egy gombra kattolva
-    // fetch api, sequelize all table json ret
-
-    // const [loading, setLoading] = useState(false);
-
-    // setLoading(true);
-    // try {
-    //   const zip = new JSZip();
-    //   const remoteZips = files.map(async (file) => {
-    //     const response = await fetch(file.url);
-    //     const data = await response.blob();
-    //     zip.file(`${file.name}.${file.type}`, data);
-
-    //     return data;
-    //   });
-
-    //   Promise.all(remoteZips)
-    //     .then(() => {
-    //       zip.generateAsync({ type: "blob" }).then((content) => {
-    //         // give the zip file a name
-    //         saveAs(content, "zip-download-next-js.zip");
-    //       });
-    //       setLoading(false);
-    //     })
-    //     .catch(() => {
-    //       setLoading(false);
-    //     });
-
-    //   setLoading(false);
-    // } catch (error) {
-    //   setLoading(false);
-    // }
-  //};
-
-    
-  }
 
   function getTabCount(row: string) {
     let c = 0;
@@ -261,6 +216,60 @@ const NoteElementImport = () => {
       rootElemId.current = selectedNoteElementData.id;
   };
 
+  function onClickCreateDbBackup() {
+    // regular usernek egy feltölthető formátum kell majd amit be tud tölteni ismét
+
+    // save file
+    // writeFile(`/tmp/${path}.txt`, content);
+    // writeFile(`/tmp/${path}`)
+
+    // table schema
+    // sequelize.getQueryInterface().showAllSchemas().then((tableObj) => {
+
+    // ez csak nekem mint adminnak, ha username xxx, egy gombra kattolva
+    // fetch api, sequelize all table json ret
+
+    // const [loading, setLoading] = useState(false);
+
+    // setLoading(true);
+    try {
+      // get data
+      const f = async () => {
+
+        // get data
+        const respData = await fetch(
+          `/api/get_all_db_table_data`,
+          { method: "GET" }
+        ).then((resp) => resp.json());
+        const allTagsDb = respData.data as { fn: string; data: any[] }[];
+
+        // make zips
+        const zip = new JSZip();
+        const remoteZips = allTagsDb.map((d) => {
+          zip.file(d.fn, JSON.stringify(d.data));
+          return d.data;
+        });
+
+        Promise.all(remoteZips)
+        .then(() => {
+          zip.generateAsync({ type: "blob" }).then((content) => {
+            saveAs(content, "db_tables_data.zip");
+          });
+          //setLoading(false);
+        })
+        .catch(() => {
+          //setLoading(false);
+        });
+      };
+      f()
+
+      //setLoading(false);
+    } catch (error) {
+      //setLoading(false);
+    }
+    //};
+  }
+
   return (
     <div className="w-[500px] flex justify-center items-center bg-blue-300">
       <div className="w-5/6">
@@ -295,6 +304,14 @@ const NoteElementImport = () => {
               onClick={onClickApprove}
             >
               Approve
+            </button>
+          )}
+          {session && session.user?.email === "hajdupeter24@gmail.com" && (
+            <button
+              className="bg-blue-300 rounded p-3 text-lg border-2 border-black ml-5"
+              onClick={onClickCreateDbBackup}
+            >
+              Create Db. backup
             </button>
           )}
         </div>

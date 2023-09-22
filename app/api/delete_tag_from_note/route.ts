@@ -1,11 +1,22 @@
 import { NextResponse } from "next/server";
 import { QueryTypes } from "sequelize";
-import { getApiResponse } from "@/utils/api_helpers";
+import { getApiResponse } from "../api_helpers";
 import { sequelizeAdapter } from "@/db";
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
+import { getUserOnServer } from "../api_helpers";
 
 export async function DELETE(request: Request) {
   try {
+
+    // user checking
+    const user = await getUserOnServer();
+    if (!user)
+      return getApiResponse(
+        "Error when deleting tag from note, the user is not authenticated",
+        EnumApiResponseStatus.STATUS_ERROR_NOT_AUTHENTICATED,
+        401
+      );
+
     // get input
     const { searchParams } = new URL(request.url);
 
@@ -27,9 +38,12 @@ export async function DELETE(request: Request) {
         400
       );
 
+    // delete db. op.
     const [results, meta] = await sequelizeAdapter.query(
-      `delete t.* from tags t inner join tag_defs td on t.tagdef_id = td.id 
-      where t.note_id = :note_id and td.name = :tag_name`, { replacements: {note_id: note_id, tag_name: tag_name}}
+      `delete t.* from tags t 
+      inner join tag_defs td on t.tagdef_id = td.id 
+      inner join notes n on t.note_id = n.id  
+      where t.note_id = :note_id and td.name = :tag_name and n.user_id = :user_id`, { replacements: {note_id: note_id, tag_name: tag_name, user_id: user.id}}
     );
     const res = results as any;
     if (res["affectedRows"] === 0)
