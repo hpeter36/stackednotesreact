@@ -3,6 +3,7 @@ import { ApiResponse, EnumApiResponseStatus } from "../../../types";
 import { getApiResponse } from "../api_helpers";
 import { dbOrm } from "@/db";
 import { getUserOnServer } from "../api_helpers";
+import { dbOrmGetAllTagDefs } from "@/db/sql_queries";
 
 export async function GET(request: Request) {
   try {
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
         401
       );
 
-    const tagDefs = await dbOrm.tag_defs.findAll();
+    const tagDefs = dbOrmGetAllTagDefs()
     return getApiResponse(tagDefs, EnumApiResponseStatus.STATUS_OK, 200);
   } catch (e) {
     // error handling

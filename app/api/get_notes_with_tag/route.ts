@@ -4,13 +4,12 @@ import { ApiResponse, EnumApiResponseStatus } from "../../../types";
 import { getApiResponse } from "../api_helpers";
 import { sequelizeAdapter } from "@/db";
 import { getUserOnServer } from "../api_helpers";
-
+import { dbGetNotesWithTag } from "@/db/sql_queries";
 
 export async function GET(request: Request) {
   try {
-
     // user checking
-    const user = await getUserOnServer()
+    const user = await getUserOnServer();
     if (!user)
       return getApiResponse(
         "Error when getting notes with tag, the user is not authenticated",
@@ -31,15 +30,7 @@ export async function GET(request: Request) {
       );
 
     // exec query
-    const results = await sequelizeAdapter.query(
-      `select n.id, n.parent_id, n.note, n.note_order from notes n join tags t on n.id = t.note_id join tag_defs td on t.tagdef_id = td.id where td.name = :tag_name and n.user_id = :user_id`,
-      {
-        plain: false,
-        raw: true,
-        type: QueryTypes.SELECT,
-        replacements: { tag_name: tag_name, user_id: user.id },
-      }
-    );
+    const results = await dbGetNotesWithTag(tag_name, user.id);
 
     // return data
     return getApiResponse(results, EnumApiResponseStatus.STATUS_OK, 200);

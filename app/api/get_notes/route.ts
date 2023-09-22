@@ -3,6 +3,7 @@ import { QueryTypes } from "sequelize";
 import { getApiResponse } from "../api_helpers";
 import { sequelizeAdapter } from "@/db";
 import { getUserOnServer } from "../api_helpers";
+import { dbGetNotes } from "@/db/sql_queries";
 
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
 
@@ -24,20 +25,8 @@ export async function GET(request: Request) {
 
     if (!from_note_id) from_note_id = "0";
 
-    const results = await sequelizeAdapter.query(
-      `with RECURSIVE cte AS 
-      (
-      SELECT n.id, n.parent_id, n.note, n.note_order, n.user_id
-      FROM notes n
-      WHERE n.id = :from_note_id
-      UNION ALL
-      SELECT n.id, n.parent_id, n.note, n.note_order, n.user_id
-      FROM notes n JOIN cte c ON n.parent_id = c.id
-      )
-      select id, parent_id, note, note_order
-      FROM cte where user_id = :user_id order by parent_id asc, note_order asc`,
-      { plain: false, raw: true, type: QueryTypes.SELECT, replacements: {from_note_id: from_note_id, user_id: user.id} }
-    );
+    // db. op.
+    const results = await dbGetNotes(from_note_id, user.id)
 
     // return data
     return getApiResponse(results, EnumApiResponseStatus.STATUS_OK, 200);

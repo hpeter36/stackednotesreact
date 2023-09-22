@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { globalContext } from "./Contexts";
@@ -68,10 +68,12 @@ const TagsManager = (inputs: TagsManagerInput) => {
   const onClickAddNewTagDef = (e: React.MouseEvent<HTMLSpanElement>) => {
     // add new tag to tagdefs db table if not exist
     const f = async () => {
-      const respData: ApiResponse = await fetch(
-        `/api/add_new_tag_def?tag_name=${searchVal}`,
-        { method: "POST" }
-      ).then((resp) => resp.json());
+      const respData: ApiResponse = await fetch(`/api/add_new_tag_def`, {
+        method: "POST",
+        body: JSON.stringify({
+          tag_name: searchVal,
+        }),
+      }).then((resp) => resp.json());
     };
     f();
 

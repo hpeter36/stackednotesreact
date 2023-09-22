@@ -112,11 +112,20 @@ const NoteElement = (inputs: NoteElementInput) => {
       // add new element
       if (isAddNewElement) {
         const f = async () => {
+          // db. op.
           const respData: ApiResponse = await fetch(
-            `/api/add_edit_note_element?parent_id=${inputs.parentId}&note=${newTextValue}`,
-            { method: "POST" }
+            `/api/add_edit_note_element`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                parent_id: inputs.parentId,
+                note: newTextValue,
+              }),
+            }
           ).then((resp) => resp.json());
           const insertedNote = respData.data as NoteElementDataDb;
+
+          // update state at parent
           if (inputs.parentActions) {
             inputs.parentActions.updateElementDataAtIdx(inputs.parentOrder, {
               ...inputs,
@@ -131,8 +140,15 @@ const NoteElement = (inputs: NoteElementInput) => {
       else {
         const f = async () => {
           const respData: ApiResponse = await fetch(
-            `/api/add_edit_note_element?parent_id=${inputs.parentId}&note=${newTextValue}&note_id=${inputs.id}`,
-            { method: "POST" }
+            `/api/add_edit_note_element`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                parent_id: inputs.parentId,
+                note: newTextValue,
+                note_id: inputs.id,
+              }),
+            }
           ).then((resp) => resp.json());
         };
         f();
@@ -217,14 +233,21 @@ const NoteElement = (inputs: NoteElementInput) => {
 
   const onClickDeleteEvent = (e: React.MouseEvent<HTMLDivElement>) => {
     if (confirm(`Are you sure you want to delete(${inputs.id})?`)) {
-      // db op.
+      // delete db op.
       const f = async () => {
         const respData: ApiResponse = await fetch(
-          `/api/delete_note_and_sub_notes?note_id_from=${inputs.id}`,
-          { method: "DELETE" }
+          `/api/delete_note_and_sub_notes`,
+          {
+            method: "DELETE",
+            body: JSON.stringify({
+              note_id_from: inputs.id,
+            }),
+          }
         ).then((resp) => resp.json());
       };
       f();
+
+      // remove from state
       if (inputs.parentActions)
         inputs.parentActions?.removeElementWithId(inputs.id);
     }
@@ -242,10 +265,13 @@ const NoteElement = (inputs: NoteElementInput) => {
   const addTagToNote = (tagName: string) => {
     // add tag to note if not present and increment the counter by 1
     const f = async () => {
-      const respData: ApiResponse = await fetch(
-        `/api/add_tag_to_note?note_id=${inputs.id}&tag_name=${tagName}`,
-        { method: "POST" }
-      ).then((resp) => resp.json());
+      const respData: ApiResponse = await fetch(`/api/add_tag_to_note`, {
+        method: "POST",
+        body: JSON.stringify({
+          note_id: inputs.id,
+          tag_name: tagName,
+        }),
+      }).then((resp) => resp.json());
     };
     f();
 
@@ -316,8 +342,12 @@ const NoteElement = (inputs: NoteElementInput) => {
                       //delete from db
                       const f = async () => {
                         const respData: ApiResponse = await fetch(
-                          `/api/delete_tag_from_note?note_id=${inputs.id}&tag_name=${d}`,
-                          { method: "DELETE" }
+                          `/api/delete_tag_from_note`,
+                          { method: "DELETE",
+                          body: JSON.stringify({
+                            note_id: inputs.id,
+                            tag_name: d,
+                          }), }
                         ).then((resp) => resp.json());
                       };
                       f();

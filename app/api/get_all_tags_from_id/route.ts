@@ -5,6 +5,7 @@ import { sequelizeAdapter } from "@/db";
 import { getUserOnServer } from "../api_helpers";
 
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
+import { dbGetAllTagsFromNote } from "@/db/sql_queries";
 
 export async function GET(request: Request) {
   try {
@@ -23,29 +24,7 @@ export async function GET(request: Request) {
 
     if (!from_note_id) from_note_id = "0";
 
-    const results = await sequelizeAdapter.query(
-      `with RECURSIVE cte AS 
-      (
-      SELECT n.id,  n.parent_id, n.note_order, n.user_id
-      FROM notes n
-      WHERE n.id = :from_note_id
-      UNION ALL
-      SELECT n.id, n.parent_id, n.note_order, n.user_id
-      FROM notes n JOIN cte c ON n.parent_id = c.id
-      )
-      select c.id as note_id, c.parent_id, c.note_order, td.name as tag_name
-      FROM cte c
-      inner join tags t on c.id = t.note_id
-      inner join tag_defs td on t.tagdef_id = td.id 
-      where c.user_id = :user_id
-      order by c.parent_id asc, c.note_order asc`,
-      {
-        plain: false,
-        raw: true,
-        type: QueryTypes.SELECT,
-        replacements: { from_note_id: from_note_id, user_id: user.id },
-      }
-    );
+    const results = await dbGetAllTagsFromNote(from_note_id, user.id)
 
     // return data
     return getApiResponse(results, EnumApiResponseStatus.STATUS_OK, 200);

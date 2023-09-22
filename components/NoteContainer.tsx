@@ -28,12 +28,15 @@ const NoteContainer = () => {
       // !!! elég lassan kezdi el tölteni a useffect sokáig tart
       let respData: ApiResponse = await fetch(
         `/api/get_notes?from_note_id=${activeRootNodeId}`,
-        { method: "GET" }
+        { method: "GET", cache: "no-store"}
       ).then((resp) => resp.json());
 
       // get db data
       const notesDb = respData.data as NoteElementDataDb[];
       //console.log(notesDb);
+
+      if (activeRootNodeId === 0)
+        notesDb.push({id: 0, note: "rootelem", note_order: 0, parent_id: -1})
 
       // dbData -> NoteElementInput
       const noteDataTemp: NoteElementInput[] = notesDb.map((noteDb) => {
@@ -69,20 +72,24 @@ const NoteContainer = () => {
         );
       }
 
-      //console.log(noteDataTemp);
+      console.log(noteDataTemp);
 
       setNotesData(noteDataTemp);
+
+      const rootElem = noteDataTemp.find((d) => d.id === activeRootNodeId); 
+      if(!rootElem)
+        console.error("Error when displaying notes, the root note element is not in the data")
 
       // set the data of the root element
       setRootNotesData([
         {
-          id: noteDataTemp[0].id, // activeRootNodeId
-          parentId: noteDataTemp[0].parentId, // -1
-          title: noteDataTemp[0].title,
+          id: rootElem!.id, // activeRootNodeId
+          parentId: rootElem!.parentId, // -1
+          title: rootElem!.title,
           actLevel: 0,
           parentOrder: 0,
-          tags: noteDataTemp[0].tags,
-          childrenElements: noteDataTemp[0].childrenElements,
+          tags: rootElem!.tags,
+          childrenElements: rootElem!.childrenElements,
           parentActions: null,
         },
       ]);

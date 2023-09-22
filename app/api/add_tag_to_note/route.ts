@@ -4,6 +4,7 @@ import { getApiResponse } from "../api_helpers";
 import { sequelizeAdapter, dbOrm } from "@/db";
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
 import { getUserOnServer } from "../api_helpers";
+import { dbOrmGetNoteWithId, dbIsNoteHasTagName, dbAddTagToNote, dbIncrementTagDefCount } from "@/db/sql_queries";
 
 export async function POST(request: Request) {
   try {
@@ -17,10 +18,7 @@ export async function POST(request: Request) {
       );
 
     // get input
-    const { searchParams } = new URL(request.url);
-
-    const note_id = searchParams.get("note_id");
-    const tag_name = searchParams.get("tag_name");
+    const { note_id, tag_name } = await request.json();
 
     // input validation
     if (!note_id)
@@ -40,9 +38,7 @@ export async function POST(request: Request) {
     // és ha a note id, tagdef nem létezik??? !!!
 
     // check if not belongs to the user
-    const foundNote = await dbOrm.notes.findOne({
-      where: { user_id: user.id, id: note_id },
-    }); // and connection
+    const foundNote = await dbOrmGetNoteWithId(note_id, user.id);
     if (!foundNote)
       return getApiResponse(
         "Error when adding tag to note, the note does not belong to the user or the note does not exist",
@@ -51,24 +47,12 @@ export async function POST(request: Request) {
       );
 
     // check if note has the tag already
-    const results = await sequelizeAdapter.query(
-      `select count(*) as c from notes n 
-      inner join tags t on n.id = t.note_id 
-      inner join tag_defs td  on t.tagdef_id  = td.id
-      where n.id  = :note_id and td.name = :tag_name and n.user_id = :user_id`,
-      {
-        plain: false,
-        raw: true,
-        type: QueryTypes.SELECT,
-        replacements: {
-          note_id: note_id,
-          tag_name: tag_name,
-          user_id: user.id,
-        },
-      }
+    const IsNoteHasTagName = await dbIsNoteHasTagName(
+      note_id,
+      tag_name,
+      user.id
     );
-    let resIds = results as any[];
-    if (resIds[0]["c"] > 0)
+    if (IsNoteHasTagName)
       return getApiResponse(
         "Error when adding tag to note, the tag already exists on the note!",
         EnumApiResponseStatus.STATUS_ERROR_CREATED_ALREADY,
@@ -76,18 +60,10 @@ export async function POST(request: Request) {
       );
 
     // insert tag to note
-    const [resInsert, metaIns] = await sequelizeAdapter.query(
-      `insert into tags (note_id, tagdef_id) values(:note_id, (select id from tag_defs where name = :tag_name))`,
-      { replacements: { note_id: note_id, tag_name: tag_name } }
-    );
-    //console.log(resInsert) // inserted id
-    //console.log(metaIns)  // affected rows
+    const metaIns = await dbAddTagToNote(note_id, tag_name)
 
     // update count for tag def.
-    const resUpdate = await sequelizeAdapter.query(
-      `update tag_defs set usage_count = (select count(*) from tags where tagdef_id = (select id from tag_defs where name = :tag_name)) where name = :tag_name`,
-      { replacements: { tag_name: tag_name } }
-    );
+    await dbIncrementTagDefCount(tag_name)
 
     // return data
     return getApiResponse(

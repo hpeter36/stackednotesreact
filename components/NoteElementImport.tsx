@@ -113,13 +113,13 @@ const NoteElementImport = () => {
       //console.log(`id ${i} p_id ${actParentId} lvl. ${actLevel} ${r}`);
 
       // check for correct tabbing
-      if (Math.abs(actLevel - prevLevel) > 1) {
-        alert(
-          "invalid data structure only one tab increment or decrement is allowed"
-        );
-        alert(`at: ${r}`);
-        return;
-      }
+      // if (Math.abs(actLevel - prevLevel) > 1) {
+      //   alert(
+      //     "invalid data structure only one tab increment or decrement is allowed"
+      //   );
+      //   alert(`at: ${r}`);
+      //   return;
+      // }
 
       let newNoteId = actId;
       parentIdAtLevelArr[actLevel] = newNoteId;
@@ -142,61 +142,14 @@ const NoteElementImport = () => {
   // apply/start import
   const onClickApprove = (e: React.MouseEvent<HTMLButtonElement>) => {
     const f = async () => {
-      // init, set first(root) element
-      const addedIdsToDb: { idTmp: number; idDb: number }[] = [
-        { idTmp: rootElemId.current, idDb: rootElemId.current },
-      ];
-
-      // process parents(1st level)
-      for (const noteParent of notesData) {
-        // insert to db if not already
-        if (addedIdsToDb.findIndex((d) => d.idTmp === noteParent.id) === -1) {
-          // get parent id
-          const parentId = addedIdsToDb.find(
-            (dDb) => dDb.idTmp === noteParent.parentId
-          );
-          if (!parentId) {
-            console.error(
-              `Error when inserting notes to db, db parent id cannot be retrieved from tmp parent id(${noteParent.parentId})`
-            );
-            return;
-          }
-
-          // add note to db
-          const respData: ApiResponse = await fetch(
-            `/api/add_edit_note_element?parent_id=${parentId.idDb}&note=${noteParent.title}`,
-            { method: "POST" }
-          ).then((resp) => resp.json());
-          const noteDb = respData.data as NoteElementDataDb;
-          addedIdsToDb.push({ idTmp: noteParent.id, idDb: noteDb.id });
-        }
-
-        // process parents(2nd level)
-        for (const noteChild of noteParent.childrenElements) {
-          // insert to db if not already
-
-          if (addedIdsToDb.findIndex((d) => d.idTmp === noteChild.id) === -1) {
-            // get parent id
-            const parentId = addedIdsToDb.find(
-              (d) => d.idTmp === noteChild.parentId
-            );
-            if (!parentId) {
-              console.error(
-                `Error when inserting notes to db, db parent id cannot be retrieved from tmp parent id(${noteChild.parentId})`
-              );
-              return;
-            }
-
-            // add note to db
-            const respData: ApiResponse = await fetch(
-              `/api/add_edit_note_element?parent_id=${parentId.idDb}&note=${noteChild.title}`,
-              { method: "POST" }
-            ).then((resp) => resp.json());
-            const noteDb = respData.data as NoteElementDataDb;
-            addedIdsToDb.push({ idTmp: noteChild.id, idDb: noteDb.id });
-          }
-        }
-      }
+      const respData: ApiResponse = await fetch(`/api/import_notes`, {
+        method: "POST",
+        body: JSON.stringify({
+          rootNoteId: rootElemId.current,
+          notesData: notesData,
+        }),
+      }).then((resp) => resp.json());
+      console.log(respData);
     };
     f();
 
@@ -219,10 +172,6 @@ const NoteElementImport = () => {
   function onClickCreateDbBackup() {
     // regular usernek egy feltölthető formátum kell majd amit be tud tölteni ismét
 
-    // save file
-    // writeFile(`/tmp/${path}.txt`, content);
-    // writeFile(`/tmp/${path}`)
-
     // table schema
     // sequelize.getQueryInterface().showAllSchemas().then((tableObj) => {
 
@@ -235,12 +184,10 @@ const NoteElementImport = () => {
     try {
       // get data
       const f = async () => {
-
         // get data
-        const respData = await fetch(
-          `/api/get_all_db_table_data`,
-          { method: "GET" }
-        ).then((resp) => resp.json());
+        const respData = await fetch(`/api/get_all_db_table_data`, {
+          method: "GET",
+        }).then((resp) => resp.json());
         const allTagsDb = respData.data as { fn: string; data: any[] }[];
 
         // make zips
@@ -251,17 +198,17 @@ const NoteElementImport = () => {
         });
 
         Promise.all(remoteZips)
-        .then(() => {
-          zip.generateAsync({ type: "blob" }).then((content) => {
-            saveAs(content, "db_tables_data.zip");
+          .then(() => {
+            zip.generateAsync({ type: "blob" }).then((content) => {
+              saveAs(content, "db_tables_data.zip");
+            });
+            //setLoading(false);
+          })
+          .catch(() => {
+            //setLoading(false);
           });
-          //setLoading(false);
-        })
-        .catch(() => {
-          //setLoading(false);
-        });
       };
-      f()
+      f();
 
       //setLoading(false);
     } catch (error) {
@@ -316,28 +263,124 @@ const NoteElementImport = () => {
           )}
         </div>
         {/* notes preview */}
-        <div>
-          {/* overlay to disable input */}
-          <div className="absolute w-full h-full z-10 bg-transparent"></div>
+        {notesData.length > 0 && (
+          <NoteElementImportPreview
+            appendToRoot={appendToRoot.current}
+            rootElemId={rootElemId.current}
+            selectedNoteElementData={selectedNoteElementData}
+            notesData={notesData}
+            parentActions={{
+              clearNoteElementsToImport: () => setNotesData([]),
+            }}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
 
-          {/* notes nodes */}
-          {notesData.length > 0 && (
-            <NoteElement
-              id={rootElemId.current}
-              parentId={-80}
-              title={
-                appendToRoot.current
-                  ? "root element"
-                  : selectedNoteElementData!.title
-              }
-              actLevel={0}
-              parentOrder={0}
-              tags={[]}
-              childrenElements={notesData}
-              parentActions={null}
-            />
-          )}
+type NoteElementImportPreviewInput = {
+  appendToRoot: boolean;
+  rootElemId: number;
+  selectedNoteElementData: NoteElementInput | null;
+  notesData: NoteElementInput[];
+  parentActions: {
+    clearNoteElementsToImport: () => void;
+  };
+};
+
+// --------------------------------------------------- NoteElementImportPreview
+
+const NoteElementImportPreview = (inputs: NoteElementImportPreviewInput) => {
+  //const [notesData, setNotesData] = useState<NoteElementInput[]>(inputs.notesData);
+  const [isOpened, setIsOpened] = useState(true);
+
+  // useEffect(() => {
+  //   setIsOpened(true)
+  // }, [notesData])
+
+  // useEffect(() => {
+  //   setNotesData(inputs.notesData)
+  //   setIsOpened(true)
+  //   console.log("xxx")
+  // }, [inputs.notesData])
+
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ left: 100, top: 100 });
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setOffset({
+      x: e.clientX - position.left,
+      y: e.clientY - position.top,
+    });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+
+    const left = e.clientX - offset.x;
+    const top = e.clientY - offset.y;
+
+    setPosition({ left, top });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const onClickCloseWindow = (e: React.MouseEvent<HTMLDivElement>) => {
+    setIsOpened(false);
+    inputs.parentActions.clearNoteElementsToImport();
+  };
+
+  return (
+    <div
+      className={isOpened ? "bg-blue-500" : " hidden"}
+      style={{
+        position: "fixed",
+        left: position.left,
+        top: position.top,
+      }}
+    >
+      {/* header */}
+      <div
+        className="flex h-8 items-center justify-between"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        style={{ cursor: isDragging ? "grabbing" : "grab" }}
+      >
+        <h2>Note import preview</h2>
+        <div
+          className="w-8 h-8 text-center text-xl"
+          onClick={onClickCloseWindow}
+        >
+          x
         </div>
+      </div>
+      {/* notes nodes */}
+      <div>
+        {/* overlay to disable input */}
+        <div className="absolute w-full h-full z-10 bg-transparent"></div>
+        {/* note elements */}
+        {inputs.notesData.length > 0 && (
+          <NoteElement
+            id={inputs.rootElemId}
+            parentId={-80}
+            title={
+              inputs.appendToRoot
+                ? "root element"
+                : inputs.selectedNoteElementData!.title
+            }
+            actLevel={0}
+            parentOrder={0}
+            tags={[]}
+            childrenElements={inputs.notesData}
+            parentActions={null}
+          />
+        )}
       </div>
     </div>
   );

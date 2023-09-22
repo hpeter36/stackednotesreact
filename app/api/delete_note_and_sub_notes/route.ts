@@ -5,6 +5,8 @@ import { sequelizeAdapter } from "@/db";
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
 import { getUserOnServer } from "../api_helpers";
 
+import { dbGetNoteAndSubNoteIds, dbDeleteTagsWithNoteIds, dbDeleteNotesWithNoteIds } from "@/db/sql_queries";
+
 export async function DELETE(request: Request) {
   try {
     // user checking
@@ -17,9 +19,7 @@ export async function DELETE(request: Request) {
       );
 
     // get input
-    const { searchParams } = new URL(request.url);
-
-    const note_id_from = searchParams.get("note_id_from");
+    const {note_id_from} = await request.json()
 
     // input validation
     if (!note_id_from)
@@ -30,26 +30,7 @@ export async function DELETE(request: Request) {
       );
 
     // get note id-s to delete
-    const results = await sequelizeAdapter.query(
-      `with RECURSIVE cte AS 
-          (
-          SELECT n.id, n.user_id
-          FROM notes n
-          WHERE n.id = ${note_id_from}
-          UNION ALL
-          SELECT n.id, n.user_id
-          FROM notes n JOIN cte c ON n.parent_id = c.id
-          )
-          select c.id
-          FROM cte c where c.user_id = :user_id`,
-      {
-        plain: false,
-        raw: true,
-        type: QueryTypes.SELECT,
-        replacements: { note_id_from: note_id_from, user_id: user.id },
-      }
-    );
-
+    const results = await dbGetNoteAndSubNoteIds(note_id_from, user.id)
     if (results.length === 0)
       return getApiResponse(
         "Error when deleting note and subnotes, the note may not be exists!",
@@ -61,16 +42,11 @@ export async function DELETE(request: Request) {
     resIds = resIds.map((r) => r.id);
 
     // delete tags
-    let [resDel, meta] = await sequelizeAdapter.query(
-      `delete from tags where note_id in (:to_del_ids)`,
-      { replacements: { to_del_ids: resIds.join(",") } }
-    );
-
+    await dbDeleteTagsWithNoteIds(resIds)
+    
     // delete notes
-    [resDel, meta] = await sequelizeAdapter.query(
-      `delete from notes where id in (:to_del_ids) and user_id = :user_id`,
-      { replacements: { to_del_ids: resIds.join(","), user_id: user.id } }
-    );
+    await dbDeleteNotesWithNoteIds(resIds, user.id)
+    
 
     // return data
     return getApiResponse("", EnumApiResponseStatus.STATUS_OK, 200);

@@ -4,10 +4,10 @@ import { getApiResponse } from "../api_helpers";
 import { sequelizeAdapter } from "@/db";
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
 import { getUserOnServer } from "../api_helpers";
+import { dbAddTagDef, dbIsTagDefExists } from "@/db/sql_queries";
 
 export async function POST(request: Request) {
   try {
-
     // user checking
     const user = await getUserOnServer();
     if (!user)
@@ -18,9 +18,7 @@ export async function POST(request: Request) {
       );
 
     // get input
-    const { searchParams } = new URL(request.url);
-
-    const tag_name = searchParams.get("tag_name");
+    const { tag_name } = await request.json();
 
     // input validation
     if (!tag_name)
@@ -31,17 +29,8 @@ export async function POST(request: Request) {
       );
 
     // check for existing tag name
-    const results = await sequelizeAdapter.query(
-      `select count(*) as c from tag_defs where name = :tag_name`,
-      {
-        plain: false,
-        raw: true,
-        type: QueryTypes.SELECT,
-        replacements: { tag_name: tag_name },
-      }
-    );
-    let resIds = results as any[];
-    if (resIds[0]["c"] > 0)
+    const isTagDefExist = await dbIsTagDefExists(tag_name);
+    if (isTagDefExist)
       return getApiResponse(
         "Error when adding new tagdef, the tagdef already exists!",
         EnumApiResponseStatus.STATUS_ERROR_CREATED_ALREADY,
@@ -49,10 +38,7 @@ export async function POST(request: Request) {
       );
 
     // insert new tagdef
-    const [insertedId, affectedRows] = await sequelizeAdapter.query(
-      `Insert into tag_defs (name, usage_count) values(:tag_name,0)`,
-      { replacements: { tag_name: tag_name } }
-    );
+    const affectedRows = await dbAddTagDef(tag_name)
 
     // return data
     return getApiResponse(

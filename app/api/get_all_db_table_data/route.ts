@@ -5,6 +5,7 @@ import { sequelizeAdapter } from "@/db";
 import { getUserOnServer } from "../api_helpers";
 
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
+import { dbGetDbTablesForUser } from "@/db/sql_queries";
 
 export async function GET(request: Request) {
   try {
@@ -24,44 +25,12 @@ export async function GET(request: Request) {
         403
       );
 
-    // get notes
-    const retRes = [] 
-    const notesDbData = await sequelizeAdapter.query(
-      `select * from notes where user_id = :user_id`,
-      {
-        plain: false,
-        raw: true,
-        type: QueryTypes.SELECT,
-        replacements: {user_id: user.id },
-      }
-    );
-
-    retRes.push( {fn: "notes.json", data: notesDbData})
-
-    // get tags
-    const tagsDbData = await sequelizeAdapter.query(
-      `select t.* from tags t inner join notes n on n.id = t.note_id where n.user_id = :user_id`,
-      {
-        plain: false,
-        raw: true,
-        type: QueryTypes.SELECT,
-        replacements: {user_id: user.id },
-      }
-    );
-
-    retRes.push( {fn: "tags.json", data: tagsDbData})
-
-    // get tagdefs
-    const tagDefsDbData = await sequelizeAdapter.query(
-      `select * from tag_defs`,
-      {
-        plain: false,
-        raw: true,
-        type: QueryTypes.SELECT,
-      }
-    );
-
-    retRes.push( {fn: "tagdefs.json", data: tagDefsDbData})
+    // get db tables data
+    const retRes = []
+    const dbTablesData = await dbGetDbTablesForUser(user.id)
+    retRes.push( {fn: "notes.json", data: dbTablesData.notes})
+    retRes.push( {fn: "tags.json", data: dbTablesData.tags})
+    retRes.push( {fn: "tagdefs.json", data: dbTablesData.tagDefs})
 
     // return data
     return getApiResponse(retRes, EnumApiResponseStatus.STATUS_OK, 200);

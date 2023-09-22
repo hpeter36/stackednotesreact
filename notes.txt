@@ -452,14 +452,20 @@ extra sürgós featureok
 
 hibák
 	miért nem rakott semmit a dev dependencies-be?
+	valamiért becacheli akkor is ha no-cache vagy más a gond?
 
 változtatni
 	context csak ott ahol kell és csak az a felelősségi kör
+
+	root elem esetén ha id 0 ne látszódjon a header csak a childek
+		és ne is indentáljon
 	
 	alap teszt
 		0 kezdőelemmel is menjen az app
-			0-s index no owner, nem törölhető	
+			0-s index no owner, nem törölhető
+		importkor nem látszódott a beimportált content db vagy req. cache lehetett
 	design + mobile resp
+		loading statek-is, screenek is mindenhova
 		hero kezdőlap
 	biztonsági elemzés
 	deploy
@@ -470,6 +476,9 @@ változtatni
 	system test
 
 import usereknek, ahol csv-t lehet behúzni, illetve az ehhez szükséges export
+	txt export is mint a mostani jegyzeteim
+
+tag kereső, adott tree és childjei illetve csak az adott level checkbox-al
 
 ML job kompetenciák
 	MLOps, GCP/Azure/AWS cloud, Apache Spark, 
@@ -479,14 +488,15 @@ ML job kompetenciák
 	Infrastructure-as-Code (IAC) -> Terraform, Pulumi, AWS CloudFormation
 	Kubernetes / Helm
 
-tag kereső, adott tree és childjei illetve csak az adott level checkbox-al
-
 gyakori linkek to check programming
-	https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+	http status codes
+		https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+	fetch cache
+		https://stackoverflow.com/questions/29246444/fetch-how-do-you-make-a-non-cached-request
 
 összes js mastery cheat sheat átnézése a legjobb toolok miatt, bomba workflow össszerakása
 	leírni
-	Postman
+	Thunder client
 
 glass design kellene blurozott átlátszó elemekkel
 	egy mintás háttér html blury elemekkel mint developed by ed videoban

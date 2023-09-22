@@ -4,10 +4,10 @@ import { getApiResponse } from "../api_helpers";
 import { sequelizeAdapter } from "@/db";
 import { ApiResponse, EnumApiResponseStatus } from "../../../types";
 import { getUserOnServer } from "../api_helpers";
+import { dbDeleteTagFromNote } from "@/db/sql_queries";
 
 export async function DELETE(request: Request) {
   try {
-
     // user checking
     const user = await getUserOnServer();
     if (!user)
@@ -18,10 +18,7 @@ export async function DELETE(request: Request) {
       );
 
     // get input
-    const { searchParams } = new URL(request.url);
-
-    const note_id = searchParams.get("note_id");
-    const tag_name = searchParams.get("tag_name");
+    const { note_id, tag_name } = await request.json();
 
     // input validation
     if (!note_id)
@@ -39,14 +36,8 @@ export async function DELETE(request: Request) {
       );
 
     // delete db. op.
-    const [results, meta] = await sequelizeAdapter.query(
-      `delete t.* from tags t 
-      inner join tag_defs td on t.tagdef_id = td.id 
-      inner join notes n on t.note_id = n.id  
-      where t.note_id = :note_id and td.name = :tag_name and n.user_id = :user_id`, { replacements: {note_id: note_id, tag_name: tag_name, user_id: user.id}}
-    );
-    const res = results as any;
-    if (res["affectedRows"] === 0)
+    const affRowsDel = await dbDeleteTagFromNote(note_id, tag_name, user.id);
+    if (affRowsDel === 0)
       return getApiResponse(
         "Error when deleting tag from note, the tag was not found on the note!",
         EnumApiResponseStatus.STATUS_ERROR_DB_RESOURCE_NOT_FOUND,
@@ -54,7 +45,11 @@ export async function DELETE(request: Request) {
       );
 
     // return data
-    return getApiResponse(results, EnumApiResponseStatus.STATUS_OK, 200);
+    return getApiResponse(
+      { affectedRows: affRowsDel },
+      EnumApiResponseStatus.STATUS_OK,
+      200
+    );
   } catch (e) {
     // error handling
     // itt logolni kell db-be !!!
