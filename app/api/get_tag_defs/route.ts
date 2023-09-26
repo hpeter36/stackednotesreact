@@ -16,7 +16,7 @@ export async function GET(request: Request) {
         401
       );
 
-    const tagDefs = dbOrmGetAllTagDefs()
+    const tagDefs = await dbOrmGetAllTagDefs()
     return getApiResponse(tagDefs, EnumApiResponseStatus.STATUS_OK, 200);
   } catch (e) {
     // error handling

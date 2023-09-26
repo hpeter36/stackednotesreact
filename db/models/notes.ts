@@ -1,6 +1,5 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
-import type { tags, tagsId } from './tags';
 import type { user, userId } from './user';
 
 export interface notesAttributes {
@@ -9,11 +8,12 @@ export interface notesAttributes {
   note: string;
   note_order: number;
   user_id: string;
+  note_date: Date;
 }
 
 export type notesPk = "id";
 export type notesId = notes[notesPk];
-export type notesOptionalAttributes = "id" | "parent_id" | "note_order";
+export type notesOptionalAttributes = "id" | "parent_id" | "note_order" | "note_date";
 export type notesCreationAttributes = Optional<notesAttributes, notesOptionalAttributes>;
 
 export class notes extends Model<notesAttributes, notesCreationAttributes> implements notesAttributes {
@@ -22,19 +22,8 @@ export class notes extends Model<notesAttributes, notesCreationAttributes> imple
   note!: string;
   note_order!: number;
   user_id!: string;
+  note_date!: Date;
 
-  // notes hasMany tags via note_id
-  tags!: tags[];
-  getTags!: Sequelize.HasManyGetAssociationsMixin<tags>;
-  setTags!: Sequelize.HasManySetAssociationsMixin<tags, tagsId>;
-  addTag!: Sequelize.HasManyAddAssociationMixin<tags, tagsId>;
-  addTags!: Sequelize.HasManyAddAssociationsMixin<tags, tagsId>;
-  createTag!: Sequelize.HasManyCreateAssociationMixin<tags>;
-  removeTag!: Sequelize.HasManyRemoveAssociationMixin<tags, tagsId>;
-  removeTags!: Sequelize.HasManyRemoveAssociationsMixin<tags, tagsId>;
-  hasTag!: Sequelize.HasManyHasAssociationMixin<tags, tagsId>;
-  hasTags!: Sequelize.HasManyHasAssociationsMixin<tags, tagsId>;
-  countTags!: Sequelize.HasManyCountAssociationsMixin;
   // notes belongsTo user via user_id
   user!: user;
   getUser!: Sequelize.BelongsToGetAssociationMixin<user>;
@@ -69,6 +58,11 @@ export class notes extends Model<notesAttributes, notesCreationAttributes> imple
         model: 'user',
         key: 'id'
       }
+    },
+    note_date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: Sequelize.Sequelize.fn('current_timestamp')
     }
   }, {
     sequelize,

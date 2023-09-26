@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { globalContext } from "./Contexts";
 import { ApiResponse } from "@/types";
+import NoteElementTag from "./NoteElementTag";
 
 import {
   FaPlus,
@@ -182,7 +183,7 @@ const NoteElement = (inputs: NoteElementInput) => {
   };
 
   // element selected or unselected event
-  const onClickElementEvent = (e: React.MouseEvent<HTMLDivElement>) => {
+  const SelectNoteElementEvent = (e: React.MouseEvent<HTMLDivElement>) => {
     const isSelected = !selected;
 
     // set context
@@ -253,11 +254,11 @@ const NoteElement = (inputs: NoteElementInput) => {
     }
   };
 
-  const onMouseOverElement = (e: React.MouseEvent) => {
+  const showNoteElementActionsEvent = (e: React.MouseEvent) => {
     setIsElementActionsVisible(true);
   };
 
-  const onMouseOutElement = (e: React.MouseEvent) => {
+  const hideNoteElementActionsEvent = (e: React.MouseEvent) => {
     setIsElementActionsVisible(false);
   };
 
@@ -309,15 +310,25 @@ const NoteElement = (inputs: NoteElementInput) => {
     setIsAddNewElement(false);
   };
 
+  const removeTagPEvent = (tagName: string) => {
+    setTags((prev) => prev.filter((tag) => tag !== tagName));
+    setNoteTagsChanged(true);
+  };
+
+  const twHeaderBg = selected ? "bg-red-500" : "bg-blue-300";
+  const twHeaderVisibility = inputs.id === 0 ? "none" : "block";
+
   return (
-    <div className="pl-5">
-      {/* edit,insert note, note text  */}
+    <div className={inputs.id === 0 ? "pl-0" : "pl-5"}>
+      {/* note header */}
       <div
-        className={selected ? "bg-red-500 flex" : "bg-blue-300 flex"}
-        onMouseOver={onMouseOverElement}
-        onMouseOut={onMouseOutElement}
+        className={`flex justify-between ${twHeaderBg} ${twHeaderVisibility} border-gray-800 border-[1px] m-1`}
+        onMouseOver={showNoteElementActionsEvent}
+        onMouseOut={hideNoteElementActionsEvent}
       >
-        <div onClick={onClickElementEvent}>
+        {/* add/edit note, tags */}
+        <div className="flex-grow" onClick={SelectNoteElementEvent}>
+          {/* input field */}
           <textarea
             className={isOnEdit ? "block" : "hidden"}
             ref={inputRef}
@@ -328,41 +339,23 @@ const NoteElement = (inputs: NoteElementInput) => {
             onChange={(e) => setAddedNoteText(e.target.value)}
           />
 
-          <div className={!isOnEdit ? "p-5" : "hidden p-5"}>
-            <span>{addedNoteText}</span>
-            {tags.map((d, i) => (
-              <div key={i}>
-                <span className=" bg-red-500">{`${d} `}</span>
-                {/* delete tag btn */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
+          <div className={`flex flex-col p-1 ${isOnEdit && "hidden" }`}>
+            {/* note text */}
+            <div>
+              <span>{addedNoteText}</span>
+            </div>
 
-                    if (confirm("Are you sure you want to delete this tag?")) {
-                      //delete from db
-                      const f = async () => {
-                        const respData: ApiResponse = await fetch(
-                          `/api/delete_tag_from_note`,
-                          { method: "DELETE",
-                          body: JSON.stringify({
-                            note_id: inputs.id,
-                            tag_name: d,
-                          }), }
-                        ).then((resp) => resp.json());
-                      };
-                      f();
-
-                      // remove from state
-                      setTags((prev) => prev.filter((tag) => tag !== d));
-
-                      setNoteTagsChanged(true);
-                    }
-                  }}
-                >
-                  x
-                </button>
-              </div>
-            ))}
+            {/* tags with delete button */}
+            <div className="flex gap-1">
+              {tags.map((d, i) => (
+                <NoteElementTag
+                  key={i}
+                  tagText={d}
+                  noteId={inputs.id}
+                  parentActions={{ removeTag: removeTagPEvent }}
+                />
+              ))}
+            </div>
           </div>
         </div>
         {/* element control panel */}
@@ -373,6 +366,7 @@ const NoteElement = (inputs: NoteElementInput) => {
               : "hidden"
           }
         >
+          {/* add, edit, collapse, delete */}
           <FaPlus className="w-6 h-6" onClick={onClickPlusIconEvent} />
           <FaPen className="w-6 h-6" onClick={onClickEditEvent} />
           {isCollapsed ? (
@@ -385,14 +379,15 @@ const NoteElement = (inputs: NoteElementInput) => {
             showTagsByDefCount={5}
             parentActions={{ addTagToNote: addTagToNote }}
           />
+          {/* child count when collapsed */}
           {isCollapsed && <span>({noteChildElementsData.length})</span>}
 
           {/* --- debug */}
-          <span>id {inputs.id}</span>
+          {/* <span>id {inputs.id}</span>
           <span>parentId {inputs.parentId}</span>
           <span>(childs {noteChildElementsData.length})</span>
           <span>p.order {inputs.parentOrder}</span>
-          <span>actLevel {inputs.actLevel}</span>
+          <span>actLevel {inputs.actLevel}</span> */}
         </div>
       </div>
 

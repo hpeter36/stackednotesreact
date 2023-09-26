@@ -89,7 +89,8 @@ export async function dbOrmGetNoteWithId(note_id: string, user_id: string) {
 }
 
 export async function dbOrmGetAllTagDefs() {
-  return await dbOrm.tag_defs.findAll();
+  const tagDefs = await dbOrm.tag_defs.findAll();
+  return tagDefs
 }
 
 export async function dbGetNoteWithId(note_id: string, user_id: string) {

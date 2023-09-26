@@ -5,6 +5,8 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { navLinks, LoginState } from "@/config/constants";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
+import { LogoSvg, HamburgerSvg } from "@/assets";
 
 type PageLinksMetaArrKeys = "home" | "notes" | "common" | "otherpage";
 
@@ -12,6 +14,7 @@ const Navigation = () => {
   const [active, setActive] = useState("Home");
   const { data: session, status } = useSession();
   const pathName = usePathname();
+  const [isOpened, setIsOpened] = useState(false);
 
   function getPageLinksMetaArrKey(page_url: string): PageLinksMetaArrKeys {
     switch (page_url) {
@@ -23,8 +26,8 @@ const Navigation = () => {
         return "notes";
 
       // commmon pages
-        case "/other_page":
-          return "otherpage";
+      case "/other_page":
+        return "otherpage";
 
       // common
       case "common":
@@ -35,11 +38,21 @@ const Navigation = () => {
   }
 
   return (
-    <nav className="z-10 flex items-center justify-between w-full py-2 ">
-      <div className="flex flex-wrap items-center justify-between w-full px-3">
+    <nav className="flex items-center justify-between w-full py-2 px-3 bg-blue-200">
+      {/* logo */}
+      <div className="flex justify-center items-center">
+        <Image src={LogoSvg} alt="Stacked Notes logo" className=" w-16 h-16" />
+        <h1 className=" text-2xl">Stacked Notes</h1>
+      </div>
+
+      <div
+        className={`${
+          isOpened ? "flex" : "hidden"
+        } flex-col lg:flex-row lg:flex lg:items-center lg:justify-between lg:flex-grow`}
+      >
         {/* menu items for the current page */}
-        <div className="flex basis-auto flex-grow items-center">
-          <ul className="flex list-style-none">
+        <div className="flex flex-grow items-center lg:justify-center">
+          <ul className="flex list-style-none flex-col lg:flex-row">
             {navLinks[getPageLinksMetaArrKey(pathName)].map((navObj) => {
               if (
                 (navObj.auth === LoginState.LOGOUT && !session) || // logout only pages
@@ -80,8 +93,8 @@ const Navigation = () => {
         </div>
 
         {/* common links */}
-        <div className="flex basis-auto flex-grow items-center">
-          <ul className="flex list-style-none">
+        <div className="flex justify-between basis-auto flex-grow items-center">
+          <ul className="flex list-style-none flex-col lg:flex-row">
             {navLinks["common"].map((navObj) => {
               if (
                 (navObj.auth === LoginState.LOGOUT && !session) || // logout only pages
@@ -101,12 +114,15 @@ const Navigation = () => {
               }
             })}
           </ul>
-          {/* User related elements */}
+        </div>
+
+        {/* User related elements */}
+        <div>
           <ul className="flex list-style-none">
             <li className="pl-2" data-te-nav-item-ref>
               {/* Logged out */}
               {!session && (
-                <div>
+                <div className="flex flex-col">
                   <Link
                     href={`/api/auth/signin`}
                     onClick={(e) => {
@@ -128,7 +144,7 @@ const Navigation = () => {
                   {/* logged in user related functions */}
 
                   {/* sign out */}
-                  <div>
+                  <div className="flex flex-col">
                     <span>
                       <strong>
                         {session?.user?.email ?? session?.user?.name}
@@ -153,6 +169,18 @@ const Navigation = () => {
           </ul>
         </div>
       </div>
+
+      {/* Hamburger button for mobile view */}
+      <button
+        className="block lg:hidden"
+        onClick={(e) => setIsOpened((prev) => !prev)}
+      >
+        <Image
+          src={HamburgerSvg}
+          alt="Stacked Notes logo"
+          className=" w-16 h-16"
+        />
+      </button>
     </nav>
   );
 };

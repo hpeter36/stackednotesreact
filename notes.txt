@@ -280,7 +280,11 @@ bookmarkolás, kedvencekhez adás funkció, mint a listám a dump.txt-ben
 
 3rd party lib-et csak-is bonyolult inputokhoz használok
 
-kiválasztott noteok mergelése funkció
+kiválasztott noteok mergelése funkció, egy noteba olvasztás
+
+több note kiválasztása
+
+context menu jobb gombra, mindenhol más a körülményektől függően
 
 átgondolni milyen felhasználási módokat lehet az appal kielégíteni
 	pld. bevásárló lista, egyetemi jegyzet, tanuláshoz, általános jegyzetelés, stb
@@ -305,21 +309,6 @@ base vision
 	könnyű jegyzet rendezés, áthelyezés, átnevezés, törlés
 	egy laikus szemnek elfogadható(nem gagyi) design
 	telefonon is jól működjön
-
-fő kérdések
-	mindent jegyzetet letöltsek az elején egyszerre vagy csak részleteiben?
-	lehet kellene egy okos class ami cacheli folyamatosan a letöltött dolgokat
-
-kell egy olyan böngészési mód amivel átlátom a fő topicokat, amivel az áthelyezés probléma mentessé válik
-	egy általános megoldás kellene amivel a keresési találat része is megoldható illetve maga a böngészés
-	lenyitható topicok ahol elem_c > 2
-	miket tudjon ez a general jegyzet mutató?
-	jobb oldalt mutatni összezárt jegyzet elemen a topic countokat, elem countokat
-	felhasználási módok szerint megalkotni a komponenst(NoteElement), minden bekonfigolható
-		lehet jobb külön megcsinálni, nagyon nagy a funkcionális eltérés
-
-jegyzetelés technikája
-	"topic" tagek meg amikben childek vannak legyenek tömörek
 
 megcsinálni
 	mind le\betöltése containerbe
@@ -436,67 +425,106 @@ megcsinálni
 		szerkesztés dinamikája ugyanaz + extrák(meglévő app funkciói is)
 		sok hotkey
 
-extra sürgós featureok
-	oldalmenübe tartalomjegyzék, kereső, import, stb
-		mehetne fentre is h-max-al
-		vertikális menü, rákattolva kinyílik az aktív ami nyiva volt esetleg összezáródik
-	gyors keresés taggel, általános kereső
-		containerbe db-ből load a kiválasztottak
-	import verify, db add után töltse be a containerbe
-	sql backup zipben letöltve a tábla adatokat
-
-	*container load
-	*refresh tag search
-	*import note load to container
-	cache
-
 hibák
 	miért nem rakott semmit a dev dependencies-be?
-	valamiért becacheli akkor is ha no-cache vagy más a gond?
-
-változtatni
-	context csak ott ahol kell és csak az a felelősségi kör
-
-	root elem esetén ha id 0 ne látszódjon a header csak a childek
-		és ne is indentáljon
 	
+apró finomhangolások
+	root node
+		jelenleg úgy van megtervezve hogy a root note-ot nem kellene látni a containerben, viszont újabban már láthatóvá tettem kivéve a id 0 root elemet
+		ha a betöltött note-ot kitörlöm egy az egyben rootostól nem tűnik el
+		add new note csak a root elemhez adáshoz kell, amikor be van töltve egyéb note oda felesleges
+			nem is jól mutatja az identation-t hozzáadáskor
 	alap teszt
-		0 kezdőelemmel is menjen az app
-			0-s index no owner, nem törölhető
-		importkor nem látszódott a beimportált content db vagy req. cache lehetett
-	design + mobile resp
-		loading statek-is, screenek is mindenhova
-		hero kezdőlap
-	biztonsági elemzés
-	deploy
-		https://www.youtube.com/watch?v=3WCIyNOrzwM - How I Made My Website Load in 0.364 Seconds | Build and Deploy
-		update to nextjs 13.5
-		unused import + deploy, prod teendők
-		docker mariadb + nextjs deploy
-	system test
+		másik user test
+		0 db. note a db-ben
+		0-s note index no owner, nem törölhető
+	import után deselect selected element
+	preview esetén ha id 0 root elem ott mutassuk az elemet de ne legyen kiválasztva
+	a previewnál le legyen kiválasztva a root elem
+	minden const f =... f() felülvizsg ahol kell await f...
 
-import usereknek, ahol csv-t lehet behúzni, illetve az ehhez szükséges export
-	txt export is mint a mostani jegyzeteim
+	záródjon be a tagválasztó ha elviszem az egeret felőle
+	belekattintva újra záródjon be, toggle üzem
+	ha már van x tag akkor ne küldjön db műveleletet
 
-tag kereső, adott tree és childjei illetve csak az adott level checkbox-al
+	note betöltés után záródjon a menu
 
-ML job kompetenciák
-	MLOps, GCP/Azure/AWS cloud, Apache Spark, 
-	AWS szolgáltatások Cognito, Lambda, CloudWatch, ECR , Athena
-	AWS OSS
-	AWS SageMaker, MLflow gépi tanulás
-	Infrastructure-as-Code (IAC) -> Terraform, Pulumi, AWS CloudFormation
-	Kubernetes / Helm
+design
+	mobile resp
+	animok
+	loading statek-is, screenek is mindenhova
+	hero kezdőlap
+biztonsági elemzés
+deploy
+	https://www.youtube.com/watch?v=3WCIyNOrzwM - How I Made My Website Load in 0.364 Seconds | Build and Deploy
+	update to nextjs 13.5
+	unused import + deploy, prod teendők
+	docker mariadb + nextjs deploy
+system test
 
-gyakori linkek to check programming
-	http status codes
-		https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-	fetch cache
-		https://stackoverflow.com/questions/29246444/fetch-how-do-you-make-a-non-cached-request
+közeli featureok
+	nyitólapra a 3d-s hierarchical webgl anim, a lementett 3d-s portfolio siteok között volt egy amiben fel lett használva
+		középre egy login/register button, átlátszó
+	tag kiválasztás a tag keresőben, alapértelmezett a "topic"
+	tag kereső
+		vertical, adott tree és childjei illetve csak az adott level checkbox-al
+		hierachical, itt meg minden szinten keres
+	content alapú kereső
+	containerbe egy jump to parent gomb
+	note cache
+	egy adott parent végébe drag and drop áthelyezés gyorsan megoldható, ezt még csináljuk meg
+		kellene a teljes értékű drag and drop
+		keresett elemekbe is lehessen drag and drop áthelyezni
+			mindbe tag, vertical, hierarch, content kereső
+			áthelyezéskor egy confirmation
+		adott, másik ablakba is
+	új ablakba is megnyitható legyen a keresőből a jegyzet
+		a container nyilna új ablakban
+		új ablak vagy bestackeli a meglévő container mellé alá
+		az áthelyezés így hatékonyan működhetne
 
-összes js mastery cheat sheat átnézése a legjobb toolok miatt, bomba workflow össszerakása
-	leírni
-	Thunder client
+további featureok
+	belinkelt, beinsertelt képek vagy pici vagy mouseoverral(!) láthatóvá tétele
+		kattintásra megnyitni nagy méretben
+		a sima linkelés sokkal egyszerűbb, link nevet megadni alapból a link maga a név
+		sokszor nincs link csak egy kivágható kép, azt kell beilleszteni
+	note linkelés ahol utalok rá, új ablakban nyitható legyen
+	note referencia, ilyenkor be is tölti egy adott helyről mintha a linkelés helyén lenne létrehozva
+		de csak 1 helyen tárolódik a db-ben
+	google-ban keresendő kifejezés mint note elem, "" részek pl.
+		rákattolva azonnal google keresés új ablakban
+		lehet idézet is, fülé vive az egeret search in google opció
+	import usereknek, ahol csv-t lehet behúzni, illetve az ehhez szükséges export
+		txt export is mint a mostani jegyzeteim
+	jegyzet böngésző
+		célok
+			minden jegyzet elérhető tagelés nélkül
+			átlátható struktúra
+		oldalmenübe
+		összezárva lekérni(childek)
+			összezárva mutatni
+			az adatot is lazy loadingal
+			esetleg egy adott childcount alatt/felett összezárni
+		lazy loading betöltés kinyitáskor
+		infinite scroll
+		csak hierarch nézet
+	vertikális/hierarch nézetek közötti váltás a nyitott container(ek)ben
+
+lehetséges featureok
+	üres sorokat is támogassuk 1-1 notera, sokat számít az átláthatóság javítása miatt
+		lehet nem kell több alfejezet kialakításával kikerülhető
+
+jegyzetelés technikája, jó jegyzet
+	"topic" tagek meg amikben childek vannak legyenek tömörek
+	saját véleményt megjegyzést külön jelölni pld. egy felmérés eredményében amit én kommentelek hozzá
+
+egy tutorial a usereknek hogy írjanak noteokat, használják a programot
+
+-------------deploy
+npm install sequelize-auto --save--dev
+sequelize-auto -h localhost -d stacked_notes_react -u root -x sr -p 3306 --dialect mariadb --lang ts --tables notes tag_defs tags themes account session user verificationtoken -o D:\Programozas\StackedNotesReact\stackednotesreact\db\models
+
+-------------------------------------------other
 
 glass design kellene blurozott átlátszó elemekkel
 	egy mintás háttér html blury elemekkel mint developed by ed videoban
@@ -518,10 +546,270 @@ glass design kellene blurozott átlátszó elemekkel
 		hátteren objektumok absolute positioningal
 		backdrop-filter: blur(2rem)
 
+ML job kompetenciák
+	MLOps, GCP/Azure/AWS cloud, Apache Spark, 
+	AWS szolgáltatások Cognito, Lambda, CloudWatch, ECR , Athena
+	AWS OSS
+	AWS SageMaker, MLflow gépi tanulás
+	Infrastructure-as-Code (IAC) -> Terraform, Pulumi, AWS CloudFormation
+	Kubernetes / Helm
+
+gyakori linkek to check programming
+	http status codes
+		https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+	fetch cache
+		https://stackoverflow.com/questions/29246444/fetch-how-do-you-make-a-non-cached-request
+
+összes js mastery cheat sheat átnézése a legjobb toolok miatt, bomba workflow össszerakása
+	leírni
+	Thunder client
+
 3d, design
 	css olyan animált háttér mint az OverWatchban alap shapek gradinetel mozognak eltünnek feltünnek
 	mint az apple id login olyan fancy animált svg-k
 
--------------deploy
-npm install sequelize-auto --save--dev
-sequelize-auto -h localhost -d stacked_notes_react -u root -x sr -p 3306 --dialect mariadb --lang ts --tables notes tag_defs tags themes account session user verificationtoken -o D:\Programozas\StackedNotesReact\stackednotesreact\db\models
+Frinwork makro elemző
+	egy charton egy halom adat
+	makro + mindenféle tetszőleges adat mutatása azonos időtávon
+	pld. olajár, usa infláció közötti kapcsolat szemlélése
+	forecastolt adatok is ahol elérhető azok eltérő színnel pld. szaggatott halványabb vonal
+	komoly(drága) adatszolgáltatóra van szükség
+	milyen egyéb megoldásokkal tudjuk lekövetni a trendeket a befektetések során?
+
+	valamilyen trendeket elemző chart(app, component)
+		különböző tényezők hogyan hatnak egyéb tényezőkre, csinálni egy tree chartot és ez alapján súlyozni
+			vagy sok adatot elemezve AI-val meghatározni a kapcsolatokat, súlyokat és ezt chartként mutatni
+			AI sokkal jobb megoldás mert mindig a valós kapcsolatot tárja fel, a chart first megoldás esetén pedig én feltételezek, de nem biztos hogy igaz
+		mint amit a problémáim és megoldásaik charton terveztem, ott a leghasznosabb, 
+			legnagyobb hasznosságot hozó teendőket akarom megfejteni, annál szokások szerint kell megvalósítani
+		itt a trendek egymásra hatását, megkeresni mi fog a legnagyobbat növekedni, minden tényező figyelembe vétele
+			mi mire hat egyértelműen meghatározható
+		AI-al kellene valahogy illetve milyen módszerek alkalmasak erre?
+			több bemenetes treek vizsgálata
+
+	változások mutatása area chart több adatsorral stackelve
+
+	növekedések mutatása %-osan a base(0. elérhető adat) értékhez képest
+		legjobban növekvő piacok megtalálása
+
+	a portfolio analyzerben figyelmeztetéseket adni vagy elemezni kül. common priciple-k szerint 
+		és jelzést adni ha a user megszegi, pld. 10%-nál nagyobb egy részvény aránya a portfólióban
+
+	olyan metrika ami megmutatja hogy egy árfolyam mennyire hajlandó a trendelésre
+		az ár helyzeteiből számolja ki
+		egyszerűnek kell lennie a számolásnak
+		pld. BTC mostanság csak stagnál ennek  reflectálódnia kell a metrikában
+		egész instrumentre is meg tudjon határozni egy jellemző számot
+		pld. 1,-1 tisztán trendelő, új csúcsok magasabb aljak rendszeresen
+		0.5 oldalazás de akkor is mutassa amikor elmozdul hirtelen a piac de jellemzően csak oldalaz pld. 95%-ban
+		a rövid idejű hirelen elmozdulásokkal kísért trend 0.5 körüli értéket kell kapjon(BTC 2023 jan. - aug.)
+		a tartós emelkedős papírok 1 körülit pld. Nvidia ~2023 febr. - aug.
+			LLY, NVO, healthcare cég is nagyon trendelt
+		tartósan oldalazó MRK healthcare stock
+		zig-zag lehet jó alap ehhez
+		window szerint előrehaladni egyenként és átlagolni az endpoint értékeket
+		számlálni a long illetve short jellegű mozgásokat és összegezni + átlagolni
+
+	PE
+		jelquing
+		hard-flaccid
+		pelvic-floor - medencefenék
+		nerves - ideg
+		Penile exercises 
+
+		http://www.actionlove.com/extra/penilex.htm
+		http://www.actionlove.com/extra/damage.htm - nagyon jó resource, sok- sok infó
+		https://en.wikipedia.org/wiki/Tunica_albuginea_(penis) - pénisz felépítés
+
+		"DAMAGED PENIS FROM PENIS ENLARGEMENT"
+
+		Az erekciós szövetek krónikus gyulladásos károsodása
+		A krónikus gyulladás elősegíti a szövetek hegesedését (a pénisz gyakorlat által kiváltott gyulladása elpusztítja az erekciós szöveteket túlzott kollagén fehérjékkel, amelyek megkeményedik a pénisz merevedési szöveteit, idegeit és artériáit
+		Folyamatos vagy gyakori mechanikus nyújtással az erekciós szöveteket kollagén hegszövetekre bonthatja
+
+		lehet a medencefenék izmait kellene relaxálni, masszírozni?
+
+	financially successful
+		piaci siker
+			legnépszerűbb bussinesek
+				real estate, e-commerce, marketing, kereskedelem, finance, medical(USA)
+			general
+				kitartóan csinálni, nem ugrálni a bussinesek között
+				fektess magadba
+				ismerni a piacot alaposan
+				unalmas egyszerű dolgok mesterévé válni
+				concentration builds wealth, diversification keeps it
+				tudjuk miben vagyunk jók
+				kemény munka
+				követni azokat akik a legjobban csinálják, "What would Apple do?"
+					"mimic what already works"
+				kövesd az álmaidat, csinálj mindent szeretettel, szenvedéllyel, a lehető legjobb, legkiválóbb eredményre törekedj
+				hála
+				te legyél az akitől megveszik, ne te vegyél dolgokat(eladói oldal)
+				mi az amiért mások sokat hajlandóak fizetni
+				ne legyél birka, azt csináld amit a legkevesebben űznek és jó üzlet			
+			eladni tudni, how to sell value for that people will paying for
+				meggyőzés
+				el kell tudni adni magad
+				csak pszihológia, teljesen értéktelen dolgokat is el lehet adni 20x áron is a megfelelő körítéssel
+				branding a lényeg, a bussiness-t, magadat
+			értéket adni
+				"there is a misconception, you can't charge a lot and grow"
+				"price is only an issue when value is absent" 
+					az ár csak akkor probléma, ha nincs érték
+				"out-value the competition"
+				"always produce a perfect product"
+				"you get paid in direct proportion to the size of the problems that you solve"
+			vásárlói visszajelzések, tudjuk kik a customerjeink
+				a customer a legfontosabb, az elégedettségük, de ne vehessenek azért palira
+				javítani ami nem okés a customer szerint
+				kérdezni a customer-t
+				ne mondj nemet normál keretek között
+			scaling
+				7 figures - good idea, good sales, marketing
+				8 figures - good team
+				9 figures - good systems,SOP(standard operating procedures)
+					minden tevékenységre egy dokumentált folyamat
+					CEO nélkül is tökéletesen működhet a cég
+				adatgyűjtés döntéshozatalhoz
+					megfelelő javítások meghozatala
+		people
+			delegate work
+				a legkevesebbet érő(pénzben) de legtöbb idő-t elvivő activityket
+				csináljuk azt az 1 dolgot ami a legtöbb hasznot hozza a vállalkozásba
+				jobban megéri fizetni, amit egy hozzáértő megcsinál, mindent nem csinálhat egyedül a vállalkozó
+				bussines scaling
+			olyan emberekkel vegyük magunkat körül amiben mi nem vagyunk jók, jó team fontos
+				invest in people not in bussinesses
+			sok követő, social media marketing
+				"your network is your net worth"
+			kapcsolatok fontossága
+			jól kommunikálni
+			mentor-t találni, körülvenni magunkat hasonló emberekkel mint mi
+		financials
+			befektetni, visszaforgatni a saját bussinesbe
+				you have to spend money to make money
+				a pénz csak egy eszköz
+			legyen mindig szabad cash(puskapor) befektetni
+				megtartani a pénzt, nem elkölteni
+			extra dolgokat (autó, ház, stb) a free cash flowból vegyünk
+			live below your means
+			minnél hamarabb elkezdeni befektetni
+			növekvő piacokon etf-ekbe fektetni
+			real estate(kivétel nélkül minden megkérdezett ingatlanozott)
+			pénzt mindig forgatni
+
+	investment rules(leginkább W.B.)
+		Rule No. 1: Never lose money. Rule No. 2 is never forget Rule No. 1
+			losses teach us something, mit rontottunk el a befektetéskor? ne fogadjuk el hogy veszteni is kell
+			csakis a legjobb cégekbe fektessünk
+		fair company value - market value
+			 stock price can be a bit slow in reflecting company fundamentals, so it’s possible to find companies that are undervalued based on financial statements
+		invest in strong history 5-10 years with good average increase in numbers
+		Think like an owner - you are investing in businesses, not just stocks
+			Are you investing or gambling? Investing involves an analysis of fundamentals, valuation, and an opinion about how the business will perform in the future
+			Make sure the management team is strong and aligned with the interests of shareholders
+		Stick to your process, hosszútávon gondolkodni
+		Buy when everyone is fearful
+			 “Be fearful when others are greedy, and greedy when others are fearful.” - W.B.
+			a megfelelő időben vegyük amikor inkább lentebb vannak az árak
+		Stay diversified
+		Avoid timing the market
+			“Time in the market is more important than timing the market.”
+			kimaradunk a kevés de nagy felfelé menetelből ha nem vagyunk a piacon
+			avoid jumping in and out of the market
+			You may not be able to time the market, but you can make it a goal to buy low and sell high
+		Understand everything you invest in
+			Don’t invest in a product you don’t understand and ensure the risks have been clearly disclosed to you before investing
+			"Risk comes from not knowing what you are doing" - W.B.
+			Buy simple businesses
+		Stay in the game, have an emergency fund - hogy ne kelljen hozzányúlni a befektetéshez baj esetén
+			Keep 5 percent of your assets in cash, because challenges happen in life, to have at least six months of expenses in your savings account
+			általában akkor kell kényszer eladni amikor lent vannak az árak
+		Be a long term investor
+			Our favorite holding period is forever
+			The best time to sell is never
+			“Time is the friend of the wonderful company, the enemy of the mediocre.” - W.B.
+		Never invest with borrowed money
+		important metrics
+			return on equity (ROE) more than the earnings per share (EPS) - increasing business value
+			return on invested capital (ROIC) - how well a company generates returns, proportional to its investment
+			solvency ratio instead of the debt-to-equity ratio - comps. have large capital reserves and little long-term debt
+		Does the company earn more money than bonds?
+			nincs értelme a bussinesnek ha kockázatosabban ér el kötvényszintű hozamot
+		Does the company have an identifiable durable competitive advantage
+			for a period of 10 years or more demonstrates its durability
+			companies in industries with high barriers to entry are often a good buy
+		Avoid companies that might be obsolete in 20 years
+			"If a company does well, the stock usually follows" - W.B.
+		nehezebben checkolható retailként
+			a cég csak a saját bussinesébe fektet, vásárol fel amit ért is?
+			a cég képes árat emelni infláció mértékébem úgy hogy ne veszítsen ügyfelet?
+			nagy tőkekiadások kilátásban vannak a közeljövőben?
+		Is the company actively buying back its shares
+			it can be a sign that the management believes in the company and must also believe that the stock is undervalued
+		low cost ETF-ekbe fektetni
+		egy stock max 10%-a legyen a portfolio-nak
+
+	nagyon jó chart
+		barchart mutatja a range-t x idő óta máig
+		benne az átlag egy vonallal szintén x időtől
+		rajta egy másik pld. pont az aktuális értékkel
+		mivel 1 metrikát mutat, azt is látni hogy egymáshoz képest milyen értéket vesznek fel
+		pld. price to book ratios by country, ahol pld. india magasabban helyezkedik el, tehát eleve drágább
+
+indikátor ami megtalálja a növekedés előtt álló iparágakat részvényeket stb
+	mint amit a acc. dist. M1 stratinál tervezek implementálni 
+		amikor az árak lokációját vizsgálom pld. megfeneklik az emelkedés csökkenés, gyengül a trend
+		különféle metrikák alkotása erre az indire és AI-vel megetetni
+			lehetőleg több aspektus szerinti metrikák, pld árhelyzet, volume változása, stb
+	lehet hogy már van is ilyen pld. TradingView-ben amiket kijegyzeteltem (Grover Llorens Cycle Oscillator [alexgrover & Lucía Llorens])
+
+gazdasági trendek
+	general
+		a felsorolt szempontokon túl milyen egyéb tényezők határozzák még meg az adott trendet?
+			pld. technológia fejlődése
+	szempontok
+		egyre növekvő globális száraz területek mennyisége -> raising food prices
+			"Droughts and food prices"
+		növekvő globális reneveables, nuclear, csökkenő olaj, szén, stagnáló, enyhén növekvő ngas
+			"Global energy mix"
+		növekvő globális kormányzati adósságok
+			államadósság gyorsabban nő mint a gazdaság már jó ideje
+			"Global government debt"
+		globális gazdasági lassulás	
+			gdp növekedés forecast kína, india legnagyobb (+4-6%) de lassuló
+			"GDP forecast"
+		vásárlóképes középosztály növekedése +1 mlrd fő
+			"estimated change in the 'consumer class' by 2030"
+		india várható gazdasági növekedése
+			kína eléggé csúcsponton lassul de növekedés várható, india növekszik, mindenki más csökken 
+			"Share of global real GDP"
+		"global energy consumption and renewable capacity"
+			kína, india nagyarányú szénhasználat
+			nagyarányú renewable increase forecast 5 évre kína, EU  +30 - 35%, global 25, india 7%
+		2023 - 2028 world econony growth contribution
+			kína 22.6%, india 12.9%, usa 11.3%
+			kínában továbbra is gazdasági növekedés lesz de lassuló
+		infáció tartósan magasabb lesz egy pár évig de lassan csökkenő -> magasabb kamatszintek
+			magasabb kamatszint -> magasabb államkötvény kiadások
+			hiánycél(mekkora a várható adósság)
+			Mo. avg. 16.2%(2023 aug.), 7.1%(2023 dec.), 4.6%(2024 dec.), 9 elemző -> tartósan magasabb infla
+		"global demographics"
+			2090-ig előrejelzés
+			65+ korosztály növekedése, 15-64 csökkenése, 15- csökkenése(gyerekvállalási hajlandóság)
+				no nyugíj
+		"Asset return expectations"(JP Morgan)
+			"2023 long-term capital market assumptions expected returns in coming 10-15 years"
+			tőkebefektetések várható növekedése
+			Kína, Japán elől
+			EU, emerging markets elől,
+				itt a lenti mutatók az átlag alattiak 
+			USA hátul a tech cégek nagy menetelése miatt
+				average forward P/E since 1990 16.3 actual 18.5
+				avg P/B 3.0, actual 4.1
+				Shiller CAPE avg 26.5, actual 30.8
+			india szintén nagyot ment(saját vélemény)
+			"Price to book ratios by country"
+
+

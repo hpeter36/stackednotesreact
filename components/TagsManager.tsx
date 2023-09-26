@@ -94,9 +94,13 @@ const TagsManager = (inputs: TagsManagerInput) => {
     setIsFocused(false);
   };
 
+  const twBgColor = "bg-blue-100";
+  const twBgColorHover = "hover:bg-blue-200";
+
   return (
-    <div>
-      <div>
+    <div className={`flex`}>
+      {/* input & dropdown */}
+      <div className="flex flex-col">
         {/* input field */}
         <input
           ref={inputRef}
@@ -106,24 +110,28 @@ const TagsManager = (inputs: TagsManagerInput) => {
           onBlur={unFocusInput}
           onChange={onChangeInput}
         />
+        {/* dropdown */}
+        <div className="relative">
+          <div className="absolute flex flex-col w-full">
+            {isFocused &&
+              filteredTags.length > 0 &&
+              filteredTags.map((tag, i) => (
+                <div className={`${twBgColor} ${twBgColorHover}`} key={i}>
+                  <span onClick={onClickAddExistingTagToNote}>{tag.name}</span>
+                </div>
+              ))}
+          </div>
+        </div>
+      </div>
+
+      {/* control panel */}
+      <div>
         {/* Add new tag */}
         {searchVal.length > 0 && filteredTags.length === 0 && (
-          <button onClick={onClickAddNewTagDef}>Add new tag</button>
+          <button className="bg-lime-300 hover:bg-lime-500 p-1 rounded-md mx-2" onClick={onClickAddNewTagDef}>Add new tag</button>
         )}
         {/* clear input btn */}
-        {isFocused && <button onClick={onClickClearSearch}>x</button>}
-      </div>
-      {/* dropdown tag list */}
-      <div className="relative">
-        <div className="absolute">
-          {isFocused &&
-            filteredTags.length > 0 &&
-            filteredTags.map((tag, i) => (
-              <div key={i}>
-                <span onClick={onClickAddExistingTagToNote}>{tag.name}</span>
-              </div>
-            ))}
-        </div>
+        {isFocused && <button className="bg-red-300 hover:bg-red-500 p-1 rounded-sm mx-2" onClick={onClickClearSearch}>x</button>}
       </div>
     </div>
   );

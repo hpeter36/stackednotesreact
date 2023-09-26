@@ -10,10 +10,10 @@ const Search = () => {
   const [searchBy, setSearchBy] = useState("tag"); // tag, content
 
   return (
-    <div className="max-w-[160px]">
-      <div>
-        <div onClick={(e) => setSearchBy("tag")}>By tag</div>
-        <div onClick={(e) => setSearchBy("content")}>By content</div>
+    <div>
+      <div className="flex justify-between items-center">
+        <div className={`${searchBy === "tag" && "bg-blue-500 text-white"} hover:bg-blue-500 hover:text-white flex-grow p-5 flex items-center justify-center`} onClick={(e) => setSearchBy("tag")}><span>By tag</span></div>
+        <div className={`${searchBy !== "tag" && "bg-blue-500 text-white"} hover:bg-blue-500 hover:text-white flex-grow p-5 flex items-center justify-center`} onClick={(e) => setSearchBy("content")}><span>By content</span></div>
       </div>
       <div>{searchBy === "tag" ? <SearchByTag /> : <SearchByContent />}</div>
     </div>

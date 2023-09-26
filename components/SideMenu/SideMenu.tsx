@@ -13,39 +13,39 @@ const SideMenu = () => {
   const [showMenu, setShowMenu] = useState(true);
 
   return (
-    <div className="flex absolute bg-blue-100 h-screen max-w-[600px]">
+    <div className={`flex absolute bg-blue-100 h-full max-w-[600px]`}>
       {showMenu && (
         // menu
-        <div className="flex flex-col gap-2 justify-center">
+        <div className="flex flex-col gap-2 justify-center mr-2">
           {/* search */}
           <div>
             {selectedItem !== "search" && (
-              <button className="bg-blue-300 rounded p-3 text-lg border-2 border-black ml-5 w-[200px]" onClick={(e) => setSelectedItem("search")}>Search</button>
+              <button className="bg-blue-300 hover:bg-blue-500 rounded p-3 text-lg border-2 border-black ml-5 w-[200px]" onClick={(e) => setSelectedItem("search")}>Search</button>
             )}
             {selectedItem === "search" && <Search />}
           </div>
           {/* import notes */}
           <div>
             {selectedItem !== "import_notes" && (
-              <button className="bg-blue-300 rounded p-3 text-lg border-2 border-black ml-5 w-[200px]" onClick={(e) => setSelectedItem("import_notes")}>
+              <button className="bg-blue-300 hover:bg-blue-500 rounded p-3 text-lg border-2 border-black ml-5 w-[200px]" onClick={(e) => setSelectedItem("import_notes")}>
                 Import Notes
               </button>
             )}
             {selectedItem === "import_notes" && <NoteElementImport />}
           </div>
           {/* another item */}
-          <div className=" min-w-max">
+          {/* <div className=" min-w-max">
             {selectedItem !== "another" && (
-              <button className="bg-blue-300 rounded p-3 text-lg border-2 border-black ml-5 w-[200px]" onClick={(e) => setSelectedItem("another")}>
+              <button className="bg-blue-300 hover:bg-blue-500 rounded p-3 text-lg border-2 border-black ml-5 w-[200px]" onClick={(e) => setSelectedItem("another")}>
                 Another item
               </button>
             )}
             {selectedItem === "another" && <AnotherMenuContent />}
-          </div>
+          </div> */}
         </div>
       )}
       {/* toggle menu */}
-      <div className="flex justify-center items-center h-full">
+      <div className={`flex justify-center items-center h-full bg-blue-200`}>
         <button className="w-[60px] -rotate-90"
           onClick={(e) => setShowMenu((prev) => !prev)}
         >

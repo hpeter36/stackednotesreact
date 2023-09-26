@@ -23,9 +23,9 @@ const VerticalViewElement = (inputs: VerticalViewElementInput) => {
   };
 
   return (
-    <div>
+    <div className="bg-blue-300 hover:bg-blue-500 flex justify-between">
       <span onClick={onClickMoveToDown}>{inputs.noteDataDb.note}</span>
-      <span onClick={onClickLoadNote}>&nbsp;load</span>
+      <span className=" hover:bg-red-500" onClick={onClickLoadNote}>&nbsp;load</span>
     </div>
   );
 };

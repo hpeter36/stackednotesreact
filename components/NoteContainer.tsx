@@ -33,7 +33,6 @@ const NoteContainer = () => {
 
       // get db data
       const notesDb = respData.data as NoteElementDataDb[];
-      //console.log(notesDb);
 
       if (activeRootNodeId === 0)
         notesDb.push({id: 0, note: "rootelem", note_order: 0, parent_id: -1})
@@ -71,8 +70,6 @@ const NoteContainer = () => {
           (d) => d.parentId === noteDataTemp[i].id
         );
       }
-
-      console.log(noteDataTemp);
 
       setNotesData(noteDataTemp);
 
@@ -137,7 +134,7 @@ const NoteContainer = () => {
   };
 
   return (
-    <div className="w-full ml-[60px]">
+    <div className="w-full h-full pl-[60px]">
       {/* control panel */}
       <div className="w-full">
         {/* Add new note */}
@@ -150,7 +147,7 @@ const NoteContainer = () => {
         </button>
       </div>
       {/* notes container */}
-      <div className="w-full max-h-screen overflow-scroll">
+      <div className="w-full">
         {rootNotesData.length > 0 &&
           rootNotesData.map((d) => (
             <NoteElement

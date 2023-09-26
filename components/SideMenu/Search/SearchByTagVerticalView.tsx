@@ -51,12 +51,15 @@ type SearchByTagVerticalViewInputs = {
 		  notesDataWithSelectedTag.find((d) => d.id === noteId)!
 		);
 	};
+
+	const twHeaderStyle = selectedParentElem.note === "" ? "hidden" : "bg-blue-300 hover:bg-blue-500 p-2 border-b-2 flex justify-between"
   
 	return (
 	  <div>
 		{/* header with selected parent */}
-		<div>
+		<div className={twHeaderStyle}>
 		  <span onClick={onClickMoveToUpperLevel}>{selectedParentElem.note}</span>
+		  <span>{"<"}</span>
 		</div>
 		{/* element list with selected parent */}
 		<div>
