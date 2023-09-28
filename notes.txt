@@ -427,30 +427,20 @@ megcsinálni
 
 hibák
 	miért nem rakott semmit a dev dependencies-be?
-	
-apró finomhangolások
-	root node
-		jelenleg úgy van megtervezve hogy a root note-ot nem kellene látni a containerben, viszont újabban már láthatóvá tettem kivéve a id 0 root elemet
-		ha a betöltött note-ot kitörlöm egy az egyben rootostól nem tűnik el
-		add new note csak a root elemhez adáshoz kell, amikor be van töltve egyéb note oda felesleges
-			nem is jól mutatja az identation-t hozzáadáskor
-	alap teszt
-		másik user test
-		0 db. note a db-ben
-		0-s note index no owner, nem törölhető
-	import után deselect selected element
-	preview esetén ha id 0 root elem ott mutassuk az elemet de ne legyen kiválasztva
-	a previewnál le legyen kiválasztva a root elem
-	minden const f =... f() felülvizsg ahol kell await f...
 
-	záródjon be a tagválasztó ha elviszem az egeret felőle
-	belekattintva újra záródjon be, toggle üzem
-	ha már van x tag akkor ne küldjön db műveleletet
+minden const f =... f() felülvizsg ahol kell await f...
 
-	note betöltés után záródjon a menu
+részletes teszt
+
+user teszt
+	másik user test
+	0 db. note a db-ben
+	0-s note index no owner, nem törölhető
 
 design
+	toast
 	mobile resp
+	finomhangolni, színek
 	animok
 	loading statek-is, screenek is mindenhova
 	hero kezdőlap
@@ -462,10 +452,18 @@ deploy
 	docker mariadb + nextjs deploy
 system test
 
+optimalizáció, refaktor
+	NoteElementDataDb lehetne része NoteElementInput-nak
+	minden kondíció ellenőrizve mindenhol? milyen fontos check hiányzik?
+	hol lassabb mint kellene?
+		container init fetch
+	actlevel-ek milyenek legyenek, db adat vagy a lekérdezetttől számolva?
+		container onClickAddNewNote actLevel: 0, // rootnode + 1 kéne ?
+
 közeli featureok
 	nyitólapra a 3d-s hierarchical webgl anim, a lementett 3d-s portfolio siteok között volt egy amiben fel lett használva
 		középre egy login/register button, átlátszó
-	tag kiválasztás a tag keresőben, alapértelmezett a "topic"
+	tag kiválasztás a tag keresőben, alapértelmezett a "topic", dropdown
 	tag kereső
 		vertical, adott tree és childjei illetve csak az adott level checkbox-al
 		hierachical, itt meg minden szinten keres
@@ -517,6 +515,7 @@ lehetséges featureok
 jegyzetelés technikája, jó jegyzet
 	"topic" tagek meg amikben childek vannak legyenek tömörek
 	saját véleményt megjegyzést külön jelölni pld. egy felmérés eredményében amit én kommentelek hozzá
+	pontosan írjuk le fogalmazzuk meg amit szeretnénk, később is legyen egyértelmű
 
 egy tutorial a usereknek hogy írjanak noteokat, használják a programot
 
@@ -525,6 +524,8 @@ npm install sequelize-auto --save--dev
 sequelize-auto -h localhost -d stacked_notes_react -u root -x sr -p 3306 --dialect mariadb --lang ts --tables notes tag_defs tags themes account session user verificationtoken -o D:\Programozas\StackedNotesReact\stackednotesreact\db\models
 
 -------------------------------------------other
+
+convert.io - png to svg
 
 glass design kellene blurozott átlátszó elemekkel
 	egy mintás háttér html blury elemekkel mint developed by ed videoban
@@ -629,10 +630,115 @@ Frinwork makro elemző
 
 		lehet a medencefenék izmait kellene relaxálni, masszírozni?
 
+		kókuszolaj
+
+	quiz app
+		res
+			"react quiz"
+			https://www.youtube.com/watch?v=UX5HIrxbRUc - How to Build a Quiz App using React (for Beginners)
+			https://www.npmjs.com/package/react-quiz-component
+			https://github.com/Jatin-8898/react-quiz-app - nagyon szép UI
+
+		pld. Reacthoz, nextjs-hez stb
+		alaposan kidolgozni a quizeket, appot
+		reklámbevételek
+		tanulni általa az engem érdeklő témákról
+		userek is építhessék, csinálhasson, bővíthessen is meglévőt
+		beállítható egy téma is pld. válasz háttér szín, háttér szín
+		viszajelzés ha egy válasz nem jó
+		egy quiznek lenne review szekciója is hogy pld. egy válasz helyességét illetően milyen visszajelzések vannak
+			milyen arányban tudják a userek, milyen arányban ítélik helyesnek a választ, stb
+		szókártya appot is integrálhatom
+			+ még mit? iq teszt?
+		quiz kiválaszt, kérdéseken végigmegy, végén review, estleg show answer opció
+			lesz egy summary, mit tartalmaz, egy kép hány kérdés milyen tudás szint, mennyi idő megcsinálni, stb 
+			lehetnek quizen belül is kategóriák, alsectionok
+		linkeket beszúrni a helyes válaszról
+		konfigurálható quiz max idő megadása válaszra, stb
+		kép is beszúrható, kódrészlet, stb
+		tudásplatform lenne akár tutorialok, stb
+			a userek érdekeltek lennének abban hogy hozzájáruljanak a bővítéshez, helyes információk ellenőrzéséhez
+		esetleg pénzt kérni egy minimálisat a tesztért és visszasharelni a usernek aki csinálta vagy contributált benne
+		amit csinált valaki azt mások ellenőrzik, esetleg azért is kap valamennyi pénzt
+		többféle quiz válasz típus, van ahova be kellene írni, stb
+		eredménylisták, random kérdések
+		megnézni mivel lenne érdemes bővíteni más quiz appok, esetleg specifikus tesztek nem kifejezetten quiz appban pld. egy React quiz egy oktató oldalon
+			https://welovedevs.com/app/tests/reactjs
+				In order for the following component to work, what must be written in place of *** MISSING CODE***?
+				kódrészlet, missing code rész, válaszokban, mit kellene a hiányzó részhez beírni
+		userek javítják a hibás válaszokat, önkorrekció kell, minden válasz helyes lesz
+			a rendszer is érzékelheti hogy pld. nem az a válasz érkezik egy kérdésre nagyarányban
+			vagy 2 válasz is helyes, ilyenkor megadni melyik lenne még helyes, szöveges üzenet akár
+			suggest answer opció, amit mások is meg tudnak erősíteni
+		cégek havidíjért tudják használni, pld. jelöltek tesztelésére
+		a user kérhessen pénzt tesztenként
+		aki csinálja a tesztet meg feltölt pénzt a rendszerbe, akár cryptot
+		teszt értékelése mások által, hány értékelés, hány csillag
+		egynél több válasz is
+		kérdéseket lehet online is "lopni"
+		quiz kategóriák, böngészni is lehet
+		sorbarendezni drag and droppal válaszokat
+		beírni egy inputot, pld ahol tudni kell egy értéket, ami nem bonyolult
+		válaszd ki azt az x ... elemet
+			vagy húzd át balról jobbra, válogasd ki 
+		rossz/jó/minden választáshoz egy opcionális magyarázat ami megjelenik rögtön válasz után vagy a quiz review alatt
+		showAswerImmediteally opció, rögtön mutatja h jó/rossz a válasz/megoldást illetve magyarázatot, ha van megadva
+
+	mindennap gyakorolni(10 perc/dolog)
+		meditáció
+		mély légzés
+		excercise, workout
+		hála
+		olvasás
+		valami újat tanulni
+		napi célok meghat
+		másokért valami jót tenni
+
+	jó programozás siteok
+		https://roadmap.sh/full-stack - developer paths
+		JS advanced
+			https://zerotomastery.io/cheatsheets/javascript-cheatsheet-the-advanced-concepts/#primitive-vs-non-primitive
+			https://github.com/ShubhamSKadam/JavaScript-Mastery
+
+	kézi kereskedési stratégiák kipróbálni
+		5-8-13 adaptive er EMA rövid skalpokra
+			https://medium.com/@nicknikravesh/a-foolproof-strategy-to-make-money-day-trading-no-really-7896e365fd40
+				elolvasni
+			egész jónak tűnik skalpolni
+			entry mind3 in alignment
+			kiszállni vagy csúcson vagy az 5 ema törésnél
+			keresni olyan indit ahol be lehet állítani többet adott perioddal
+			ciklikusságot hogy lehet belevinni?
+		nagy boom-ot megélt stockok shortolása
+			tradelni vagy beleállni hosszútávon
+		Grover Llorens Cycle Oscillator faltól falig mean rev
+
+	igéretes stratégiák
+		https://medium.com/coinmonks/how-to-beat-the-stock-market-with-maths-a-dual-strategy-approach-2cfbf2a6558f - part1
+		https://medium.com/coinmonks/how-to-beat-the-stock-market-with-maths-a-dual-strategy-approach-part-2-5e8b562952bc - part2
+
+	jó prog tutorialok/authorok
+		https://www.youtube.com/@DaveGrayTeachesCode - sok full tutorial, több órásak
+		https://www.youtube.com/@javascriptmastery
+
+	jó topicok
+		behavioural economics
+
+	könyvlista
+		Dan Ariely - Kiszámíthatóan irracionális - A racionálisnak vélt döntéseinket alakító rejtett erőkről
+
+
+	warez
+		libgen.io - könyvek
+		https://snowfl.com/ - tutorialok, course-ok
+
+
 	financially successful
 		piaci siker
 			legnépszerűbb bussinesek
 				real estate, e-commerce, marketing, kereskedelem, finance, medical(USA)
+			legbulletproofabb bussinesek
+				finance, food(drink), hi-tech, real-estate
 			general
 				kitartóan csinálni, nem ugrálni a bussinesek között
 				fektess magadba
@@ -751,12 +857,20 @@ Frinwork makro elemző
 		low cost ETF-ekbe fektetni
 		egy stock max 10%-a legyen a portfolio-nak
 
+"Electricity is the most volatile market, most reliabily predictable, it follows the laws of physics"
+	"time is energy"
+	a fickó volatilis piacokat trédelt, ami könnyen predictálható
+
 	nagyon jó chart
 		barchart mutatja a range-t x idő óta máig
 		benne az átlag egy vonallal szintén x időtől
 		rajta egy másik pld. pont az aktuális értékkel
 		mivel 1 metrikát mutat, azt is látni hogy egymáshoz képest milyen értéket vesznek fel
 		pld. price to book ratios by country, ahol pld. india magasabban helyezkedik el, tehát eleve drágább
+
+melyik tf-en a legjobb a momentum egy adott instrumentumon?
+	a "legsimább" swingek hol alakulnak ki, hol töredezik a legkevésbé
+	kell rá egy metrika akár egy egyszerű backtest
 
 indikátor ami megtalálja a növekedés előtt álló iparágakat részvényeket stb
 	mint amit a acc. dist. M1 stratinál tervezek implementálni 

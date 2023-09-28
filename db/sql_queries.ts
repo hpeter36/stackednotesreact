@@ -1,24 +1,35 @@
 import { sequelizeAdapter, dbOrm } from ".";
 import { QueryTypes } from "sequelize";
 
-export async function dbGetNotes(from_note_id: string, user_id: string) {
+export async function dbGetNotes(
+  from_note_id: string,
+  depth: string,
+  user_id: string
+) {
   const results = await sequelizeAdapter.query(
     `with RECURSIVE cte AS 
-		(
-		SELECT n.id, n.parent_id, n.note, n.note_order, n.user_id
-		FROM notes n
-		WHERE n.id = :from_note_id
-		UNION ALL
-		SELECT n.id, n.parent_id, n.note, n.note_order, n.user_id
-		FROM notes n JOIN cte c ON n.parent_id = c.id
-		)
-		select id, parent_id, note, note_order
-		FROM cte where user_id = :user_id order by parent_id asc, note_order asc`,
+    (
+    SELECT n.id, n.parent_id, n.note, n.note_order, n.user_id, 0 as depth_l, (select count(*) from notes where parent_id = n.id) as child_c
+    FROM notes n
+    WHERE n.id = :from_note_id
+    UNION ALL
+    SELECT n.id, n.parent_id, n.note, n.note_order, n.user_id, depth_l + 1, (select count(*) from notes where parent_id = n.id) as child_c
+    FROM notes n JOIN cte c ON n.parent_id = c.id
+    where (depth_l + 1) <= :depth
+    ) 
+    select id, parent_id, note, note_order, depth_l, child_c
+    FROM cte 
+    where user_id = :user_id 
+    order by parent_id asc, note_order asc`,
     {
       plain: false,
       raw: true,
       type: QueryTypes.SELECT,
-      replacements: { from_note_id: from_note_id, user_id: user_id },
+      replacements: {
+        from_note_id: from_note_id,
+        depth: depth,
+        user_id: user_id,
+      },
     }
   );
   return results;
@@ -26,17 +37,19 @@ export async function dbGetNotes(from_note_id: string, user_id: string) {
 
 export async function dbGetNoteAndSubNoteIds(
   note_id_from: string,
+  depth: string,
   user_id: string
 ) {
   const results = await sequelizeAdapter.query(
     `with RECURSIVE cte AS 
 			(
-			SELECT n.id, n.user_id
+			SELECT n.id, n.user_id, 0 as depth_l
 			FROM notes n
 			WHERE n.id = :note_id_from
 			UNION ALL
-			SELECT n.id, n.user_id
+			SELECT n.id, n.user_id, depth_l + 1
 			FROM notes n JOIN cte c ON n.parent_id = c.id
+      where (depth_l + 1) <= :depth
 			)
 			select c.id
 			FROM cte c where c.user_id = :user_id`,
@@ -44,7 +57,11 @@ export async function dbGetNoteAndSubNoteIds(
       plain: false,
       raw: true,
       type: QueryTypes.SELECT,
-      replacements: { note_id_from: note_id_from, user_id: user_id },
+      replacements: {
+        note_id_from: note_id_from,
+        depth: depth,
+        user_id: user_id,
+      },
     }
   );
   return results;
@@ -90,7 +107,7 @@ export async function dbOrmGetNoteWithId(note_id: string, user_id: string) {
 
 export async function dbOrmGetAllTagDefs() {
   const tagDefs = await dbOrm.tag_defs.findAll();
-  return tagDefs
+  return tagDefs;
 }
 
 export async function dbGetNoteWithId(note_id: string, user_id: string) {
@@ -121,17 +138,19 @@ export async function dbGetNotesWithTag(tag_name: string, user_id: string) {
 
 export async function dbGetAllTagsFromNote(
   from_note_id: string,
+  depth: string,
   user_id: string
 ) {
   const results = await sequelizeAdapter.query(
     `with RECURSIVE cte AS 
 		(
-		SELECT n.id,  n.parent_id, n.note_order, n.user_id
+		SELECT n.id,  n.parent_id, n.note_order, n.user_id, 0 as depth_l
 		FROM notes n
 		WHERE n.id = :from_note_id
 		UNION ALL
-		SELECT n.id, n.parent_id, n.note_order, n.user_id
+		SELECT n.id, n.parent_id, n.note_order, n.user_id, depth_l + 1
 		FROM notes n JOIN cte c ON n.parent_id = c.id
+    where (depth_l + 1) <= :depth
 		)
 		select c.id as note_id, c.parent_id, c.note_order, td.name as tag_name
 		FROM cte c
@@ -143,7 +162,11 @@ export async function dbGetAllTagsFromNote(
       plain: false,
       raw: true,
       type: QueryTypes.SELECT,
-      replacements: { from_note_id: from_note_id, user_id: user_id },
+      replacements: {
+        from_note_id: from_note_id,
+        depth: depth,
+        user_id: user_id,
+      },
     }
   );
   return results;

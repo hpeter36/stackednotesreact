@@ -22,11 +22,13 @@ export async function GET(request: Request) {
     // get input
     const { searchParams } = new URL(request.url);
     let from_note_id = searchParams.get("from_note_id");
+    let depth = searchParams.get("depth");
 
     if (!from_note_id) from_note_id = "0";
+    if (!depth) depth = "1000";
 
     // db. op.
-    const results = await dbGetNotes(from_note_id, user.id)
+    const results = await dbGetNotes(from_note_id, depth, user.id)
 
     // return data
     return getApiResponse(results, EnumApiResponseStatus.STATUS_OK, 200);

@@ -40,14 +40,12 @@ const TagsManager = (inputs: TagsManagerInput) => {
 
   //--------- events
 
-  const onFocusInput = (e: React.FocusEvent<HTMLInputElement>) => {
+  const showTags = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsFocused(true);
     setFilteredTags(filterTags(searchVal));
   };
 
-  const unFocusInput = (e: React.FocusEvent<HTMLInputElement>) => {};
-
-  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const searchTags = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.currentTarget.value;
     setSearchVal(val);
     setFilteredTags(filterTags(val));
@@ -89,7 +87,7 @@ const TagsManager = (inputs: TagsManagerInput) => {
     inputRef.current?.blur();
   };
 
-  const onClickClearSearch = (e: React.MouseEvent<HTMLSpanElement>) => {
+  const clearSearchEvent = (e: React.MouseEvent<HTMLSpanElement>) => {
     setSearchVal("");
     setIsFocused(false);
   };
@@ -98,7 +96,7 @@ const TagsManager = (inputs: TagsManagerInput) => {
   const twBgColorHover = "hover:bg-blue-200";
 
   return (
-    <div className={`flex`}>
+    <div className={`flex`} onMouseLeave={clearSearchEvent}>
       {/* input & dropdown */}
       <div className="flex flex-col">
         {/* input field */}
@@ -106,9 +104,9 @@ const TagsManager = (inputs: TagsManagerInput) => {
           ref={inputRef}
           type="text"
           value={searchVal}
-          onFocus={onFocusInput}
-          onBlur={unFocusInput}
-          onChange={onChangeInput}
+          onFocus={showTags}
+          // onBlur={unFocusInput}
+          onChange={searchTags}
         />
         {/* dropdown */}
         <div className="relative">
@@ -131,7 +129,7 @@ const TagsManager = (inputs: TagsManagerInput) => {
           <button className="bg-lime-300 hover:bg-lime-500 p-1 rounded-md mx-2" onClick={onClickAddNewTagDef}>Add new tag</button>
         )}
         {/* clear input btn */}
-        {isFocused && <button className="bg-red-300 hover:bg-red-500 p-1 rounded-sm mx-2" onClick={onClickClearSearch}>x</button>}
+        {isFocused && <button className="bg-red-300 hover:bg-red-500 p-1 rounded-sm mx-2" onClick={clearSearchEvent}>x</button>}
       </div>
     </div>
   );

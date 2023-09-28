@@ -30,6 +30,8 @@ const SearchByTag = () => {
           parent_id: -1,
           note: "",
           note_order: 0,
+          depth_l: 0,
+          child_c: -1,
         },
         ...data,
       ];

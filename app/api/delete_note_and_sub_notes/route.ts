@@ -30,7 +30,7 @@ export async function DELETE(request: Request) {
       );
 
     // get note id-s to delete
-    const results = await dbGetNoteAndSubNoteIds(note_id_from, user.id)
+    const results = await dbGetNoteAndSubNoteIds(note_id_from, "1000", user.id)
     if (results.length === 0)
       return getApiResponse(
         "Error when deleting note and subnotes, the note may not be exists!",

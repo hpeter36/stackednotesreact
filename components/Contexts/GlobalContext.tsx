@@ -25,7 +25,7 @@ const defSelectedNoteElement: GlobalContextData = {
   setSelectedNoteElementData: (noteData: NoteElementInput | null) => {},
   tagDefs: [],
   addNewTagDef: (tagDefData: TagDefData) => {},
-  activeRootNodeId: -1, // the parent of the root db id
+  activeRootNodeId: 0,
   setActiveRootNodeId: (noteId: number) => {},
   noteTagsChanged: false,
   setNoteTagsChanged: (value: boolean) => {},
@@ -41,7 +41,7 @@ const GlobalContext = ({ children }: { children: React.ReactNode }) => {
       defSelectedNoteElement.selectedNoteElementData
     );
   const [tagDefs, setTagDefs] = useState<TagDefData[]>([]);
-  const [activeRootNodeId, setActiveRootNodeId] = useState(-1);
+  const [activeRootNodeId, setActiveRootNodeId] = useState(0);
   const [_noteTagsChanged, _setNoteTagsChanged] = useState(false);
 
   // init

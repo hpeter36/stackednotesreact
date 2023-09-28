@@ -9,12 +9,19 @@ import { globalContext } from "./Contexts";
 import { NoteElementInput } from "./NoteElement";
 import { ApiResponse } from "@/types";
 import NoteElementImportPreview from "./NoteElementImportPreview";
+import { sideMenuContext } from "./SideMenu/SideMenu";
 
 const NoteElementImport = () => {
   const [textCont, setTextCont] = useState("");
   const [notesData, setNotesData] = useState<NoteElementInput[]>([]);
-  const ctx = useContext(globalContext);
-  const { selectedNoteElementData, setActiveRootNodeId } = ctx;
+  
+  // global context
+  const globalCtx = useContext(globalContext);
+  const { selectedNoteElementData, setActiveRootNodeId } = globalCtx;
+
+  // side menu context
+  const sideMenuCtx = useContext(sideMenuContext);
+  const { closeSideMenu } = sideMenuCtx;
 
   const { data: session, status } = useSession();
 
@@ -104,9 +111,15 @@ const NoteElementImport = () => {
         title: r,
         actLevel: actLevel,
         parentOrder: 0,
+        childCount: -1,
         tags: [],
         childrenElements: [],
         parentActions: null,
+        behaviour: {
+          indentTwSize: "pl-5",
+          isInitialCollapsed: false,
+          isLazyLoadingChildren: false,
+        }
       });
 
       //console.log(`id ${i} p_id ${actParentId} lvl. ${actLevel} ${r}`);
@@ -152,6 +165,7 @@ const NoteElementImport = () => {
     };
     await f();
 
+    closeSideMenu()
     setActiveRootNodeId(rootElemId.current);
 
     setTextCont("");

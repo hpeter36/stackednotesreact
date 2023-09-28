@@ -96,9 +96,16 @@ const NoteElementImportPreview = (inputs: NoteElementImportPreviewInput) => {
             }
             actLevel={0}
             parentOrder={0}
+            childCount={-1}
             tags={[]}
             childrenElements={inputs.notesData}
             parentActions={null}
+            behaviour={{
+              indentTwSize: "pl-5",
+              isInitialCollapsed: false,
+              isLazyLoadingChildren: false,
+              isPreviewMode: true
+            }}
           />
         )}
       </div>

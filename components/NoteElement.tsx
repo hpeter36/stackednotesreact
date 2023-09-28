@@ -18,9 +18,11 @@ import { TagsManager } from ".";
 
 export type NoteElementDataDb = {
   id: number;
+  parent_id: number;
   note: string;
   note_order: number;
-  parent_id: number;
+  depth_l: number;
+  child_c: number;
 };
 
 export type NoteTagsDataDb = {
@@ -35,6 +37,7 @@ export type NoteElementInput = {
   parentId: number;
   title: string;
   actLevel: number;
+  childCount: number;
   parentOrder: number;
   tags: string[];
   childrenElements: NoteElementInput[];
@@ -46,6 +49,12 @@ export type NoteElementInput = {
     ) => void;
     newElementEndEdit: () => void;
   } | null;
+  behaviour: {
+    indentTwSize: string;
+    isInitialCollapsed: boolean;
+    isLazyLoadingChildren: boolean;
+    isPreviewMode?: boolean;
+  };
 };
 
 // helper only  !!!
@@ -68,7 +77,9 @@ const NoteElement = (inputs: NoteElementInput) => {
   const [isOnEdit, setIsOnEdit] = useState(() =>
     inputs.title === "" ? true : false
   );
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() =>
+    inputs.behaviour.isInitialCollapsed ? true : false
+  );
   const [isElementActionsVisible, setIsElementActionsVisible] = useState(false);
 
   // add new child element state -> shows editable element component
@@ -84,7 +95,11 @@ const NoteElement = (inputs: NoteElementInput) => {
     selectedNoteElementData,
     setSelectedNoteElementData,
     setNoteTagsChanged,
+    activeRootNodeId,
+    setActiveRootNodeId,
   } = ctx;
+
+  // ----------------------- hooks
 
   // init, focus on input
   useEffect(() => {
@@ -102,6 +117,13 @@ const NoteElement = (inputs: NoteElementInput) => {
   useEffect(() => {
     if (isOnEdit) inputRef.current!.focus();
   }, [isOnEdit]);
+
+  // -----------------------functions
+  const getNoteCountDb = () => {
+    return noteChildElementsData.length > 0
+      ? noteChildElementsData.length
+      : inputs.childCount;
+  };
 
   // -----------------------events
   // add new element
@@ -170,7 +192,7 @@ const NoteElement = (inputs: NoteElementInput) => {
     // cancel this element if no content, remove from its parent
     else {
       // cannot delete empty note if it has children
-      if (noteChildElementsData.length > 0) {
+      if (getNoteCountDb() > 0) {
         // mark with red border !!!
       }
       // empty note and no children -> delete from parent
@@ -209,12 +231,18 @@ const NoteElement = (inputs: NoteElementInput) => {
           title: "",
           actLevel: inputs.actLevel + 1,
           parentOrder: prev.length,
+          childCount: 0,
           tags: [],
           childrenElements: [],
           parentActions: {
             removeElementWithId: removeElementDataWithId,
             updateElementDataAtIdx: updateElementDataAtIdx,
             newElementEndEdit: newElementEndEdit,
+          },
+          behaviour: {
+            indentTwSize: "pl-5",
+            isInitialCollapsed: true,
+            isLazyLoadingChildren: false,
           },
         },
       ]);
@@ -228,7 +256,71 @@ const NoteElement = (inputs: NoteElementInput) => {
     setIsOnEdit(true);
   };
 
-  const onClickCollapseEvent = (e: React.MouseEvent<HTMLDivElement>) => {
+  const onClickCollapseEvent = async (e: React.MouseEvent<HTMLDivElement>) => {
+    // ha eleve nem 0 a child count a db prefetch érték, level, depth child count + input !!!
+
+    // fetch children if
+    if (
+      isCollapsed && //  we expand the item
+      inputs.childCount > 0 && // we have children according to db
+      noteChildElementsData.length == 0 && //  we have 0 child in our component loaded
+      inputs.behaviour.isLazyLoadingChildren //  and is in lazy loading mode
+    ) {
+      const f = async () => {
+        // fetch element data
+        let respData: ApiResponse = await fetch(
+          `/api/get_notes?from_note_id=${inputs.id}&depth=1`,
+          { method: "GET", cache: "no-store" }
+        ).then((resp) => resp.json());
+        let notesDb = respData.data as NoteElementDataDb[];
+
+        // exclude the current component
+        notesDb = notesDb.filter((note) => note.id !== inputs.id);
+
+        // dbData -> NoteElementInput
+        const noteDataTemp: NoteElementInput[] = notesDb.map((noteDb, i) => {
+          return {
+            id: noteDb.id,
+            parentId: noteDb.parent_id,
+            title: noteDb.note,
+            actLevel: noteDb.depth_l,
+            parentOrder: noteDb.note_order,
+            childCount: noteDb.child_c,
+            tags: [], // in next step
+            childrenElements: [],
+            parentActions: {
+              removeElementWithId: removeElementDataWithId,
+              updateElementDataAtIdx: updateElementDataAtIdx,
+              newElementEndEdit: newElementEndEdit,
+            },
+            behaviour: {
+              indentTwSize: "pl-5",
+              isInitialCollapsed: true,
+              isLazyLoadingChildren: true,
+            },
+          };
+        });
+
+        // fetch tags
+        respData = await fetch(
+          `/api/get_all_tags_from_id?from_note_id=${inputs.id}&depth=1`,
+          { method: "GET" }
+        ).then((resp) => resp.json());
+        const allTagsDb = respData.data as NoteTagsDataDb[];
+
+        // fill the tags
+        for (let i = 0; i < noteDataTemp.length; i++) {
+          noteDataTemp[i].tags = allTagsDb
+            .filter((d) => d.note_id === noteDataTemp[i].id)
+            .map((d) => d.tag_name);
+        }
+
+        // set in state
+        setNoteChildElementsData(noteDataTemp);
+      };
+      await f();
+    }
+
     setIsCollapsed((prev) => !prev);
   };
 
@@ -251,6 +343,13 @@ const NoteElement = (inputs: NoteElementInput) => {
       // remove from state
       if (inputs.parentActions)
         inputs.parentActions?.removeElementWithId(inputs.id);
+
+      // if this was selected, unselect
+      if (inputs.id === selectedNoteElementData?.id)
+        setSelectedNoteElementData(null);
+
+      // trigger to clear container if this was the root elem
+      if (inputs.id === activeRootNodeId) setActiveRootNodeId(0);
     }
   };
 
@@ -263,23 +362,26 @@ const NoteElement = (inputs: NoteElementInput) => {
   };
 
   // to TagManager input
-  const addTagToNote = (tagName: string) => {
-    // add tag to note if not present and increment the counter by 1
-    const f = async () => {
-      const respData: ApiResponse = await fetch(`/api/add_tag_to_note`, {
-        method: "POST",
-        body: JSON.stringify({
-          note_id: inputs.id,
-          tag_name: tagName,
-        }),
-      }).then((resp) => resp.json());
-    };
-    f();
+  const addTagToNote = async (tagName: string) => {
+    // tag is not in element
+    if (tags.indexOf(tagName) === -1) {
+      // add tag to db and increment the counter by 1
+      const f = async () => {
+        const respData: ApiResponse = await fetch(`/api/add_tag_to_note`, {
+          method: "POST",
+          body: JSON.stringify({
+            note_id: inputs.id,
+            tag_name: tagName,
+          }),
+        }).then((resp) => resp.json());
+      };
+      await f();
 
-    // add tag to state
-    if (tags.indexOf(tagName) === -1) setTags((prev) => [...prev, tagName]);
+      // add tag to state
+      setTags((prev) => [...prev, tagName]);
 
-    setNoteTagsChanged(true);
+      setNoteTagsChanged(true);
+    }
   };
 
   // ----------------------- parent events
@@ -315,11 +417,25 @@ const NoteElement = (inputs: NoteElementInput) => {
     setNoteTagsChanged(true);
   };
 
-  const twHeaderBg = selected ? "bg-red-500" : "bg-blue-300";
-  const twHeaderVisibility = inputs.id === 0 ? "none" : "block";
+  const isPreviewMode =
+    inputs.behaviour.isPreviewMode !== undefined
+      ? inputs.behaviour.isPreviewMode
+      : false;
+
+  const twHeaderBg = selected
+    ? isPreviewMode
+      ? "bg-blue-300"
+      : "bg-red-500"
+    : getNoteCountDb() > 0 && isCollapsed
+    ? "bg-blue-400"
+    : "bg-blue-300";
+  const twHeaderVisibility =
+    inputs.id === 0 ? (isPreviewMode ? "block" : "hidden") : "block";
 
   return (
-    <div className={inputs.id === 0 ? "pl-0" : "pl-5"}>
+    <div
+      className={inputs.parentId === 0 ? "pl-5" : inputs.behaviour.indentTwSize}
+    >
       {/* note header */}
       <div
         className={`flex justify-between ${twHeaderBg} ${twHeaderVisibility} border-gray-800 border-[1px] m-1`}
@@ -339,11 +455,19 @@ const NoteElement = (inputs: NoteElementInput) => {
             onChange={(e) => setAddedNoteText(e.target.value)}
           />
 
-          <div className={`flex flex-col p-1 ${isOnEdit && "hidden" }`}>
+          <div className={`flex flex-col p-1 ${isOnEdit && "hidden"}`}>
             {/* note text */}
             <div>
               <span>{addedNoteText}</span>
             </div>
+            {/* --- debug */}
+            {/* <div className="flex justify-around">
+              <span>id {inputs.id}</span>
+              <span>parentId {inputs.parentId}</span>
+              <span>(childs {getNoteCountDb()})</span>
+              <span>p.order {inputs.parentOrder}</span>
+              <span>actLevel {inputs.actLevel}</span>
+            </div> */}
 
             {/* tags with delete button */}
             <div className="flex gap-1">
@@ -380,14 +504,7 @@ const NoteElement = (inputs: NoteElementInput) => {
             parentActions={{ addTagToNote: addTagToNote }}
           />
           {/* child count when collapsed */}
-          {isCollapsed && <span>({noteChildElementsData.length})</span>}
-
-          {/* --- debug */}
-          {/* <span>id {inputs.id}</span>
-          <span>parentId {inputs.parentId}</span>
-          <span>(childs {noteChildElementsData.length})</span>
-          <span>p.order {inputs.parentOrder}</span>
-          <span>actLevel {inputs.actLevel}</span> */}
+          {isCollapsed && <span>({getNoteCountDb()})</span>}
         </div>
       </div>
 
@@ -399,8 +516,9 @@ const NoteElement = (inputs: NoteElementInput) => {
             id={d.id}
             parentId={d.parentId}
             title={d.title}
-            actLevel={inputs.actLevel + 1}
-            parentOrder={i}
+            actLevel={d.actLevel} // inputs.actLevel + 1
+            parentOrder={d.parentOrder} // i
+            childCount={d.childCount}
             tags={d.tags}
             childrenElements={d.childrenElements}
             parentActions={{
@@ -408,6 +526,7 @@ const NoteElement = (inputs: NoteElementInput) => {
               updateElementDataAtIdx: updateElementDataAtIdx,
               newElementEndEdit: newElementEndEdit,
             }}
+            behaviour={d.behaviour}
           />
         ))}
       </div>

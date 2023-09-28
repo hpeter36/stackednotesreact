@@ -40,10 +40,16 @@ const Navigation = () => {
   return (
     <nav className="flex items-center justify-between w-full py-2 px-3 bg-blue-200">
       {/* logo */}
-      <div className="flex justify-center items-center">
-        <Image src={LogoSvg} alt="Stacked Notes logo" className=" w-16 h-16" />
-        <h1 className=" text-2xl">Stacked Notes</h1>
-      </div>
+      <Link href="/">
+        <div className="flex justify-center items-center">
+          <Image
+            src={LogoSvg}
+            alt="Stacked Notes logo"
+            className=" w-16 h-16"
+          />
+          <h1 className=" text-2xl">Stacked Notes</h1>
+        </div>
+      </Link>
 
       <div
         className={`${
