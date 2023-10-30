@@ -500,7 +500,6 @@ const NoteElement = (inputs: NoteElementInput) => {
           )}
           <FaWindowClose className="w-6 h-6" onClick={onClickDeleteEvent} />
           <TagsManager
-            showTagsByDefCount={5}
             parentActions={{ addTagToNote: addTagToNote }}
           />
           {/* child count when collapsed */}

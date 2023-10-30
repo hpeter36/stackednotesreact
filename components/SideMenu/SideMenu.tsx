@@ -18,9 +18,13 @@ const defaultSideMenuConextData:SideMenuContextData = {
 
 export const sideMenuContext = createContext<SideMenuContextData>(defaultSideMenuConextData)
 
-const SideMenu = () => {
+type SideMenuInput = {
+  initialStateOpened: boolean
+}
+
+const SideMenu = (inputs: SideMenuInput) => {
   const [selectedItem, setSelectedItem] = useState<MenuElements>("browser");
-  const [showMenu, setShowMenu] = useState(true);
+  const [showMenu, setShowMenu] = useState(inputs.initialStateOpened);
 
   const ctx = useContext(globalContext);
   const { activeRootNodeId, setActiveRootNodeId } = ctx;

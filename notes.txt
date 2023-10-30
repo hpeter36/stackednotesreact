@@ -427,15 +427,22 @@ megcsinálni
 
 hibák
 	miért nem rakott semmit a dev dependencies-be?
+	errno: -4078, code: 'ECONNREFUSED', syscall: 'connect', address: '127.0.0.1', port: 63639
+		lehet a mariadb dobja el a connectiont itt is
 
 minden const f =... f() felülvizsg ahol kell await f...
+belekattintok a dropdown search-be és van egy elem az inputban dobja fel az összes lehetőséget
+"==" -> "==="
+
+react, next js tanulni
+	jsmastery course
+a meglévő kódokat tökéletesre optimolni
 
 részletes teszt
-
-user teszt
-	másik user test
-	0 db. note a db-ben
-	0-s note index no owner, nem törölhető
+	user teszt
+		másik user test
+		0 db. note a db-ben
+		0-s note index no owner, nem törölhető
 
 design
 	toast
@@ -444,6 +451,7 @@ design
 	animok
 	loading statek-is, screenek is mindenhova
 	hero kezdőlap
+	egyszerű template switcher, a blue és árnyalatait cseréli le
 biztonsági elemzés
 deploy
 	https://www.youtube.com/watch?v=3WCIyNOrzwM - How I Made My Website Load in 0.364 Seconds | Build and Deploy
@@ -453,6 +461,7 @@ deploy
 system test
 
 optimalizáció, refaktor
+	mindent a lehető legalaposabban, legjobb tudásom szerint, nem kell sietni!
 	NoteElementDataDb lehetne része NoteElementInput-nak
 	minden kondíció ellenőrizve mindenhol? milyen fontos check hiányzik?
 	hol lassabb mint kellene?
@@ -460,14 +469,49 @@ optimalizáció, refaktor
 	actlevel-ek milyenek legyenek, db adat vagy a lekérdezetttől számolva?
 		container onClickAddNewNote actLevel: 0, // rootnode + 1 kéne ?
 
+	csak ott state ahol valóban kell, egyébként input props-ot tovább adni
+		pontosan tudjuk mit hányszor renderel, lássuk át, tervezzük meg
+	felesleges rendereket elkerülni usememoval
+	felesleges komponens reinitek, újracsinálások amin belül busy work van
+	next js dolgok
+	custom hook ahol érdemes
+	ha valami nem okés "throw Error(...)
+	komponenseket szétvenni, 1 comp single responsibility
+	ha nem látszódik a note child nem is kellene renderelni, tünjön el a node
+	default propok ahol érdemes
+	"notes" page-re minden kezdeni szükséges adat szerver preload
+	fölös useeffectek kivétele(renderbe elég betenni esetleg usememo)
+		ahol csak másik state change-t hajtok végre, nincs external system
+	 	filterezések
+	amit meglévő stateből számolni tudok ott ne legyen külön state, renderkor sima változóba tenni
+	mi az ami nem state, számolható, nem változik, propként átadva
+	előbb event handler legyen valami mint useffect
+		először minden legyen render közben, ha ez nem lehet event, ha ez se effect
+	eventeknek handleonlickmitcsinálazeventevent elnevezés
+		saját comp. eventeknek onXxxxx elnevezés
+	
+	ahol csak lehet JSX inputja(children) legyen a componenteknek
+		comp layer levelek minimalizálása -> contextek minimalizálása
+		inkább propokkal adjunk át infót ahol csak lehet
+	contextek teljesen külön fileban minden related logika, még a useContext is
+		compok amik használják csak egy useXXX
+	
+abc sorrendben legyenek a noteok egy levelen belül
+
 közeli featureok
 	nyitólapra a 3d-s hierarchical webgl anim, a lementett 3d-s portfolio siteok között volt egy amiben fel lett használva
 		középre egy login/register button, átlátszó
 	tag kiválasztás a tag keresőben, alapértelmezett a "topic", dropdown
+	content alapú kereső
+		minden note textben contains alapon, találatokat környezetében kiemelni
+		lekérni vagy úgy hogy a note környezetét pld x db note-ot illetve a találat headerben x parentet mutatni ami kattintható
+			kellene egy sorszám ami megkönnyíteni lekérni a jegytetet folyamatában pld infinie scroll illetve content kereső esetében
+			ezt mindig updatelni kell valahogy, gyakorlatilag random helyre insertelhetek note-ot a valós struktúra szerint
+			inkább a rekurzív lekérésnél kell maradni csak felfelé is csinálni
+			from to alapon
 	tag kereső
 		vertical, adott tree és childjei illetve csak az adott level checkbox-al
 		hierachical, itt meg minden szinten keres
-	content alapú kereső
 	containerbe egy jump to parent gomb
 	note cache
 	egy adott parent végébe drag and drop áthelyezés gyorsan megoldható, ezt még csináljuk meg
@@ -480,13 +524,26 @@ közeli featureok
 		a container nyilna új ablakban
 		új ablak vagy bestackeli a meglévő container mellé alá
 		az áthelyezés így hatékonyan működhetne
+	jegyzet beszúrása egy adott level közepébe is ne csak a végébe lehessen
+	collapse all, open all gomb a nodeokra, pld. egy komplett jegyzet azonnali letöltése
+		ha lazy akkor egyben kellene letölteni a szétnyitott nodetól nem nodeonként
 
 további featureok
+	jegyzet copy paste
+		crtl + v a fő felületen
+		a vágólapon lévő tabolt notesot egy modal ablakba beteszi, kiixelhető, cancelezhető
+		a teljes értékű drag and drop move funkcióval a helyére illeszthető
+		esetleg lehet egy gyorskeresés funckió hogy mi alá tegye be vagy melyik parentbe
+			mutatja hogy milyen tree struktúra alá teszi
+			ez a funkció azonos a keresés funkció content alapú keresővel
 	belinkelt, beinsertelt képek vagy pici vagy mouseoverral(!) láthatóvá tétele
 		kattintásra megnyitni nagy méretben
 		a sima linkelés sokkal egyszerűbb, link nevet megadni alapból a link maga a név
 		sokszor nincs link csak egy kivágható kép, azt kell beilleszteni
 	note linkelés ahol utalok rá, új ablakban nyitható legyen
+	bold kiemelés note texten belül
+		Build a Rich Text Editor in Next 13 Tutorial
+		https://www.youtube.com/watch?v=ml4USMIm594
 	note referencia, ilyenkor be is tölti egy adott helyről mintha a linkelés helyén lenne létrehozva
 		de csak 1 helyen tárolódik a db-ben
 	google-ban keresendő kifejezés mint note elem, "" részek pl.
@@ -507,25 +564,1085 @@ további featureok
 		infinite scroll
 		csak hierarch nézet
 	vertikális/hierarch nézetek közötti váltás a nyitott container(ek)ben
+	userek közötti jegyzet megosztás, csak read only
+	lehetne olyan szerkesztő hogy egy parentet szerkesztve úgy jelenne meg az összes childel együtt mint a text editorban tabokkal szeparálva
 
 lehetséges featureok
 	üres sorokat is támogassuk 1-1 notera, sokat számít az átláthatóság javítása miatt
 		lehet nem kell több alfejezet kialakításával kikerülhető
 
+prioritást is meghatározhatunk a jegyzetek sorrendjével egy adott levelen belül
+
 jegyzetelés technikája, jó jegyzet
 	"topic" tagek meg amikben childek vannak legyenek tömörek
 	saját véleményt megjegyzést külön jelölni pld. egy felmérés eredményében amit én kommentelek hozzá
 	pontosan írjuk le fogalmazzuk meg amit szeretnénk, később is legyen egyértelmű
+	egymáshoz tartozó, szorosan összetartozó fogalmakat egymás alá jegyzeteljük
 
 egy tutorial a usereknek hogy írjanak noteokat, használják a programot
 
+-------------------------React legfontosabbak
+	https://react.dev/
+	Thinking in React
+		0) the final data structure(mockup)
+		1) Break the UI into a component hierarchy
+		 	single responsibility principle, that is, a component should ideally only do one thing
+			JSON is well-structured, you’ll often find that it naturally maps to the component structure of your UI
+			Separate your UI into components, where each component matches one piece of your data model
+			you’ve identified the components in the mockup, arrange them into a hierarchy
+		2) Build a static version in React
+			build a version that renders the UI from your data model without adding any interactivity
+			Building a static version requires a lot of typing and no thinking, but adding interactivity requires a lot of thinking and not a lot of typing
+			you’ll want to build components that reuse other components and pass data using props
+			don’t use state at all to build this static version
+			You can either build “top down” by starting with building the components higher up in the hierarchy	or “bottom up” by working from components lower down
+			In simpler examples, it’s usually easier to go top-down, and on larger projects, it’s easier to go bottom-up
+			After building your components, you’ll have a library of reusable components that render your data model
+			Because this is a static app, the components will only return JSX, The component at the top of the hierarchy will take your data model as a prop. 
+				This is called one-way data flow because the data flows down from the top-level component to the ones at the bottom of the tree
+			At this point, you should not be using any state values. That’s for the next step!
+		3) Find the minimal but complete representation of UI state
+			To make the UI interactive, you need to let users change your underlying data model. You will use state for this
+			Think of state as the minimal set of changing data that your app needs to remember
+				component memory
+				It lets a component keep track of some information and change it in response to interactions
+			The most important principle for structuring state is to keep it DRY (Don’t Repeat Yourself)
+			Figure out the absolute minimal representation of the state your application needs and compute everything else on-demand
+			don't state if
+				remain unchanged over time
+				it passed in from a parent via props
+				Can you compute it based on existing state or props in your component
+			props -  let a parent component pass data to a child component and customize its appearance
+			Props and state are different, but they work together
+			A parent component will often keep some information in state (so that it can change it), and pass it down to child components as their props
+		 4) Identify where your state should live
+		 	you need to identify which component is responsible for changing this state, or owns the state
+			React uses one-way data flow, passing data down the component hierarchy from parent to child component
+			finding who owns the state
+				identify every component that renders something based on that state
+				Find their closest common parent component
+				Decide where the state should live
+					common parent
+					some component above their common parent
+					If you can’t find a component where it makes sense to own the state, create a new component solely for holding the state and add it somewhere in the hierarchy above the common parent component
+		5) Add inverse data flow
+			you will need to support data flowing the other way
+			a tree végén lévő component updateli a state-jét egy parentnek
+			state setter-t dobunk le a childnek eseményekre
+	Describing the UI
+		Passing Props to a Component
+			React components use props to communicate with each other.
+			you can pass any props to your own components, such as <Avatar>
+			props are the only argument to your component! React component functions accept a single argument, a props object
+			Every parent component can pass some information to its child components by giving them props.
+			you can pass any JavaScript value through them, including objects, arrays, and functions
+			Props are the information that you pass to a JSX tag
+			The props you can pass to an <img> tag are predefined (ReactDOM conforms to the HTML standard)
+			Usually you don’t need the whole props object itself, so you destructure it into individual props
+				function Avatar({ person, size }) {...
+			to give a prop a default value to fall back on when no value is specified
+				undefined megadásakor fallbackel defaultra de null, 0 esetén nem
+				function Avatar({ person, size = 100 }) {...
+			Forwarding props with the JSX spread syntax
+				Sometimes, passing props gets very repetitive
+				nem baj a reperitív kód, jobban olvasható, cleaner
+				Some components forward all of their props to their children
+				<Avatar {...props} />
+				Use spread syntax with restraint
+			Passing JSX as children
+				the parent component will receive that content in a prop called children 
+				<Card><Avatar/></Card>
+			How props change over time 
+				Props are not always static!
+				Props reflect a component’s data at any point in time, rather than only in the beginning
+				eg. the time prop changes every second, and the color prop changes when you select another color
+				Don’t try to “change props”, props are immutable, “unchangeable”, When a component needs to change its props, it will have to “ask” its parent component to pass it different props, a new object
+					When you need interactivity, you’ll need to set state.
+				Props are read-only snapshots in time: every render receives a new version of props.
+		Keeping Components Pure(pure functions)
+			Pure functions only perform a calculation and nothing more
+			you can avoid an entire class of baffling bugs and unpredictable behavior
+			following characteristics
+				It minds its own business. It does not change any objects or variables that existed before it was called
+				Same inputs, same output. Given the same inputs, a pure function should always return the same result
+				eg. formulas in math
+			React assumes that every component you write is a pure function
+			React components you write must always return the same JSX given the same inputs
+			You could think of your components as recipes: if you follow them and don’t introduce new ingredients during the cooking process, you will get the same dish every time
+				That “dish” is the JSX that the component serves to React to render
+			React’s rendering process must always be pure. Components should only return their JSX, and not change any objects or variables that existed before rendering
+			impure component
+				reading and writing a guest variable declared outside of it.
+				calling this component multiple times will produce different JSX!
+			each component should only “think for itself”, and not attempt to coordinate with or depend upon others during rendering
+			each component should calculate JSX on their own!
+			three kinds of inputs that you can read while rendering: props, state, and context. You should always treat these inputs as read-only
+			When you want to change something in response to user input, you should set state instead of writing to a variable. 
+			You should never change preexisting variables or objects while your component is rendering
+			Strict mode
+				Pure functions only calculate, so calling them twice won’t change anything
+			Local mutation: Your component’s little secret 
+				the component changed a preexisting variable while rendering. This is often called a “mutation”
+				Pure functions don’t mutate variables outside of the function’s scope or objects that were created before the call
+				it’s completely fine to change variables and objects that you’ve just created while rendering(created them during the same render, “local mutation”)
+					No code outside of component will ever know that this happened(Your component’s little secret)
+			Where you can cause side effects 
+				While functional programming relies heavily on purity, at some point, somewhere, something has to change
+				These changes—updating the screen, starting an animation, changing the data—are called side effects
+					They’re things that happen “on the side”, not during rendering
+					azok a dolgok amik nem renderkor történnek!
+				In React, side effects usually belong inside event handlers. 
+					functions that React runs when you perform some action
+					they don’t run during rendering! So event handlers don’t need to be pure
+				If you’ve exhausted all other options and can’t find the right event handler for your side effect, you can still attach it to your returned JSX with a useEffect call in your component
+					This tells React to execute it later, after rendering, when side effects are allowed. However, this approach should be your last resort
+				When possible, try to express your logic with rendering alone.
+			why write pure functions
+				Your components could run in a different environment—for example, on the server! Since they return the same result for the same inputs, one component can serve many user requests.
+				You can improve performance by skipping rendering components whose inputs have not changed.(usememo) This is safe because pure functions always return the same results, so they are safe to cache
+				If some data changes in the middle of rendering a deep component tree, React can restart rendering without wasting time to finish the outdated render. Purity makes it safe to stop calculating at any time
+			először render-ben próbáljuk megoldani a componentet, When you need to “change things”, you’ll usually want to do it in an event handler. As a last resort, you can useEffect
+			Writing pure functions takes a bit of practice, but it unlocks the power of React’s paradigm
+	Adding interactivity
+		Responding to Events
+			React lets you add event handlers to your JSX
+			Event handlers are your own functions that will be triggered in response to interactions
+			usually defined inside your components
+			names that start with handle, followed by the name of the event
+			define an event handler inline in the JSX even with arrow  func.
+				Inline event handlers are convenient for short functions
+			Functions passed to event handlers must be passed, not called
+				This tells React to remember it and only call your function when the user interacts with it
+				In the second example, the () at the end of handleClick() fires the function immediately during rendering, without any clicks.
+					it fires every time the component renders
+				This is because JavaScript inside the JSX { and } executes right away
+			Reading props in event handlers
+				Because event handlers are declared inside of a component, they have access to the component’s props
+			Passing event handlers as props
+				Often you’ll want the parent component to specify a child’s event handler
+			Naming event handler props 
+				By convention, event handler props should start with on, followed by a capital letter
+				Built-in components like <button> and <div> only support browser event names like onClick. However, when you’re building your own components, you can name their event handler props any way that you like
+				When your component supports multiple interactions, you might name event handler props for app-specific concepts. For example, this Toolbar component receives onPlayMovie and onUploadImage event handlers
+				Make sure that you use the appropriate HTML tags for your event handlers
+					For example, to handle clicks, use <button onClick={handleClick}> instead of <div onClick={handleClick}>. Using a real browser <button> enables built-in browser behaviors like keyboard navigation
+			Event propagation
+				Event handlers will also catch events from any children your component might have, it starts with where the event happened, and then goes up the tree
+				All events propagate in React except onScroll, which only works on the JSX tag you attach it to
+				If you want to prevent an event from reaching parent components, you need to call e.stopPropagation()(stops the event handlers attached to the tags above from firing) , to preventing the event from bubbling further
+				onClickCapture, akkor is elkaphatjuk a click eventet a parenten ha e.stopPropagation()-t használunk, ritka esetben szükség lehet rá
+			Passing handlers as alternative to propagation
+				a parent által leadott onClick-et hívja a child onClick-je e.stopPropagation() után
+				You could add more code to this handler before calling the parent onClick event handler
+				This pattern provides an alternative to propagation
+				It lets the child component handle the event, while also letting the parent component specify some additional behavior
+				you can clearly follow the whole chain of code that executes as a result of some event
+			Preventing default behavior
+				Some browser events have default behavior associated with them. For example, a <form> submit event
+				You can call e.preventDefault()(prevents the default browser behavior for the few events that have it) on the event object to stop this from happening
+				Don’t confuse e.stopPropagation() and e.preventDefault(). They are both useful, but are unrelated
+			Can event handlers have side effects? 
+				Absolutely! Event handlers are the best place for side effects.
+				event handlers don’t need to be pure
+				it’s a great place to change something
+		State: A Component's Memory
+			Components often need to change what’s on the screen as a result of an interaction
+			Components need to “remember” things
+			In React, this kind of component-specific memory is called state
+			usestate -> props, mindig közvetve state változás miatt renderelünk újra
+			When a regular variable isn’t enough
+				Local variables don’t persist between renders
+				Changes to local variables won’t trigger renders
+				To update a component with new data
+					Retain the data between renders
+					Trigger React to render the component with new data (re-rendering)
+				The useState Hook provides those two things
+					A state variable to retain the data between renders
+					A state setter function to update the variable and trigger React to render the component again
+			Adding a state variable
+				[ and ] syntax here is called array destructuring and it lets you read values from an array 
+			useState 
+				you are telling React that you want this component to remember something
+				The convention is to name this pair like const [something, setSomething]. You could name it anything you like, but conventions make things easier to understand across project
+				The only argument to useState is the initial value of your state variable
+				process
+					1) Your component renders the first time -> initial value
+					2) event, effect -> You update the state -> triggers another render
+					3) Your component’s second render -> React still sees useState(0), but because React remembers that you set index to 1, it returns [1, setIndex] instead
+				You can have as many state variables of as many types as you like in one component
+				It is a good idea to have multiple state variables if their state is unrelated
+				if you find that you often change two state variables together, it might be easier to combine them into one
+					eg. if you have a form with many fields, it’s more convenient to have a single state variable that holds an object than state variable per field
+				How does React know which state to return?
+					useState call does not receive any information about which state variable it refers to. There is no “identifier” that is passed to useState
+					Hooks rely on a stable call order on every render of the same component. 
+					This works well in practice because if you follow the rule above (“only call Hooks at the top level”), Hooks will always be called in the same order
+					Internally, React holds an array of state pairs for every component. It also maintains the current pair index, which is set to 0 before rendering. 
+						Each time you call useState, React gives you the next state pair and increments the index
+				State is isolated and private
+					State is local to a component instance on the screen.
+					if you render the same component twice, each copy will have completely isolated state! Changing one of them will not affect the other
+					state is fully private to the component declaring it
+		render and commit
+			1)trigger render
+				1)initial(a root elem amikor indul az app)
+				2)state update
+			2)render(prepare)
+				renderelés alatt azt érti amikor lefutnak a comp. függények
+				React calls your components to figure out what to display on screen. “Rendering” is React calling your components
+				On initial render, React will call the root component
+					React will create the DOM nodes
+				For subsequent renders, React will call the function component whose state update triggered the render
+					React will calculate which of their properties, if any, have changed since the previous render
+				recursive, adott comp alatt minden childet újra renderel  
+				at the end of render, React knows exactly what should be displayed on screen
+				Rendering must always be a pure calculation(pure function)
+					Same inputs, same output. Given the same inputs, a component should always return the same JSX
+					It should not change any objects or variables that existed before rendering
+					it must return the same output if its props, state, and context haven’t changed
+					developing in “Strict Mode”, React calls each component’s function twice, which can help surface mistakes caused by impure functions
+						If re-rendering a component causes a problem or produces some noticeable visual artifact, it’s a bug in your component!
+						This is development-only behavior and does not affect production
+				props, state change -> rerender
+					Object.Is(...) összehasonlítás
+						nem "==", nincs coercion
+						nem "===", egyedüli diffi, itt a NaN = NaN, +0 != -0
+			3)commiting to the DOM(execute)
+				After rendering (calling) your components, React will modify the DOM
+				For the initial render, React will use the appendChild() DOM API to put all the DOM nodes it has created on screen
+				For re-renders, React will apply the minimal necessary operations (calculated while rendering!) to make the DOM match the latest rendering output
+					React only changes the DOM nodes if there’s a difference between renders
+			(4))Browser paint
+				the browser will repaint the screen(browser rendering -  “painting”)
+		State as a Snapshot
+			state behaves more like a snapshot. Setting it does not change the state variable you already have, but instead triggers a re-render
+			Setting state triggers renders
+				user interface as changing directly in response to the user event like a click
+			Rendering takes a snapshot in time 
+				“Rendering” means that React is calling your component, which is a function. The JSX you return from that function is like a snapshot of the UI in time
+				Its props, event handlers, and local variables were all calculated using its state at the time of the render
+				Unlike a photograph or a movie frame, the UI “snapshot” you return is interactive
+				It includes logic like event handlers that specify what happens in response to inputs. React updates the screen to match this snapshot and connects the event handlers
+				When you call useState, React gives you a snapshot of the state for that rende
+				Every render (and functions inside it) will always “see” the snapshot of the state that React gave to that render
+				Variables and event handlers don’t “survive” re-renders. Every render has its own event handlers
+				Event handlers created in the past have the state values from the render in which they were created
+				When React re-renders a component
+					1)React calls your function again.
+					2)Your function returns a new JSX snapshot.
+					3)React then updates the screen to match the snapshot your function returned.
+				As a component’s memory, state is not like a regular variable that disappears after your function returns. State actually “lives” in React itself
+					outside of your function. When React calls your component, it gives you a snapshot of the state for that particular render. 
+					Your component returns a snapshot of the UI with a fresh set of props and event handlers in its JSX, all calculated using the state values from that render!
+				Setting state only changes it for the next render.
+					at setXXX React prepares to change y to z on the next render
+					több hívás ugyanazon a render körben egyszerűen felülírja, az utolsó módosítás érvényesül a következő renderben
+				State over time
+					A state variable’s value never changes within a render, even if its event handler’s code is asynchronous
+						csak a következő renderben kapja meg a beállított értékét
+					React keeps the state values “fixed” within one render’s event handlers
+		Queueing a Series of State Updates
+			Setting a state variable will queue another render. But sometimes you might want to perform multiple operations on the value before queueing the next render
+			how React batches state updates
+			React batches state updates
+				each render’s state values are fixed, so the value of number inside the first render’s event handler is always 0, no matter how many times you call setNumber(1)
+				React waits until all code in the event handlers has run before processing your state updates
+				This lets you update multiple state variables—even from multiple components—without triggering too many re-renders
+				the UI won’t be updated until after your event handler, and any code in it, completes
+				This behavior, also known as batching, makes your React app run much faster
+				React does not batch across multiple intentional events like clicks—each click is handled separately
+					React only does batching when it’s generally safe to do
+			Updating the same state multiple times before the next render(updater function)
+				to update the same state variable multiple times before the next render, instead of passing the next state value like setNumber(number + 1)
+					pass a function that calculates the next state based on the previous one in the queue, like setNumber(n => n + 1). 
+					It is a way to tell React to “do something with the state value” instead of just replacing it
+					(n => n + 1) 3x hívva +3-at eredményez a következő renderkor nem csak +1-et
+				1)React queues this function to be processed after all the other code in the event handler has run.
+				2)During the next render, React goes through the queue and gives you the final updated state.
+				When you call useState during the next render, React goes through the queue. The previous number state was 0, so that’s what React passes to the 
+					first updater function as the n argument. Then React takes the return value of your previous updater function and passes it to the next updater as n
+				setstate mindig queue-be kerül, csak a functionos formulával az előző értékből tudunk számolni
+				During the re-render, React will process the queue
+				Updater functions run during rendering, so updater functions must be pure and only return the result
+				naming conventions
+					It’s common to name the updater function argument by the first letters of the corresponding state variable
+						setEnabled(e => !e);
+						setLastName(ln => ln.reverse());
+						setFriendCount(fc => fc * 2);
+					If you prefer more verbose code
+						setEnabled(enabled => !enabled)
+						setEnabled(prevEnabled => !prevEnabled)
+				recap
+					Setting state does not change the variable in the existing render, but it requests a new render.
+					React processes state updates after event handlers have finished running. This is called batching.
+					To update some state multiple times in one event, you can use setNumber(n => n + 1) updater function	
+		Updating Objects in State
+			State can hold any kind of JavaScript value, including objects. But you shouldn’t change objects that you hold in the React state directly. 
+			Instead, when you want to update an object, you need to create a new one (or make a copy of an existing one), and then set the state to use that copy
+			What’s a mutation?
+				numbers, strings, and booleans. These kinds of JavaScript values are “immutable”, meaning unchangeable or “read-only”
+				It’s not possible to make any changes to the built-in primitive values like numbers, strings, and booleans in JavaScript
+				Technically, it is possible to change the contents of the object itself. This is called a mutation
+				objects in React state are technically mutable, you should treat them as if they were immutable, instead of mutating them, you should always replace them
+			Treat state as read-only
+				treat any JavaScript object that you put into state as read-only
+				create a new object and pass it to the state setting function
+				Local mutation is fine
+					code like this is absolutely fine because you’re mutating a fresh object you have just created(no other code references it yet)
+						const nextPosition = {};
+						nextPosition.x = e.clientX;
+						nextPosition.y = e.clientY;
+				Mutation is only a problem when you change existing objects that are already in state
+				You can even do local mutation while rendering. Very convenient and completely okay!
+			Copying objects with the spread syntax 
+				often, you will want to include existing data as a part of the new object you’re creating
+				you may want to update only one field in a form, but keep the previous values for all other fields.
+				you want to also copy the existing data into it because only one of the fields has changed
+				... object spread syntax so that you don’t need to copy every property separately
+				the ... spread syntax is “shallow”—it only copies things one level deep
+				it fast, but it also means that if you want to update a nested property, you’ll have to use it more than once
+				[ and ] braces inside your object definition to specify a property with dynamic name
+			Updating a nested object 
+				setPerson({
+					...person, // Copy other fields
+					artwork: { // but replace the artwork
+						...person.artwork, // with the same one
+						city: 'New Delhi' // but in New Delhi!
+					}
+					});
+			Write concise update logic with Immer
+				nem kell nested spread a state módosításhoz, ez a tool egy sorosan megoldja, látszólag mutálva az objectet
+				If your state is deeply nested, you might want to consider flattening it
+				But, if you don’t want to change your state structure, you might prefer a shortcut to nested spreads
+				Immer is a popular library that lets you write using the convenient but mutating syntax and takes care of producing the copies for you
+				You can mix and match useState and useImmer in a single component as much as you like
+				Immer is a great way to keep the update handlers concise, especially if there’s nesting in your state
+			Why is mutating state not recommended in React? 
+				Debugging: If you use console.log and don’t mutate state, you can clearly see how state has changed between renders
+				Optimizations: Common React optimization strategies rely on skipping work if previous props or state are the same as the next ones(usememo). If you never mutate state, it is very fast to check whether there were any changes
+				Simpler Implementation: Because React does not rely on mutation, it does not need to do anything special with your objects
+			Instead of mutating an object, create a new version of it, and trigger a re-render by setting state to it
+			To update a nested object, you need to create copies all the way up from the place you’re updating
+				To reduce repetitive copying code, use Immer
+		Updating Arrays in State
+			Arrays are mutable in JavaScript, but you should treat them as immutable when you store them in state. 
+			Just like with objects, when you want to update an array stored in state, you need to create a new one (or make a copy of an existing one), and then set state to use the new array
+			Updating arrays without mutation
+				you should treat arrays in React state as read-only. This means that you shouldn’t reassign items inside an array like arr[0] = 'bird', and you also shouldn’t use methods that mutate the array, such as push() and pop()
+				you’ll want to pass a new array to your state setting function
+				from the original array in your state by calling its non-mutating methods like filter() and map()
+					avoid (mutates the array)
+						adding - push, unshift, removing - pop, shift, splice, replacing - splice, arr[i] = ... assignment, sorting - reverse, sort
+					prefer (returns a new array)
+						adding - concat, [...arr] spread syntax, removing - filter, slice, replacing - map, sorting - copy the array first
+					Alternatively, you can use Immer
+					Unfortunately, slice and splice are named similarly but are very different
+						slice lets you copy an array or a part of it, splice mutates the array (to insert or delete items)
+			Adding to an array
+				create a new array which contains the existing items and a new item at the end,  use the ... array spread syntax
+				The array spread syntax also lets you prepend an item by placing it before the original array
+			Removing from an array 
+				to remove an item from an array is to filter it out, arr.filter(...)
+			Transforming an array 
+				to change some or all items of the array, you can use map() to create a new array
+			Replacing items in an array
+				to replace one or more items in an array. Assignments like arr[0] = 'bird' are mutating the original array, so instead you’ll want to use map for this as well
+				map index inputtal, ha map i === index(event input), replace value logic, else return d
+			Inserting into an array
+				want to insert an item at a particular position that’s neither at the beginning nor at the end. To do this, you can use the ... array spread syntax together with the slice() method
+				The slice() method lets you cut a “slice” of the array. To insert an item, you will create an array that spreads the slice before the insertion point, then the new item, and then the rest of the original array
+					const insertAt = 1; // Could be any index
+					const nextArtists = [
+					// Items before the insertion point:
+					...artists.slice(0, insertAt),
+					// New item:
+					{ id: nextId++, name: name },
+					// Items after the insertion point:
+					...artists.slice(insertAt)
+					];
+			Making other changes to an array
+				There are some things you can’t do with the spread syntax and non-mutating methods like map() and filter() alone
+				For example, you may want to reverse or sort an array, reverse() and sort() methods are mutating the original array
+				However, you can copy the array first, and then make changes to it.
+					const nextList = [...list];
+					nextList.reverse();
+				even if you copy an array, you can’t mutate existing items inside of it directly. This is because copying is shallow—the new array will contain the same items as the original one. So if you modify an object inside the copied array, you are mutating the existing state
+			Updating objects inside arrays
+				When updating nested state, you need to create copies from the point where you want to update, and all the way up to the top level
+				You can use map to substitute an old item with its updated version without mutation
+				myList.map(artwork => {
+					if (artwork.id === artworkId) {
+						// Create a *new* object with changes
+						return { ...artwork, seen: nextSeen };
+					} else {
+						// No changes
+						return artwork;
+					}
+					})
+				In general, you should only mutate objects that you have just created
+				if you’re dealing with something that’s already in state, you need to make a copy
+			Write concise update logic with Immer
+				Updating nested arrays without mutation can get a little bit repetitive. Just as with objects
+				you shouldn’t need to update state more than a couple of levels deep. If your state objects are very deep, you might want to restructure them differently so that they are flat
+				If you don’t want to change your state structure, you might prefer to use Immer, which lets you write using the convenient but mutating syntax and takes care of producing the copies for you
+				you’re not mutating the original state, but you’re mutating a special draft object provided by Immer
+				you can apply mutating methods like push() and pop() to the content of the draft
+				Immer always constructs the next state from scratch according to the changes that you’ve done to the draft
+	Managing state
+		Reacting to Input with State
+			you describe the different states that your component can be in, and switch between them in response to the user input
+			How declarative UI compares to imperative
+				imperative programming - You have to write the exact instructions to manipulate the UI depending on what just happened
+					imagine riding next to someone in a car and telling them turn by turn where to go
+					They don’t know where you want to go, they just follow your commands. (And if you get the directions wrong, you end up in the wrong place!)
+					It’s called imperative because you have to “command” each element
+					works well enough for isolated examples, but it gets exponentially more difficult to manage in more complex systems
+					Adding a new UI element or a new interaction would require carefully checking all existing code to make sure you haven’t introduced a bug
+			declarative programming - describing the UI for each visual state rather than micromanaging the UI (imperative).
+				you don’t directly manipulate the UI
+				you declare what you want to show, and React figures out how to update the UI
+				getting into a taxi and telling the driver where you want to go instead of telling them exactly where to turn
+				It’s the driver’s job to get you there, and they might even know some shortcuts you haven’t considered!
+			Thinking about UI declaratively
+				1)Identify your component’s different visual states
+					to visualize all the different “states” of the UI the user might see
+					you’ll want to “mock up” or create “mocks” for the different states before you add logic
+					Mocking lets you quickly iterate on the UI before you wire up any logic
+					minimális logika input propokkal, csak hogy láthassam a kül. UI állapotokat
+					mutatni lehet a kül állapotokat, kül inputok esetén
+						Pages like this are often called “living styleguides” or “storybooks”.
+				2)Determine what triggers those state changes
+					You can trigger state updates in response to two kinds of inputs
+						Human inputs, like clicking a button, typing in a field, navigating a link.
+						Computer inputs, like a network response arriving, a timeout completing, an image loading.
+					you must set state variables to update the UI
+					human inputs often require event handlers!
+				3)Represent the state in memory using useState
+					Simplicity is key: each piece of state is a “moving piece”, and you want as few “moving pieces” as possible. More complexity leads to more bugs!
+					Start with the state that absolutely must be there
+					There’s usually more than a single way to represent that in memory
+					start by adding enough state that you’re definitely sure that all the possible visual states are covered
+				4)Remove any non-essential state variables
+					avoid duplication in the state content so you’re only tracking what is essential. Spending a little time on refactoring your state structure will make your components easier to understand, reduce duplication, and avoid unintended meanings
+					prevent the cases where the state in memory doesn’t represent any valid UI that you’d want a user to see
+					essential states: you can’t remove any of them without breaking the functionality
+					some questions about state variables(to find essential state variables)
+						Does this state cause a paradox?
+							A paradox usually means that the state is not constrained enough
+							eg. isTyping and isSubmitting can’t both be true
+						Is the same information available in another state variable already?
+							isEmpty and isTyping can’t be true at the same time. By making them separate state variables, you risk them going out of sync and causing bugs
+						Can you get the same information from the inverse of another state variable?
+							isError is not needed because you can check error !== null instead
+					Eliminating “impossible” states with a reducer
+						there are still some intermediate states that don’t fully make sense
+						eg. a non-null error doesn’t make sense when status is 'success'
+						To model the state more precisely, you can extract it into a reducer. 
+						Reducers let you unify multiple state variables into a single object and consolidate all the related logic!
+				5)Connect the event handlers to set the state
+					create event handlers that update the state
+					descriptive code is longer than the original imperative example, it is much less fragile
+					Expressing all interactions as state changes lets you later introduce new visual states without breaking existing ones
+					It also lets you change what should be displayed in each state without changing the logic of the interaction itself
+		Choosing the State Structure
+			Structuring state well can make a difference between a component that is pleasant to modify and debug, and one that is a constant source of bugs
+			Principles for structuring state 
+				1)Group related state. If you always update two or more state variables at the same time, consider merging them into a single state variable.
+					if some two state variables always change together, it might be a good idea to unify them into a single state variable
+						you won’t forget to always keep them in sync
+					group data into an object or an array when you don’t know how many pieces of state you’ll need
+						eg. a form where the user can add custom fields
+						If your state variable is an object, remember that you can’t update only one field in it without explicitly copying the other fields
+				2)Avoid contradictions in state. When the state is structured in a way that several pieces of state may contradict and “disagree” with each other, you leave room for mistakes
+					it leaves the door open for “impossible” states
+					Since isSending and isSent should never be true at the same time, it is better to replace them with one status state variable that may take one of three valid states: 'typing' (initial), 'sending', and 'sent'
+					You can still declare some constants for readability, const isSending = status === 'sending';, const isSent = status === 'sent';
+						But they’re not state variables, so you don’t need to worry about them getting out of sync with each other.
+				3)Avoid redundant state. If you can calculate some information from the component’s props or its existing state variables during rendering, you should not put that information into that component’s state.
+					If you can calculate some information from the component’s props or its existing state variables during rendering, you should not put that information into that component’s state
+					eg. form has three state variables: firstName, lastName, and fullName. However, fullName is redundant.
+						You can always calculate fullName from firstName and lastName during render, so remove it from state.
+					Don’t mirror props in state
+						if the parent component passes a different value of messageColor later (for example, 'red' instead of 'blue'), the color state variable would not be updated! 
+							The state is only initialized during the first render
+						This is why “mirroring” some prop in a state variable can lead to confusion.
+						Instead, use the messageColor prop directly in your code. 
+						If you want to give it a shorter name, use a constant
+							function Message({ messageColor }) {
+								const color = messageColor;...
+							This way it won’t get out of sync with the prop passed from the parent component
+						“Mirroring” props into state only makes sense when you want to ignore all updates for a specific prop.
+						By convention, start the prop name with initial or default to clarify that its new values are ignored
+							const [color, setColor] = useState(initialColor);
+				4)Avoid duplication in state. When the same data is duplicated between multiple state variables, or within nested objects, it is difficult to keep them in sync
+					it stores the selected item as an object in the selectedItem state variable, the contents of the selectedItem is the same object as one of the items inside the items list
+						the information about the item itself is duplicated in two places
+						elfelejtjük pl az egyik state-t updatelni
+						helyette egy id-t vagy arr. index-et tároljunk stateben, itemet render alatt find-oljuk	
+					For UI patterns like selection, keep ID or index in state instead of the object itself
+				5)Avoid deeply nested state. Deeply hierarchical state is not very convenient to update. When possible, prefer to structure state in a flat way.
+					Updating nested state involves making copies of objects all the way up from the part that changed. 
+					Deleting a deeply nested place would involve copying its entire parent place chain
+					If the state is too nested to update easily, consider making it “flat”
+					data restructuring might remind you of seeing a database table
+					Now that the state is “flat” (also known as “normalized”), updating nested items becomes easier
+					You can nest state as much as you like, but making it “flat” can solve numerous problems. 
+					It makes state easier to update, and it helps ensure you don’t have duplication in different parts of a nested object
+					Sometimes, you can also reduce state nesting by moving some of the nested state into the child components
+			The goal behind these principles is to make state easy to update without introducing mistakes.
+				“Make your state as simple as it can be—but no simpler.” - Albert Einstein
+			Removing redundant and duplicate data from state helps ensure that all its pieces stay in sync
+		Sharing State Between Components
+			lifting state up
+				Sometimes, you want the state of two components to always change together. To do it, remove state from both of them, move it to their closest common parent, and then pass it down to them via props
+				parent controls children, parent is "single source of truth"
+				Add state to the common parent and pass it down together with the event handlers
+			Controlled and uncontrolled components 
+				a component with some local state “uncontrolled”, its parent cannot influence
+					Uncontrolled components are easier to use within their parents because they require less configuration
+					But they’re less flexible when you want to coordinate them together
+				a component is “controlled” when the important information in it is driven by props rather than its own local state
+					This lets the parent component fully specify its behavior
+				In practice, “controlled” and “uncontrolled” aren’t strict technical terms—each component usually has some mix of both local state and props
+				When writing a component, consider which information in it should be controlled (via props), and which information should be uncontrolled (via state)
+			A single source of truth for each state
+				For each unique piece of state, you will choose the component that “owns” it.(single source of truth)
+				each piece of state, there is a specific component that holds that piece of information. Instead of duplicating shared state between components, lift it up to their common shared parent, and pass it down to the children that need it
+		Preserving and Resetting State
+			State is isolated between components. React keeps track of which state belongs to which component based on their place in the UI tree. 
+			You can control when to preserve state and when to reset it between re-renders
+			React keeps state for as long as the same component is rendered at the same position.
+			State is not kept in JSX tags. It’s associated with the tree position in which you put that JSX.
+			You can force a subtree to reset its state by giving it a different key
+			The UI tree 
+				The DOM represents HTML elements, the CSSOM does the same for CSS. There’s even an Accessibility tree!
+				React also uses tree structures to manage and model the UI you make. React makes UI trees from your JSX. 
+				Then React DOM updates the browser DOM elements to match that UI tree. 
+				React Native translates these trees into elements specific to mobile platforms.
+				components -> React UI tree -> React DOM -> render browser DOM
+				State is tied to a position in the tree
+					When you give a component state, you might think the state “lives” inside the component. 
+					But the state is actually held inside React. React associates each piece of state it’s holding with the correct component by where that component sits in the UI tree
+					You don’t usually have to think about these positions to use React, but it can be useful to understand how it works
+					React will keep the state around for as long as you render the same component at the same position
+					when React removes a component, it destroys its state
+					React preserves a component’s state for as long as it’s being rendered at its position in the UI tree
+				Same component at the same position preserves state 
+					it’s the position in the UI tree—not in the JSX markup—that matters to React!
+					React doesn’t know where you place the conditions in your function. All it “sees” is the tree you return
+					In both cases, the App component returns a <div> with <Counter /> as a first child. To React, these two counters have the same “address”: the first child of the first child of the root. 
+						This is how React matches them up between the previous and next renders, regardless of how you structure your logic
+				Different components at the same position reset state
+					when you render a different component in the same position, it resets the state of its entire subtree
+					As a rule of thumb, if you want to preserve the state between re-renders, the structure of your tree needs to “match up” from one render to another. 
+					If the structure is different, the state gets destroyed because React destroys state when it removes a component from the tree
+					This is why you should not nest component function definitions
+						This is because a different NestedComp function is created for every render of MyComponent, You’re rendering a different component in the same position, so React resets all state below
+					always declare component functions at the top level, and don’t nest their definitions
+				Resetting state at the same position
+					By default, React preserves state of a component while it stays at the same position. Usually, this is exactly what you want
+					sometimes, you may want to reset a component’s state
+					ugyanaz a component ugyanabban a poziban alapból nincs megkülönböztetve, ugyanazt a state-t rendeli hozzá
+						{isPlayerA ? (<Counter person="Taylor" />
+							) : (
+								<Counter person="Sarah" />
+							)}
+					There are two ways to reset state when switching between them
+						Render components in different positions
+							a JSX-ben egymás alá teszem külön conditional mind2-höz
+						Give each component an explicit identity with key
+							more generic, way to reset a component’s state
+							Keys aren’t just for lists! You can use keys to make React distinguish between any components. 
+							By default, React uses order within the parent (“first counter”, “second counter”) to discern between components. 
+							But keys let you tell React that this is not just a first counter, or a second counter, but a specific counter
+							Specifying a key tells React to use the key itself as part of the position, instead of their order within the parent. 
+							This is why, even though you render them in the same place in JSX, React sees them as two different counters, and so they will never share state. 
+							Every time a counter appears on the screen, its state is created. Every time it is removed, its state is destroyed. Toggling between them resets their state over and over.	
+							Remember that keys are not globally unique. They only specify the position within the parent
+						Resetting a form with a key
+							Resetting state with a key is particularly useful when dealing with forms.
+						Preserving state for removed components 
+							to keep the state “alive” for a component that’s no longer visible
+								You could render all comps instead of just the current one, but hide all the others with CSS, the elements not get removed from the tree, so their local state would be preserved
+									it can get very slow if the hidden trees are large and contain a lot of DOM nodes
+								You could lift the state up, This way, when the child components get removed, it doesn’t matter, because it’s the parent that keeps the important information. This is the most common solution
+								You might also use a different source in addition to React state, eg. by reading from the localStorage
+		Extracting State Logic into a Reducer
+			Components with many state updates spread across many event handlers can get overwhelming. 
+			For these cases, you can consolidate all the state update logic outside your component in a single function, called a reducer
+			Consolidate state logic with a reducer 
+				As your components grow in complexity, it can get harder to see at a glance all the different ways in which a component’s state gets updated
+				To reduce this complexity and keep all your logic in one easy-to-access place, you can move that state logic into a single function outside your component, called a “reducer”.
+				reducers can “reduce” the amount of code inside your component, they are actually named after the reduce() operation that you can perform on arrays
+					The function you pass to reduce is known as a “reducer”. It takes the result so far and the current item, then it returns the next result
+				React reducers take the state so far and the action, and return the next state. In this way, they accumulate actions over time into state
+				egy adott state-t egy adott reducerre cserélek
+				Reducers are a different way to handle state. You can migrate from useState to useReducer in three steps
+					1)Move from setting state to dispatching actions.
+						Managing state with reducers is slightly different from directly setting state. 
+						Instead of telling React “what to do” by setting state, you specify “what the user just did” by dispatching “actions” from your event handlers. (The state update logic will live elsewhere!)
+						The object you pass to dispatch is called an “action”
+						eventből dispatch(actionObj), actionObj = {type: 'eventType', ...data...}
+						It is a regular JavaScript object. You decide what to put in it, but generally it should contain the minimal information about what happened
+						An action object can have any shape
+						By convention, it is common to give it a string type that describes what happened, and pass any additional information in other fields. The type is specific to a component
+					2)Write a reducer function.
+						A reducer function is where you will put your state logic. It takes two arguments, the current state and the action object, and it returns the next state
+						function yourReducer(state, action) { // return next state for React to set }
+							it’s a convention to use switch statements inside reducers
+								We recommend wrapping each case block into the { and } curly braces so that variables declared inside of different cases don’t clash with each other. 
+								Also, a case should usually end with a return. If you forget to return, the code will “fall through” to the next case, which can lead to mistakes
+							de lehet if action.type === 'xxx' ... else if ... else
+						React will set the state to what you return from the reducer
+						you can declare it outside of your component	
+					3)Use the reducer from your component
+						import { useReducer } from 'react';
+						Then you can replace useState
+							const [tasks, setTasks] = useState(initialTasks);
+							to
+							const [tasks, dispatch] = useReducer(tasksReducer, initialTasks);
+							const [state, dispatch] = useReducer(reducerFunc, initialState);
+						The useReducer Hook is similar to useState—you must pass it an initial state and it returns a stateful value and a way to set state (in this case, the dispatch function). But it’s a little different
+				Component logic can be easier to read when you separate concerns like this. 
+				Now the event handlers only specify what happened by dispatching actions, and the reducer function determines how the state updates in response to them
+				You can always convert between useState and useReducer back and forth: they are equivalent!
+				Comparing useState and useReducer 
+					Code size
+						Generally, with useState you have to write less code upfront, However, useReducer can help cut down on the code if many event handlers modify state in a similar way
+					Readability
+						useState is very easy to read when the state updates are simple, When they get more complex, they can bloat your component’s code and make it difficult to scan. 
+						In this case, useReducer lets you cleanly separate the how of update logic from the what happened of event handlers
+					Debugging
+						When you have a bug with useState, it can be difficult to tell where the state was set incorrectly, and why 
+						With useReducer, you can add a console log into your reducer to see every state update, and why it happened (due to which action). 
+						If each action is correct, you’ll know that the mistake is in the reducer logic itself
+					Testing
+						A reducer is a pure function that doesn’t depend on your component. 
+						This means that you can export and test it separately in isolation. 
+						While generally it’s best to test components in a more realistic environment, for complex state update logic it can be useful to assert that your reducer returns a particular state for a particular initial state and action
+				We recommend using a reducer if you often encounter bugs due to incorrect state updates in some component, and want to introduce more structure to its code.
+				You don’t have to use reducers for everything: feel free to mix and match! You can even useState and useReducer in the same component.
+				Writing reducers well
+					1)Reducers must be pure. 
+						Similar to state updater functions, reducers run during rendering! (Actions are queued until the next render.) 
+						This means that reducers must be pure—same inputs always result in the same output. They should not send requests, schedule timeouts, or perform any side effects (operations that impact things outside the component). 
+						They should update objects and arrays without mutation
+					2)Each action describes a single user interaction, even if that leads to multiple changes in the data
+				Writing concise reducers with Immer - you can use the Immer library to make reducers more concise
+		Passing Data Deeply with Context
+			Usually, you will pass information from a parent component to a child component via props. But passing props can become verbose and inconvenient if you have to pass them through many components in the middle, or if many components in your app need the same information
+			Context lets the parent component make some information available to any component in the tree below it—no matter how deep—without passing it explicitly through props
+			The problem with passing props 
+				The nearest common ancestor could be far removed from the components that need data, and lifting state up that high can lead to a situation called “prop drilling”
+			Context: an alternative to passing props
+				Context lets a parent component provide data to the entire tree below it
+				1)Create a context
+					import { createContext } from 'react';
+					export const LevelContext = createContext(1);
+					The only argument to createContext is the default value
+				2)Use that context from the component that needs the data
+					import { useContext } from 'react';
+					import { LevelContext } from './LevelContext.js';
+					const level = useContext(LevelContext);
+					If you don’t provide the context, React will use the default value you’ve specified in the previous step
+				3)Provide that context from the component that specifies the data
+					<ContextNameContext.Provider value=..., tetszőleges ilyen szekció is lehet eltérő értékekkel
+						a legközelebbi .Provider értéket veszi ki az adott componens
+			Context lets you write components that “adapt to their surroundings” and display themselves differently depending on where (or, in other words, in which context) they are being rendered
+			Similarly, different React contexts don’t override each other. Each context that you make with createContext() is completely separate from other ones, and ties together components using and providing that particular context
+			Before you use context 
+				Context is very tempting to use! However, this also means it’s too easy to overuse it. 
+				Just because you need to pass some props several levels deep doesn’t mean you should put that information into context
+				1)Start by passing props. If your components are not trivial, it’s not unusual to pass a dozen props down through a dozen components. It may feel like a slog, but it makes it very clear which components use which data!
+				2)Extract components and pass JSX as children to them. If you pass some data through many layers of intermediate components that don’t use that data (and only pass it further down), this often means that you forgot to extract some components along the way
+				If neither of these approaches works well for you, consider context
+			Use cases for context 
+				Theming, Current account - logged in user, routing
+				Managing state - As your app grows, you might end up with a lot of state closer to the top of your app. Many distant components below may want to change it. It is common to use a reducer together with context to manage complex state and pass it down to distant components
+			If you pass a different value on the next render, React will update all the components reading it below! This is why context is often used in combination with state
+			In general, if some information is needed by distant components in different parts of the tree, it’s a good indication that context will help you
+			lehet createContext(null) kezdőérték, majd a Provider ad neki értéket
+		Scaling Up with Reducer and Context
+			Reducers let you consolidate a component’s state update logic. Context lets you pass information deep down to other components. You can combine reducers and context together to manage state of a complex screen
+			You can combine reducer with context to let any component read and update state above it
+			Combining a reducer with context 
+				A reducer helps keep the event handlers short and concise
+				as your app grows, you might want to put both the state and dispatch function into context
+				a state-t, dispatch-t külön contextben adta meg a példa
+				The state still “lives” in the top-level TaskApp component, managed with useReducer.
+			Moving all wiring into a single file 
+				declutter the components by moving both reducer and context into a single file
+				1)It will manage the state with a reducer
+				2)It will provide both contexts to components below
+				3)It will take children as a prop so you can pass JSX to it
+				You can also export functions that use the context
+					context file
+					export function useTasks() {
+						return useContext(TasksContext);
+					}
+					ahol importálom
+					const tasks = useTasks(); // custom hooks
+				Now all of the context and reducer wiring is in context file
+				This keeps the components clean and uncluttered, focused on what they display rather than where they get the data
+			As your app grows, you may have many context-reducer pairs like this. This is a powerful way to scale your app and lift state up without too much work
+	escape hatches 
+		need to “step outside React” and when there is no better built-in solution
+		components may need to control and synchronize with systems outside of React
+		Most of your application logic and data flow should not rely on these features
+		Referencing values with refs
+			When you want a component to “remember” some information, but you don’t want that information to trigger new renders, you can use a ref
+			Like state, refs are retained by React between re-renders
+			setting state re-renders a component, changing a ref does not!
+			A ref is like a secret pocket of your component that React doesn’t track
+			you can use refs to store timeout IDs, DOM elements, and other objects that don’t impact the component’s rendering output
+		Manipulating the DOM with refs 
+			React automatically updates the DOM to match your render output, so your components won’t often need to manipulate it
+			sometimes you might need access to the DOM elements managed by React
+			if there is no built-in way to do those things in React, so you will need a ref to the DOM node, eg. to focus a node, scroll to it, or measure its size and position, etc.
+		Synchronizing with Effects 
+			Some components need to synchronize with external systems
+			you might want to control a non-React component based on the React state
+			effects let you run some code after rendering
+			Many Effects also “clean up” after themselves
+		You Might Not Need an Effect
+			The fewer raw useEffect calls you have in your components, the easier you will find to maintain your application
+			Effects are an escape hatch from the React paradigm
+			They let you “step outside” of React and synchronize your components with some external system like a non-React widget, network, or the browser DOM
+			Removing unnecessary Effects will make your code easier to follow
+			You do need Effects to synchronize React state with external systems
+			1) You don’t need Effects to transform data for rendering
+				effects runs after render commit, If your Effect also immediately updates the state, this restarts the whole process from scratch! 
+				To avoid the unnecessary render passes, transform all the data at the top level of your components
+				That code will automatically re-run whenever your props or state change
+			2) You don’t need Effects to handle user events
+				usually handle user events in the corresponding event handlers
+			bad practises
+				Updating state based on props or state
+					if you can calculate something during render, you don’t need an Effect
+					ne effect depek legyenek a statek ha egy másik state-t számol ezekből
+						szükségtelen re-render
+					renderkor(comp. body) számoljunk(pure func legyen!)
+						When something can be calculated from the existing props or state, don’t put it in state. Instead, calculate it during rendering
+						gyorsabb, cleanebb, hibamentesebb kód
+				Caching expensive calculations
+					To cache expensive calculations, add useMemo instead of useEffect
+					ne effectben futtassunk filterezést(renderben), ne tároljuk a filter resultot külön state-ben, ha expensive calculation, usememo-t használni depekkel
+					expensive calculation
+						unless you’re creating or looping over thousands of objects, it’s probably not expensive
+						measure time
+							console.time('filter array');
+							const visibleTodos = getFilteredTodos(todos, filter);
+							console.timeEnd('filter array');
+						If the overall logged time adds up to a significant amount (say, 1ms or more), it might make sense to memoize that calculation
+						Chrome offers a CPU Throttling option, lassabb eszközök szimulációja
+						test it on production mode(without React Strict mode)
+				Resetting all state when a prop changes
+					To reset the state of an entire component tree, pass a different key to it.
+					kb mint fentebb
+					key={userId}-vel a komponenst egyedivé tehetjük, ha a key változik a komponents megszűnik
+						Normally, React preserves the state when the same component is rendered in the same spot
+				Adjusting some state when a prop changes
+					To reset a particular bit of state in response to a prop change, set it during rendering
+					Storing information from previous renders like this can be hard to understand, but it’s better than updating the same state in an Effect
+					When you update a component during rendering, React throws away the returned JSX and immediately retries rendering
+					To avoid very slow cascading retries, React only lets you update the same component’s state during a render
+					Although this pattern is more efficient than an Effect, most components shouldn’t need it either
+					adjusting state based on props or other state makes your data flow more difficult to understand and debug. 
+					Always check whether you can reset all state with a key or calculate everything during rendering instead
+				Sharing logic between event handlers
+					Code that runs because a component was displayed should be in Effects, the rest should be in events
+					If you need to update the state of several components, it’s better to do it during a single event
+					When you’re not sure whether some code should be in an Effect or in an event handler, ask yourself why this code needs to run. Use Effects only for code that should run because the component was displayed to the user
+						effect akkor kell pl. ha egy component mountol
+					függvénybe tegyük a közös logikát ne effectbe 
+				Sending a POST request
+					csak akkor effectben ha a comp mountkor kell az action, egyéb esetben az event handlerben
+					what kind of logic it is from the user’s perspective. If this logic is caused by a particular interaction, keep it in the event handler. If it’s caused by the user seeing the component on the screen, keep it in the Effect
+				Chains of computations
+					to chain Effects that each adjust a piece of state based on other state
+					very inefficient, not clean, rigid, fragile code
+					it’s better to calculate what you can during rendering, and adjust the state in the event handler, This is a lot more efficient
+					If you need to reuse logic between several event handlers, you can extract a function
+					inside event handlers, state behaves like a snapshot
+						az előző state-t látjuk hiába állítunk újat, számoljuk ki egy const változóba az eventben a kövi értéket
+					amikor a kövi state az előző értékétől függ, pld egy dropdown kiválasztástól függ a következő értéke, then chain of Effects is appropriate because you are synchronizing with network
+				Initializing the application 
+					Some logic should only run once when the app loads
+					In general, your components should be resilient to being remounted(React Strict mode tests that)
+					If some logic must run once per app load rather than once per component mount, add a top-level variable to track whether it has already executed
+						didInit compon kívülre, majd compon behúzni true-ra
+					Keep app-wide initialization logic to root component modules like App.js or in your application’s entry point
+				Notifying parent components about state changes 
+					Whenever you try to synchronize state variables in different components, consider lifting state up
+					az eventbe updateljük mind a child, parent statejét is, useeffect nem kell külön 
+					React batches updates from different components together, so there will only be one render pass
+					2 state kezelése helyett csak a parent is tartalmazhatja a state-t “Lifting state up”
+				Passing data to the parent
+					In React, data flows from the parent components to their children
+					When child components update the state of their parent components in Effects, the data flow becomes very difficult to trace
+					Since both the child and the parent need the same data, let the parent component fetch that data, and pass it down to the child instead
+					This is simpler and keeps the data flow predictable
+				Subscribing to an external store 
+					Sometimes, your components may need to subscribe to some data outside of the React state
+					This data could be from a third-party library or a built-in browser API. Since this data can change without React’s knowledge, you need to manually subscribe your components to it.
+						This is often done with an Effect
+					React has a purpose-built Hook for subscribing to an external store that is preferred instead. useSyncExternalStore
+						This approach is less error-prone than manually syncing mutable data to React state with an Effect
+				Fetching data
+					race condition: sok parallel fetch közel egyidőben, nem tudhatjuk milyen sorrendben érkeznek a resultok vissza
+						two different requests “raced” against each other and came in a different order than you expecte
+					To fix the race condition, you need to add a cleanup function to ignore stale responses
+					ignore=false az effect elejére, ha !ignore, setResults, cleanupban ignore=true
+					This ensures that when your Effect fetches data, all responses except the last requested one will be ignored
+					data fetching difficulties
+						caching responses,  how to fetch data on the server, how to avoid network waterfalls(a child can fetch data without waiting for every parent)
+					modern frameworks provide more efficient built-in data fetching mechanisms than fetching data in Effects
+					If you don’t use a framework ->  extracting your fetching logic into a custom Hook
+					a leghatékonyabb a fw. használata
+		Lifecycle of reactive effects
+			Effects have a different lifecycle from components. 
+			Components may mount, update, or unmount
+			An Effect can only do two things: to start synchronizing something, and later to stop synchronizing it. 
+			This cycle can happen multiple times(re-sync) if your Effect depends on props and state that change over time
+		Separating events from Effects
+			Event handlers only re-run when you perform the same interaction again. 
+			Unlike event handlers, Effects re-synchronize if any of the values they read, like props or state, are different than during last render. 
+			Sometimes, you want a mix of both behaviors: an Effect that re-runs in response to some values but not others
+			useEffectEvent
+				Code inside Effect Events isn’t reactive
+		Removing Effect dependencies
+			When you write an Effect, the linter will verify that you’ve included every reactive value (like props and state) that the Effect reads in the list of your Effect’s dependencies. 
+			This ensures that your Effect remains synchronized with the latest props and state of your component. 
+			Unnecessary dependencies may cause your Effect to run too often, or even create an infinite loop.
+			move the creation of variables into effect which should not re-run that effect
+			To change the dependency list, change the code
+		Reusing Logic with Custom Hooks(between comps.)
+			hookokat a komponens, custom hook elején tudunk hívni
+				conditionalban nem lehet hookot hívni
+			A piece of state
+			useeffect initkor pld.. egy state beáll
+			ugyanaz mint egy comp de jsx helyett belső state-t ad vissza
+				ugyanúgy meghívódik mint a comp és ugyanúgy él benne a state
+			React applications are built from components. Components are built from Hooks, whether built-in or custom
+				use custom Hooks created by others, but occasionally you might write one yourself
+			Only Hooks and components can call other Hooks
+			you should give use prefix to a function (and thus make it a Hook) if it uses at least one Hook inside of it
+				de nem kötelező hookot tartalmaznia egy custom hooknak, de az a normális use case
+			state-el használatát megkövetelő közös logikát írjunk hookban, ne state-t shareljünk a comp.-ok között
+			többször is hívható ugyanaz a hook, ilyenkor "több instance" fog létezni, külön statekkel, pld. egy form input/hook
+			code inside your custom Hooks will re-run during every re-render of your component
+				custom Hooks need to be pure
+				Think of custom Hooks’ code as part of your component’s body
+				they always receive the latest props and state
+			inputokat state-et, propokat is kaphat és a belső hookja is újrafuthat ennek megfelelően
+	APIs
+		memo
+			lets you skip re-rendering a component when its props are unchanged
+			React normally re-renders a component whenever its parent re-renders
+			With memo, you can create a component that React will not re-render when its parent re-renders so long as its new props are the same as the old props
+			By using memo, you are telling React that your component complies with pure rendering concept, so React doesn’t need to re-render as long as its props haven’t changed
+			Even with memo, your component will re-render if its own state changes or if a context that it’s using changes
+			Optimizing with memo  is only valuable when your component re-renders often with the same exact props, and its re-rendering logic is expensive
+				If there is no perceptible lag when your component re-renders, memo is unnecessary
+				memo is completely useless if the props passed to your component are always different
+			a single value that’s “always new” is enough to break memoization for an entire component
+			You should only rely on memo as a performance optimization.
+				alapból nem kell használni, csak ahol sok re-render van, pld. egy painting editor, de egy átlagos sitenál nem kell
+	hooks
+		general
+			Hooks are special functions that are only available while React is rendering
+			can only be called at the top level of your components or your own Hooks. You can’t call Hooks inside conditions, loops, or other nested functions
+			unconditional declarations about your component’s needs. You “use” React features at the top of your component similar to how you “import” modules at the top of your file
+		usememo
+			cache the result of a calculation between re-renders
+			csak akkor számolja újra a megadott func-ot re-render-kor ha a megadott depek változnak
+			renderkor fut, így pure function calculationokre alkalmas
+		useCallback
+			cache a function definition between re-renders
+			React will return (not call!) your function back to you during the initial render
+			a cachelt fgv-ben hivatkozott külső változók változásainál cahcelünk újra, ezek a depek, ilyenkor a friss, változott variable értékekkel tud futni a fgv.
+				pld. child compoknek átpasszolva cahce-elt fgv-t, kevesebb re-render
+		useRef
+			reference a value that’s not needed for rendering
+			Initially, it’s set to the initialValue you have passed
+			On the next renders, useRef will return the same object
+			pass the ref object to React as a ref attribute to a JSX node
+			Unlike state, it is mutable. However, if it holds an object that is used for rendering (for example, a piece of your state), then you shouldn’t mutate that object
+			When you change the ref.current property, React does not re-render your component. React is not aware of when you change it because a ref is a plain JavaScript object
+			Do not write or read ref.current during rendering, except for initialization. This makes your component’s behavior unpredictable
+				azt érti alatta hogy function body-ban ne módosítsuk, illetve a jsx-ben ne hivatkozzunk rá
+				csak effect, illetve eventek-ekben (illetve ezek álltal hívott func.)
+				to read or write something during rendering, use state instead.
+			Each ref object will be created twice, but one of the versions will be discarded. If your component function is pure (as it should be), this should not affect the behavior
+			usage
+				Referencing a value with a ref
+					You can store information between re-renders (unlike regular variables, which reset on every render)
+					Changing it does not trigger a re-render (unlike state variables, which trigger a re-render), so refs are not appropriate for storing information you want to display on the screen. Use state for that instead.
+					The information is local to each copy of your component (unlike the variables outside, which are shared).
+					refs are perfect for storing information that doesn’t affect the visual output of your component
+					Information that’s used for rendering should be state instead
+				Manipulating the DOM with a ref
+					React creates the DOM node and puts it on the screen, React will set the current property of your ref object to that DOM node
+					React will set the current property back to null when the node is removed from the screen
+				Avoiding recreating the ref contents 
+					const playerRef = useRef(new VideoPlayer());, itt render-nél, ahogy hívja React a comp. func-ot, az objektumot létrehozza ami fölösleges
+					const playerRef = useRef(null);if (playerRef.current === null) {playerRef.current = new VideoPlayer();}
+						itt ugyan renderkor adunk értéket amit tiltott, de csak initkor, ami kiszámítható
+		useEffect
+			effects - let you specify side effects that are caused by rendering itself, rather than by a particular event
+			side effects
+				function or expression is said to have a side effect if it modifies some state variable value(s) outside its local environment, 
+				which is to say if it has any observable effect other than its primary effect of returning a value to the invoker of the operation. 
+				Example side effects include modifying a non-local variable, modifying a static local variable, modifying a mutable argument passed 
+					by reference, performing I/O or calling other functions with side-effects	
+			synchronize a component with an external system.
+			return-nál egy cleanup is lefut
+			If you’re not trying to synchronize with some external system, you probably don’t need an Effect
+			If your Effect wasn’t caused by an interaction (like a click), React will generally let the browser paint the updated screen first before running your Effect
+			Even if your Effect was caused by an interaction (like a click), the browser may repaint the screen before processing the state updates inside your Effect
+				ha a browser repaintet az effect után szeretnénk -> useLayoutEffect
+			Effects only run on the client. They don’t run during server rendering
+			useEffect is an escape hatch
+			a cleanup lefut mindig ha újra fut az effect(pld. dependency miatt)
+				Avoid cleanup logic without corresponding setup logic
+				Your cleanup logic should be “symmetrical” to the setup logic, and should stop or undo whatever setup did
+			usage
+				Connecting to an external system 
+					external system means any piece of code that’s not controlled by React
+						minden ami nem React
+						A timer managed with setInterval() and clearInterval()
+						An event subscription using window.addEventListener() and window.removeEventListener()
+						A third-party animation library with an API like animation.start() and animation.reset()
+						control a <dialog modal showModal, close
+					Try to write every Effect as an independent process and think about a single setup/cleanup cycle at a time
+				Wrapping Effects in custom Hooks
+					If you find yourself often needing to manually write Effects, it’s usually a sign that you need to extract some custom Hooks for common behaviors your components rely on
+				Controlling a non-React widget 
+					3rd party libek pld. classok használata, szinkronban tartása a react component-el dep state -> js class action
+					amikor kikerül a treeből a component a js libek(refnek adva értékül) is garbage collectálódnak ha nem kell cleanupolni külön
+				Fetching data with Effects
+					if you use a framework, using your framework’s data fetching mechanism will be a lot more efficient than writing Effects manually
+					downsides
+						Effects don’t run on the server(not efficient)
+							 initial server-rendered HTML will only include a loading state with no data, The client computer will have to download all JavaScript and render your app only to discover that now it needs to load the data
+						Fetching directly in Effects makes it easy to create “network waterfalls”
+							You render the parent component, it fetches some data, renders the child components, and then they start fetching their data. If the network is not very fast, this is significantly slower than fetching all data in parallel
+						Fetching directly in Effects usually means you don’t preload or cache data
+							if the component unmounts and then mounts again, it would have to fetch the data again
+						fetch race conditions
+					approaches
+						solving these
+							deduplicating requests, caching responses, and avoiding network waterfalls (by preloading data or hoisting data requirements to routes)
+						If you use a framework, use its built-in data fetching mechanism
+						Otherwise, consider using or building a client-side cache
+							React Query, useSWR, and React Router 6.4+
+				Specifying reactive dependencies
+					If you specify the dependencies, your Effect runs after the initial render and after re-renders with changed dependencies
+					If you pass no dependency array at all, your Effect runs after every single render (and re-render)
+					Notice that you can’t “choose” the dependencies of your Effect. Every reactive value used by your Effect’s code must be declared as a dependency
+					Reactive values include props and all variables and functions declared directly inside of your component
+						declared outside the component, they are not reactive values
+					To remove a dependency, you need to “prove” to the linter that it doesn’t need to be a dependency
+					If your Effect’s code doesn’t use any reactive values, its dependency list should be empty ([])
+					When dependencies don’t match the code, there is a high risk of introducing bugs. By suppressing the linter, you “lie” to React about the values your Effect depends on. Instead, prove they’re unnecessary
+				Updating state based on previous state from an Effect
+					setCount(c => c + 1), és nem kell dependency, mert hozzáférünk az előző state-hez
+				Removing unnecessary object dependencies
+					ne legyen olyan object dependency ami gyakran változik, helyette az objectet az effecten belül készítsük
+				Removing unnecessary function dependencies
+					a comp bodyjában a függvények minden renderkor újracsinálódnak új reffel, ami depként megadva mindig futtatja az effectet
+					a függvény mindig azt az értéket kapja egy hivatkozott változó esetén (ami nem direkt inputja) ami a fgv. létrehozásakor volt neki
+					By itself, creating a function from scratch on every re-render is not a problem. You don’t need to optimize that
+					Avoid using a function created during rendering as a dependency. Instead, declare it inside the Effect
+				Reading the latest props and state from an Effect 
+					By default, when you read a reactive value from an Effect, you have to add it as a dependency. This ensures that your Effect “reacts” to every change of that value. For most dependencies, that’s the behavior you want
+					However, sometimes you’ll want to read the latest props and state from an Effect without “reacting” to them
+						use useEffectEvent - read the latest value of some props and state
+					Effect Events are not reactive and must always be omitted from dependencies of your Effect
+				Displaying different content on the server and the client 
+					If your app uses server rendering, your component will render in two different environments
+					On the server, it will render to produce the initial HTML
+					On the client, it can attach your event handlers to that HTML
+					for hydration to work, your initial render output must be identical on the client and the server
+					In rare cases, you might need to display different content on the client. For example, if your app reads some data from localStorage, it can’t possibly do that on the server
+					egy didmount state-t kell beállítani init useeffectel https://react.dev/reference/react/useEffect#displaying-different-content-on-the-server-and-the-client
+					While the app is loading, the user will see the initial render output. Then, when it’s loaded and hydrated, your Effect will run and set didMount to true, triggering a re-render. This will switch to the client-only render output. 
+					Use this pattern sparingly
+		useLayoutEffect
+			the Effect does something visual
+			If your Effect must block the browser from painting the screen, replace useEffect with useLayoutEffect. 
+			Note that this shouldn’t be needed for the vast majority of Effects. You’ll only need this if it’s crucial to run your Effect before the browser paint
+			for example, to measure and position a tooltip before the user sees it
+	performance
+		Don’t optimize prematurely(elég a munka végén)
+		rendering all components nested within the updated component is not optimal for performance if the updated component is very high in the tree
+		Profiling Components with the DevTools Profiler
+			to see which components would benefit the most from memoization, and add memoization where needed
+		rerendering
+			When a component visually wraps other components, let it accept JSX as children. This way, when the wrapper component updates its own state, React knows that its children don’t need to re-render.
+				eg. <Card><Avatar /></Card>
+			Prefer local state and don’t lift state up any further than necessary
+			Keep your rendering logic pure
+			Avoid unnecessary Effects that update state. Most performance problems in React apps are caused by chains of updates originating from Effects that cause your components to render over and over
+			Try to remove unnecessary dependencies from your Effects.
+			usememo, usecallback
+	best practisok
+		dickek key-ei eleve a jsx propok és elég csak {...variable} -vel kibontani
+	
 -------------deploy
 npm install sequelize-auto --save--dev
 sequelize-auto -h localhost -d stacked_notes_react -u root -x sr -p 3306 --dialect mariadb --lang ts --tables notes tag_defs tags themes account session user verificationtoken -o D:\Programozas\StackedNotesReact\stackednotesreact\db\models
 
 -------------------------------------------other
 
-convert.io - png to svg
+megnyitott képek nagyon enyhe, alig észrevehető scale + esetleg translate hogy élettelibbé váljon 
+	hiradóban mutatták így
+
+kell egy profi tailwind css + ui ux tutorial-t csinálni
+google devtools tutorial
+
+utility libraries
+	Lodash, underscore
+
+google devtools
+	jobb  gomb inspect a flex elemre és végig probálható minden elrendezése
+	animációkat ki lehet szűrni és meg lehet vizsgálni
+
+ingatlanra lecsapni hamar egy scrapelős machine learning modellel
+	egyéb másra is alk.
+	js web scraping
+		Web Scraping Full Course 2023 | Build and Deploy eCommerce Price Tracker
+			https://www.youtube.com/watch?v=lh9XVGv6BHs
+			next js alapú
+	a scrapelést, adatgyűjtést csinálhatja a js
+	a ml feldolgozást meg a python backend
+	univerzális legyen + commercial több felhasználós is lehessen
+
+online toolok
+	https://www.remove.bg/upload-new - background remove
+	https://convertio.co/ - png -> svg
+	https://react-svgr.com/playground/ - svg -> react jsx
+	https://www.shapedivider.app - wave generator
+	https://app.haikei.app - advanced wave generator
+	https://www.gradient-animator.com - animált gradiens bg creator
+
+stackednotes react-ban cheat sheet fül
+
+pair trading-et sikerre kellene vinni egyedi logikát kitalálni !!!
+
+dual trading
+
+adott tf, adott periódissal mennyire mean rev. egy instrument
+
+a swingek pontjait megadni ai-nek + a featureok és kideríteni milyen környezet esetén teljesülnek a fordulatok
+
+programozás hibák
+	React
+		probléma
+			state array change esetén nem renderelődik újra a child componens
+		megoldás 
+			valódi probléma, array state változás esetén a régi array-el renderel
+			csak state initializáláskor adtam meg az értéket, a child comp. mountkor, de az updatelt értékeket már nem kapta meg
 
 glass design kellene blurozott átlátszó elemekkel
 	egy mintás háttér html blury elemekkel mint developed by ed videoban
@@ -561,13 +1678,31 @@ gyakori linkek to check programming
 	fetch cache
 		https://stackoverflow.com/questions/29246444/fetch-how-do-you-make-a-non-cached-request
 
+3d, design
+	css olyan animált háttér mint az OverWatchban alap shapek gradinetel mozognak eltünnek feltünnek
+	mint az apple id login olyan fancy animált svg-k
+	hullámformák elválasztók
+	ferde section határok, lehet rajta valami + elem is, kontrasztos színek
+	animált gradient szín ferde shapek(https://stripe.com/en-hu)
+	parallax megoldások
+	képekre filter egy adott színnel, benne kép, egyenlőtlen opacityvel, egeret rávivve scaling + egyéb anim
+	hooverral gradient háttér anim egyszínűről vagy hasonló gradientesről + méret változtatás
+	animált svg ikonok hooverra
+	product showcase képekkel akár animált svg képpel(stripe oldalán példák)
+		kiemelni árnyékkal, fehér alapon mind2
+		glass design is nagyon jól mutat
+	nagyon vékony dividerek 1px-es alig látható vonalak
+	gradient texts
+	gradiens foltok a hátteren(JSMastery Hoobank project)
+	svg logo, szöveggel ikonnal szürke ha nem aktív, rákattintva színt kap
+
 összes js mastery cheat sheat átnézése a legjobb toolok miatt, bomba workflow össszerakása
 	leírni
 	Thunder client
 
-3d, design
-	css olyan animált háttér mint az OverWatchban alap shapek gradinetel mozognak eltünnek feltünnek
-	mint az apple id login olyan fancy animált svg-k
+VS code pluginok webdevhez
+
+
 
 Frinwork makro elemző
 	egy charton egy halom adat
@@ -683,6 +1818,8 @@ Frinwork makro elemző
 			vagy húzd át balról jobbra, válogasd ki 
 		rossz/jó/minden választáshoz egy opcionális magyarázat ami megjelenik rögtön válasz után vagy a quiz review alatt
 		showAswerImmediteally opció, rögtön mutatja h jó/rossz a válasz/megoldást illetve magyarázatot, ha van megadva
+		legyen nehézsége is a kérdéseknek, több pont a nehezebb kérdésért
+			userek is értékelhessék a kérdés nehézségét
 
 	mindennap gyakorolni(10 perc/dolog)
 		meditáció
@@ -725,7 +1862,9 @@ Frinwork makro elemző
 		behavioural economics
 
 	könyvlista
+		"behavioural economics books"
 		Dan Ariely - Kiszámíthatóan irracionális - A racionálisnak vélt döntéseinket alakító rejtett erőkről
+		Polgár László - nevelhetsz zsenit
 
 
 	warez
@@ -805,6 +1944,87 @@ Frinwork makro elemző
 			real estate(kivétel nélkül minden megkérdezett ingatlanozott)
 			pénzt mindig forgatni
 
+trading and physics
+	res
+		https://www.uni-miskolc.hu/~www_fiz/pszota/Fizika_I_BV_BI/Fizika_I_BV_BI_ea_02.pdf - jó tömör leírás
+		https://www.gotothings.com/shares/newtons-laws-of-stock-market-trading.htm
+		https://github.com/landgreen/landgreen.github.io/tree/master/physics - jó kis fizikai szimuláció erőhatások, waves,etc
+	Newton 1st law - tehetetlenség törvénye
+		egy test mindaddig megőrzi nyugalmát vagy egyenes vonalú egyenletes mozgását amíg egy másik test ennek megváltoztatására rá nem kényszeríti
+		tehetetlenség mértéke a tömeg, jele m
+		2 test kölcsönhatása során létrejött sebességváltozás fordítottan arányos a testek tömegével
+		m2 = (m1 * v1) / v2
+	Newton 2nd law - dinamika alaptörvénye
+		test mozgásállapota dinamikai szempontból lendület, impulzus
+		Bármely két test mechanikai kölcsönhatása során bekövetkező sebességváltozások fordítottan arányosak a test tömegével. 
+		Tehát tömegük és sebesség változásuk szorzata egyenlő. m1*v1=m2*v2. Az m*v szorzat az m tömegű és v sebességű test mozgás állapotát jellemzi dinamikai szempontból, ezt a szorzatut nevezzük lendületnek. Jele: I, mértékegysége: kg*m/s. 
+		A lendület vektormennyiség, iránya mindig megegyezik a pillanatnyi sebesség irányával, tehát a test mozgásának mindenkori irányával
+		zárt rendszer -> a testekre nem hat a környezetük
+		lendületmegmaradás törvénye
+			csak zárt rendszerben
+			zárt rendszert alkotó testek lendületváltozásának összege nulla, tehát a zárt rendszer lendülete állandó
+		erő
+			A mozgásállapot változtató hatás erőhatás, mennyiségi jellemzője erő. 
+			Jele: F. Iránya van -> vektormennyiség.
+			A lendületváltozás csak az erőtől és annak időtartamától függ. 
+			Az az erőhatás a nagyobb, amelyik ugyanazon a testen ugyanannyi idő alatt nagyobb lendületváltozást hoz létre, vagy ugyanakkora lendületváltoztatáshoz kevesebb időre van szüksége.
+			F=I/t, mértékegysége: N (newton). 
+			Az F=(m*v)/t képlet átrendezhető F*t=m*v formába. 
+			F*t az erőhatásra jellemző és erőlökésnek nevezzük.
+			Az m*v lendületváltozás az erőlökés következménye
+			Az erő nem csak a lendületváltozás sebességeként számolható ki. F=I*t=(m*v)/t=m*(v/t)=m*a. Ezt nevezik a dinamika II. alaptörvényének.
+			A változatlan tömegű testet gyorsító erő nagysága a test gyorsulásának és a tömegének a szorzata F=m*a
+		Ha egy pontszerű testre erő hat az megváltoztatja annak mozgásállapotát (a sebesség vektort).
+			Ekkor a test gyorsul (a gyorsulás vektor nem nulla).
+		Egy állandó tömegű pontszerű test gyorsulása arányos a testre ható erővel és ellentétesen arányos a test tömegével. A gyorsulás a testre ható erő irányába mutat
+	Newton 3rd law - hatás-ellenhatás törvénye
+		Amikor egy test erőhatás gyakorol egy testre, akkor az a test is gyakorol az első testre erőhatást. 
+		A két test kölcsönhatásánál fellépő egyik erőt, erőnek a másikat ellenerőnek nevezzük.
+		Két test esetén ugyanabban a kölcsönhatásban fellépő két erő egyenlő nagyságú, közös hatásvonalú, ellentétes irányú, egyik az egyik testre, a másik a másik testre hat.
+	Newton 4rd law - szuperpozíció elve
+		Egy testet egyszerre több erőhatás is érheti, ezek az erőhatások helyettesíthetőek egy darab erővel amelynek ugyanaz a következménye. Ezt az erőt eredő erőnek nevezzük.
+		Az eredő erő a testre ható összes erő vektori összege
+		Fab = -Fba
+	A Galilei-féle relativitási elv
+		két egymáshoz képest állandó sebességgel mozgó vonatkoztatási rendszerben a mechanikai jelenségek ugyanúgy mennek végbe
+		Pl. a rázkódástól eltekintve nem érezzük, hogy mozog-e a vonat, ha állandó sebességgel halad
+		v' = v - v0
+	erőtörvények
+		Newton-féle gravitációs erő
+		súlyerő
+		rugóerő
+		súrlódási erő
+		közegellenállás vagy légellenállás
+		kényszererők
+		a dinamika alapegyenlete 
+			 összegezzük Newton I., II., és IV. törvényét
+		lendület
+			A test tömegének és sebességének szorzata
+			vektormennyiség, iránya a sebesség vektor iránya
+			Pvekt = m * Vvekt
+			lendülettétel - A lendület erő hatására változik meg
+		munka
+			Az erő vonal menti (görbe menti) integrálja a test pályája mentén két pont között
+		kinetikus (mozgási) energia
+		teljesítmény
+			Az energiaközlés üteme (egységnyi idő alatt közölt energia)
+
+	finance
+		találni kell egy fizikai összefüggést amiből visszaszámolható a jövő
+		a piacokon
+			gyorsulás
+			idő
+			sebesség
+			lendület
+			tömeg
+			erő
+				a piacon lévő eladási vételi megbízások adott szinteken?
+		a tömege az instrumentnek az aktuális forgalom?
+		A Stock at rest tends to stay at rest and a Trending Stock tends to stay in trend unless acted upon by an equal and opposite reaction or an unbalanced force
+		"Electricity is the most volatile market, most reliabily predictable, it follows the laws of physics"
+			"time is energy"
+			a fickó volatilis piacokat trédelt, ami könnyen predictálható
+
 	investment rules(leginkább W.B.)
 		Rule No. 1: Never lose money. Rule No. 2 is never forget Rule No. 1
 			losses teach us something, mit rontottunk el a befektetéskor? ne fogadjuk el hogy veszteni is kell
@@ -856,10 +2076,6 @@ Frinwork makro elemző
 			it can be a sign that the management believes in the company and must also believe that the stock is undervalued
 		low cost ETF-ekbe fektetni
 		egy stock max 10%-a legyen a portfolio-nak
-
-"Electricity is the most volatile market, most reliabily predictable, it follows the laws of physics"
-	"time is energy"
-	a fickó volatilis piacokat trédelt, ami könnyen predictálható
 
 	nagyon jó chart
 		barchart mutatja a range-t x idő óta máig
@@ -926,4 +2142,22 @@ gazdasági trendek
 			india szintén nagyot ment(saját vélemény)
 			"Price to book ratios by country"
 
+bölcsességek
+	You need only 100-200 sqft room to live, need three times meal, and need pair of good dresses to wear. Rest everything is your wants and human wants are unlimited.
+	Living a simplistic and minimalist life can cut significant amount of your stress, problems and anxieties
+	Time is Money!
+	You need to sacrifice something to achieve something
+	Consistency and Discipline can do wonders
+	Soft skills are underrated in our education system, but become the only thing which matters when you climb the ladder in corporate world
+	It's not the company, it's the people who will be around you in a job matters the most
+	The more we GIVE, the more we’ll receive
+		give respect, friendship, love, happiness
+		If you want energy: You’ve got to give energy (exercise)
+		If you want money: You’ve first got to give VALUE
+	When you are feeling good, it's best to keep your mouth shut
+	
+	Mindig kérdezz, kérj, meglepően sokan lesznek segítőkészek
+	minnél agresszívebb vagy annál jobban eléred a célod
 
+trading strategy tracking metrics
+	# of trades, max DD%, Max DD$, return on max DD, Percent profitable, profit, gross profit, gross loss, # trades/day, profit/day, profit/trade, profit factor, 

@@ -8,7 +8,7 @@ export default function NotesPage() {
   return (
     <div className="min-w-full h-screen max-h-screen overflow-y-auto">
       <GlobalContext>
-        <SideMenu />
+        <SideMenu initialStateOpened={false} />
         <NoteContainer />
       </GlobalContext>
     </div>
