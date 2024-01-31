@@ -567,6 +567,8 @@ további featureok
 	userek közötti jegyzet megosztás, csak read only
 	lehetne olyan szerkesztő hogy egy parentet szerkesztve úgy jelenne meg az összes childel együtt mint a text editorban tabokkal szeparálva
 
+labeleknek, # tageknek is lehetne hierarchiája, egy adott bejegytést jegyzetet hozzá kell tudni kapcsolni több hashtaghez
+
 lehetséges featureok
 	üres sorokat is támogassuk 1-1 notera, sokat számít az átláthatóság javítása miatt
 		lehet nem kell több alfejezet kialakításával kikerülhető
@@ -574,6 +576,9 @@ lehetséges featureok
 prioritást is meghatározhatunk a jegyzetek sorrendjével egy adott levelen belül
 
 jegyzetelés technikája, jó jegyzet
+	teljességre törekedni a beazonosíthatóság, referenciák tekintetében
+		source linkek, csatorna, adott ember nevének kiírása
+		amiről jegyzetelünk hozzálinkelni link, kép, video, stb
 	"topic" tagek meg amikben childek vannak legyenek tömörek
 	saját véleményt megjegyzést külön jelölni pld. egy felmérés eredményében amit én kommentelek hozzá
 	pontosan írjuk le fogalmazzuk meg amit szeretnénk, később is legyen egyértelmű
@@ -1600,6 +1605,9 @@ megnyitott képek nagyon enyhe, alig észrevehető scale + esetleg translate hog
 
 kell egy profi tailwind css + ui ux tutorial-t csinálni
 google devtools tutorial
+"optimizing react app"
+	https://www.codementor.io/blog/react-optimization-5wiwjnf9hj
+"react best practices"
 
 utility libraries
 	Lodash, underscore
@@ -1625,6 +1633,10 @@ online toolok
 	https://www.shapedivider.app - wave generator
 	https://app.haikei.app - advanced wave generator
 	https://www.gradient-animator.com - animált gradiens bg creator
+	https://www.grammarly.com/grammar-check - grammar check
+	http://onpaste.com/ - clipboard to png
+	https://www.paste.photos/ - - clipboard to png, ez gyorsabb, jobb
+	https://www.imagetotext.info/ - image to text
 
 stackednotes react-ban cheat sheet fül
 
@@ -1695,14 +1707,50 @@ gyakori linkek to check programming
 	gradient texts
 	gradiens foltok a hátteren(JSMastery Hoobank project)
 	svg logo, szöveggel ikonnal szürke ha nem aktív, rákattintva színt kap
+	
+
+	animált hátterek
+		https://codepen.io/enxaneta/pen/VejMRE - conical helix
+			https://codepen.io/ElHalWaNY/pen/zKRQGx - hasonló
+		https://codepen.io/ray7551/pen/EbVmZd - mozgó amorf színek
+		https://codepen.io/wenbin5243/pen/xxgRaa - gradient circle, loading-nak jó
+		https://codepen.io/zachernuk/pen/ExrrYb - összetett, fodrozódó 3szögek
+		https://loading.io/background/ - frankó hullám bg-k
+		https://codepen.io/alvarotrigo/pen/GRvYNax - mozgó négyzetek
+		https://codepen.io/alvarotrigo/pen/RwYYBZP - grid háttér
+		https://codepen.io/alvarotrigo/pen/poOOZYZ - szöveg mögött kép mozog
+		https://codepen.io/alvarotrigo/pen/BaOOOZx - hullám bg.
+		https://codepen.io/alvarotrigo/pen/abyRBgm - 3d-s grid
+		https://codepen.io/alvarotrigo/pen/GRvYNVd - 3szögek
+		https://codepen.io/vaibhavarora/pen/xmpxjp - pulzáló circle-k
+		https://codepen.io/ksenia-k/pen/jXbWaJ - animált svg, blob
+		https://codepen.io/onion2k/pen/MZWoaL - fotók váltása animáltan
+		https://codepen.io/nouribram/pen/OzqNvJ - rectangles
+		https://codepen.io/Alca/pen/gzxXLq - nagyon szép wave
+		https://codepen.io/Mamboleoo/pen/BxMQYQ - blur a háttérben úszkáló gömbök
+		https://codepen.io/cr0ybot/pen/zNyYeW - háttérben csíkot húzó pontok, nagyon jó
+		https://codepen.io/mksglu/pen/jxXGaY - ribbon effect, feltűnő csíkok
+		https://codepen.io/baarbaracrr/pen/KKovmGb - egész jó kis wave bg
+		https://codepen.io/johnbgarcia/pen/qqdgGp - galaxy bg
+			https://codepen.io/sarazond/pen/LYGbwj - a felirat meg itt jobb
+		https://codepen.io/codycurley/pen/bdqevE - a felirat tök jó animált
+		https://codepen.io/MarcoGuglielmelli/pen/ExGYae - frankó particle js bg
+			https://codepen.io/Gorin1603/pen/mgzQdg - hasonló de jobb a háttér
+		https://codepen.io/coecks/pen/DpBxKB - nagyon lassú scale képre
+		https://codepen.io/BillyM/pen/QwbrqL - interaktív, élő forgó hexagonok, ahova kattolok az és környezete fordul
+		https://codepen.io/vavik96/pen/wBjaWg - lenyíló lapok, mintha egy táblát lehúznánk, eszméletlen jó
+		https://codepen.io/adsingh14/pen/gqWpeG - blurozott háttér
+
+		https://codepen.io/michellebarker/pen/vYpdEgQ - animated grid, egy kategória választó
+		
+
 
 összes js mastery cheat sheat átnézése a legjobb toolok miatt, bomba workflow össszerakása
 	leírni
 	Thunder client
 
 VS code pluginok webdevhez
-
-
+	egy lista, de csak amit tényleg használok
 
 Frinwork makro elemző
 	egy charton egy halom adat
@@ -2142,6 +2190,16 @@ gazdasági trendek
 			india szintén nagyot ment(saját vélemény)
 			"Price to book ratios by country"
 
+BTC scam, ponzi
+    tranzaktálásra alkalmatlan
+    mindenki investmentként veszi és nem a tranzaktálás, használat miatt
+    free magical get rich quick
+    csak az új befektetőkön tud pénzt keresni aki magasabb áron szeretné eladni
+    az összes projekt a pénzbehúzásról szól, felfut majd crash
+    ico, nft, games
+    1 hosszútávon sikeres project nincs
+    invesment firm buy crypto comps -> receive tokens -> go public -> sell on hype to retails
+
 bölcsességek
 	You need only 100-200 sqft room to live, need three times meal, and need pair of good dresses to wear. Rest everything is your wants and human wants are unlimited.
 	Living a simplistic and minimalist life can cut significant amount of your stress, problems and anxieties
@@ -2155,9 +2213,103 @@ bölcsességek
 		If you want energy: You’ve got to give energy (exercise)
 		If you want money: You’ve first got to give VALUE
 	When you are feeling good, it's best to keep your mouth shut
-	
+	You win every fight you avoid
+		‘save the bravery for something important’
+		boxing is a sport with rules. a fight is life or death no rules
 	Mindig kérdezz, kérj, meglepően sokan lesznek segítőkészek
 	minnél agresszívebb vagy annál jobban eléred a célod
+	Dreams don’t make you successful, actions do.
+	Today the road to riches is a specific expertise and a clear understanding of our disruptive future
+	Today it’s all about how much value you can provide not how hard you work
+	A jó és hosszú élet titka: egyél fele annyit, járj dupla annyit, nevess háromszor annyit és szeress mértéktelenül - Tibeti mondás
+	Feeling stuck ? The worst thing you can do is overthink the next action
+	Even with all the hard work you may not achieve what you want or it might take longer than you’d like but hard work is guaranteed to grow you as a person every day
+	Acquiring all knowledge isn’t the ultimate goal. Applying that knowledge is
+		fókuszálni mit kell valóban tudni
+	Watch your thoughts carefully and see if they serve you, discard any other thoughts that are dragging us down
+	become stress free: social life, my employment, my health.
+	kétszer annyira gazdag lehetsz ha eldöntöd hogy fele annyi is elég
+	Your brain works best when you minimize your interference with it.
+		to put your brain into its most receptive, creative, and powerful state you simply need to minimize your thinking
+		“Almost everything will work again if you unplug it for a few minutes, including you.”
+		All your attempts to control, improve, maximize, or hack it are what slows it down.
+		calm, clear water reflects reality the best, There is no way to stir the water to make it calmer and more reflective
+	try to replace “sorry” with “thank you” in certain situations. For example, instead of saying “Sorry for being late”, you can say “Thank you for waiting”
+	a kutyát nem érdekli mit csinálsz, tudsz ha csak nem vagy celeb
+	a titulusok világa ez az számít mi a végzettséged, az alapján ítélnek meg
+	How much do I need to build 3 generations of wealth?
+		1)Make as much money as possible.
+		2)Limit unnecessary expenses.
+		3)Invest as much as possible into income producing assets.
+			-Stocks
+			-Businesses
+			-Real Estate
+		a 9-5 job cannot be inherited, assets stocks, real estate, bussines can be inherited
+	A gazdagság titka: te legyél a legjobb #1 abban amit csinálsz, adj valódi értéket, minnél jobb vagy annál több pénzed lesz eg. Apple, MUI
+	Talent does matter, but hard work matters FAR more
+	a kitartás, fókusz a legfontosabb
+	az életben minden a pénzről szól
+	a szerencse: a lehetőség találkozása a felkészültséggel
+	siker = képesség + lehetőség
+	lehetőség = jókor jó helyen
+	objects in motion tend to stay in motion -> ez igaz az emberre is
+	az vagy amit "megeszel" és én nem eszem több szart
+	az élet egy circle, amit adsz azt vissza is kapod
+	a hit és a szeretet a legfontosabb
+	egyenletes lassú légzés a legjobb nyugtató
+	minden vibráció, jól vibrálni
+	türelem rózsát terem
+	van valami problémám vagy másnak -> milyen termékkel oldjam meg?
+	szeretet, gyűlölet -> érzelmek -> hatás
+	carpe diem, nyugodtan jelent megélni, élvezni
+	daily energy
+		zöld tea/kv
+		megfelelő szobahőmérséklet
+		sok-sok folyadék
+		friss levegő
+		mozgás
+		egyenletes lassú légzés, pozitív gondolatok, megfelelő rezgés
+	segíteni kell másoknak, akkor is ha nem viszonozza, majd viszonozza más, többszörösen megtérül
+	más(nagytöbbség) fejével kell gondolkodni üzleti szempontból, a nagytöbbség mást preferál mint én
+	az emberek a múltban élnek a jelenben álmodnak a jövőt rettegik
+	soha ne várj senkitől semmit -> sosem fogsz csalódni
+	ne hagyd hogy a körülmények megállítsanak, panaszkodás helyett cselekedj(megoldás orientáltság)
+	brain boosting
+		physical activity
+		balanced diet rich in fruits, vegetables, whole grains, lean proteins, and healthy fats. Omega-3 fatty acids, found in fish and flaxseeds
+			brain health, such as blueberries, broccoli, pumpkin seeds, and dark chocolate. 
+			stay hydrated with water,
+		7-9 hours of quality sleep each night
+		practice stress-reducing techniques such as mindfulness, meditation, deep breathing, or yoga
+		lifelong learning
+		strong social connections. Interacting with others stimulates various cognitive functions and contributes to emotional well-being
+		Alternate between periods of intense focus and short breaks to enhance productivity
+
+
+The 8–3 Pattern
+	A buy pattern occurs after eight successive close prices where each close price is lower than the close price three periods ago
+	A sell pattern occurs after eight successive close prices where each close price is higher than the close price three periods ago
+	
+BTCUSDT, D1 H,L elkapása, 
+	mind2 irányba trédelős, 
+	makacsan tartani vonal alatt felett a profitosat, 
+	ugyanakkora mennyiségeket tartani mind long short irányban
+	a D1 L,H-ok visszatárásait trédelni intraday SL-el
+	ha nem zár vissza akkor az előző L,H megtörésével trendirányba mint a Gann Swing chart
+	veszteségbe ne üljünk
+	reversálhatunk is ha sl-be fordul a visszazárás és Gann swing trend teljesül
+
+to follow
+	"Sadhguru magyarul"
+	Teréz Anya
+		A béke egy mosollyal kezdődik.
+		Soha ne engedd, hogy valaki ne legyen boldogabb a veled való találkozás után, mint előtte
+		Nagy dolgokat tenni nem tudunk, csak kicsiket, nagy szeretettel
+			Úgy érezzük, hogy amit teszünk, csak egy csepp a tengerben. Anélkül a csepp nélkül azonban sekélyebb volna a tenger
+		Szeretet fontosága
+		Az embereknek szükségük van segítségedre, de ha segítesz, támadás érhet, mégis segíts! 
+			A legjobbat add a világnak, amid csak van, s ha verést kapsz cserébe, mégis a legjobbat add a világnak, amid csak van!
+		
 
 trading strategy tracking metrics
 	# of trades, max DD%, Max DD$, return on max DD, Percent profitable, profit, gross profit, gross loss, # trades/day, profit/day, profit/trade, profit factor, 
