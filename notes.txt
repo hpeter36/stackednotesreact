@@ -586,6 +586,19 @@ jegyzetelés technikája, jó jegyzet
 
 egy tutorial a usereknek hogy írjanak noteokat, használják a programot
 
+egy nagy egybefüggő szerkesztő felület kellene a ClickUp-hoz hasonló módon
+	nincs valami kész library erre?
+	keresés, stb attól még mutathatja intelligensen soronként a találatokat, csak a megjelenés lenne ilyen
+	ugyanez lesz az egész csak egy sima sor helyett egy ilyen rich text editor jön fel, egy topic 1 felület, a keresésnek mennie kell természetesen
+
+AI felhasználása hasonló dolgok keresésére mint a kijelölt szöveg, és odalinkelem az adott helyre a hasonlóságot
+
+újra írni a Quantumos tech stackekkel + amit a clickup használ
+
+jegyzetek megosztása másokkal akár egy note is
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
 -------------------------React legfontosabbak
 	https://react.dev/
 	Thinking in React
@@ -1611,6 +1624,7 @@ google devtools tutorial
 
 utility libraries
 	Lodash, underscore
+	Prisma - ORM, sql table -> typescript type gen
 
 google devtools
 	jobb  gomb inspect a flex elemre és végig probálható minden elrendezése
@@ -1992,6 +2006,26 @@ Frinwork makro elemző
 			real estate(kivétel nélkül minden megkérdezett ingatlanozott)
 			pénzt mindig forgatni
 
+műtőrobot cégek, Intuitive Surgical(ISRG)
+Buy now pay later market - vedd meg most, fizess később szolgáltatások ágazata
+
+befektetések, passzív income source-ok
+	épp ami jó áron van buy(arbitrázs)
+	dividends
+	bonds 
+	real estate(home, airbnb, reit)
+	collections
+		coins, precious metals, watches, bags, art, etc.
+	retirement accounts
+	royalities
+	gold, foreign currency
+	automated trading
+	stocks
+	crypto, árucikkek
+	private companies/startups
+
+
+
 trading and physics
 	res
 		https://www.uni-miskolc.hu/~www_fiz/pszota/Fizika_I_BV_BI/Fizika_I_BV_BI_ea_02.pdf - jó tömör leírás
@@ -2124,6 +2158,12 @@ trading and physics
 			it can be a sign that the management believes in the company and must also believe that the stock is undervalued
 		low cost ETF-ekbe fektetni
 		egy stock max 10%-a legyen a portfolio-nak
+		értéknövekedő asseteket vegyünk, ha pl. egy órát veszünk, olyat ami jobban tartja az értékét illetve felértékelődhet
+
+	értékszámolás
+		Bence Balázs 
+			intrisic value cashflow számítás
+			Earning Power Value számolás
 
 	nagyon jó chart
 		barchart mutatja a range-t x idő óta máig
@@ -2131,6 +2171,20 @@ trading and physics
 		rajta egy másik pld. pont az aktuális értékkel
 		mivel 1 metrikát mutat, azt is látni hogy egymáshoz képest milyen értéket vesznek fel
 		pld. price to book ratios by country, ahol pld. india magasabban helyezkedik el, tehát eleve drágább
+
+	Iren Szucs fb
+		Iren Szucs
+			tulajdonképp engem minden befektetési stílus érdekelt és tudni akartam, vagy inkább érezni a gondolkodásmódot, hogy találom meg a lehetöségeket. 
+			Peter Lynch, Philip A Fisher és Aswath Damodaran könyvei számomra ugyan olyan jók, mint Andre Kostolany könyvei. 
+			Mert magát a gondolkodást akartam érezni. Szerintem sikerült. Aswath Damodarannak többszáz videója elérhetö a Youtube-on teljesen ingyen. 
+			Nagyon értékes anyagnak tartom. Igazi kincs ez az ember. De szeretem Mornish Parbait is. Mindenki egy kicsit más
+
+		Köszönöm, és veszed a közös pontokat az egyes szerzők között vagy hogy kovácsolod rendszerré a tanultakat?
+
+		Iren Szucs
+			kijegyzetelem azt, amit a legfontosabbak tartok, és elkezdek gyakorolni. Veszek pár céget egy ágazatból, összehasonlítom öket, vagy készítek rá egy excelt és ilyesmi. 
+			A legjobbakról elkezdek olvasni. De mindent. A mérlegeket, régebbi híreket, újakat stb. Keresem bennük a növekedést, stabilitást, mennyi pénzt fog termelni, képes e megújulni, klónozni, osztódni stb. Mornishnak van egy videója a 100 buggerekröl, biztos megtalálod.
+
 
 melyik tf-en a legjobb a momentum egy adott instrumentumon?
 	a "legsimább" swingek hol alakulnak ki, hol töredezik a legkevésbé
@@ -2200,6 +2254,77 @@ BTC scam, ponzi
     1 hosszútávon sikeres project nincs
     invesment firm buy crypto comps -> receive tokens -> go public -> sell on hype to retails
 
+mennyit együnk igyunk(Friderikusz podcast)
+	étkezés(70%) + mozgás(30%) + alvás
+		étkezés -> 80% egészséges + 20% junk food
+	az alkolol a legkisebb mennyiségben is káros
+	vacsorára keveset együnk
+	inkább kevesebb húst enni
+		ülő életmódhoz mégkevesebbet
+	sérült bélfallal a tejfogyasztás problémás(kazein)
+	min. napi 1 meleg étel sem kell(feldolgozott étel) 
+	túl sokat esznek az emberek
+	elhízott ember -> koplalás(böjt), kevesebbet eszik naponta, hetente
+		2 étkezés között min. 16 óra -> böjt minimális időtartama
+		test építő(étkezés), karbantartó(koplalás) üzemmódja
+		az alvás időtartama nem elég a karbantartás idejére
+	egészséges biom(bacik összessége a bélben) -> diverz, változatos sokszínű táplálkozás
+		táplálékkiegészítőkkel se lehet pótolni
+		egészséges biom testi harmódiát ad, ami ez ellen van:
+			túlzott sterilitás gond, mennyit vagyunk kint a kertben, erdőben
+			nagyüzemi húsok - szegényes táplálkozás(csak kukorica pld.), szabadeget, levegőt nem látott állatok
+			pld. mangalica egészségesebb, magasabb ásványi anyag tartalom, drágább, tovább tart felnevelni
+	növényi alapú, kevés húsos étkezés a legegészségesebb
+		húsfogyasztás -> mérgező toxin termelés a szervezetben
+			magas vérnyomáshoz is köze van
+	személyreszabott táplálkozás
+		magas vérnyomás, hogy alszik, vérkép, alapdolgok felmérése
+	ülő életmóddal 
+		napi fél kg. zöldség
+		fermentált zöldség
+		a nagyáruházi zöldség is megteszi
+		pisztrángot érdemes halként fogyasztani, nehezen tűri a nagyüzemi tartást, a lényeg hogy természetes közegből származzon a hal, hús
+		önellátás fontos lehet a jövőben
+	civilizációs betegségek 95%-a a gyomorból indul
+		magas gabonatartalmú, hústartalmú(marhahús) étkezés -> cukorbeteg -> (ha nem) -> daganat -> (...) -> szív és érrendszeri probléma -> Alzheimer
+		nagy mennyiségű fűszeres étel + sok alkohol -> vastagbélrák(Mo.-n vezető halálok)
+	böjt
+		előkészítést igényel
+		5 napig nem eszik csak szürt húslevest, napi 4 óra intenzív sport
+		nőtt a teljesítménye minden nap
+		tisztább gondolkodás, energikusság
+		cukorbetegeknek szánt szerek bevitele -> étvágycsökkentés, hasznos kiegészítője a böjtnek
+	alkohol leoldja a bél védőhártyáját, könnyebben a májba jutnak a káros bacik
+		nincs biztonságos dózis, a legkisebb mennyiség is káros
+		az egyik leginkább rákkeltő dolog a dohányzás mellett
+	víz
+		evés helyett inkább igyon vizet
+		energiaital nagyon káros, alkohollal egyszinten van
+	alvás
+		éjfél előtt 2-3 órával lefeküdni, min. 7 órát aludni
+		7 óra alatt ki kell tudnom pihenni magam -> ha több alással is fáradtan ébredek -> alvásminőség nem megfelelő
+		kevesebb kv, több, rendszeres mozgás, korán lefeküdni, korán kelni
+		ha rendszertelenül alszunk időtartamban a mélyalvás szenved kárt
+		2 legfontosabb
+			mélyalvás -> testi egészség
+			REM fázis -> mentális egészség
+		szendergő alvás - általános pihenés az izmoknak, szivünknek, stb.
+		reggel ne a telefont nyomkodjuk hanem menjünk ki a szabadba
+		a lemenő lapban is ki kellene menni a szabadba ne a tv állítsa a biológiai órát
+		rossz alvás -> könyebben lebomlik a bél védőnyák
+	mozgás, alvás, táplálkozás, környezeti terhelés(alkohol, gyógyszerek, dohányzás, légszennyezés, kémia anyagok) -> mai civilizációs betegségek 95%-a ezekből ered
+	mozgás
+		stressz levezetése sport által a leghatékonyabb
+		min. napi 30 perc
+		kardio nem jó a beleknek, interval edzés jobb
+	genetika
+		az életmód 95%, a genetika 5% a szerepe az egészséges életmód
+		az életmód okozza a betegségeket
+	10 évvel ki lehet tolni egy ember életet egy közepes elköteleződéssel, életmód váltással
+	az alkalmazkodásra képesek győznek, nem az erősebbek, okosabbak
+	jó közérzet és hosszú élet
+	
+
 bölcsességek
 	You need only 100-200 sqft room to live, need three times meal, and need pair of good dresses to wear. Rest everything is your wants and human wants are unlimited.
 	Living a simplistic and minimalist life can cut significant amount of your stress, problems and anxieties
@@ -2254,7 +2379,7 @@ bölcsességek
 	lehetőség = jókor jó helyen
 	objects in motion tend to stay in motion -> ez igaz az emberre is
 	az vagy amit "megeszel" és én nem eszem több szart
-	az élet egy circle, amit adsz azt vissza is kapod
+	az élet egy circle, amit adsz legyen jó vagy rossz, azt vissza is kapod
 	a hit és a szeretet a legfontosabb
 	egyenletes lassú légzés a legjobb nyugtató
 	minden vibráció, jól vibrálni
@@ -2284,7 +2409,62 @@ bölcsességek
 		lifelong learning
 		strong social connections. Interacting with others stimulates various cognitive functions and contributes to emotional well-being
 		Alternate between periods of intense focus and short breaks to enhance productivity
+	The world is full of UNSUCCESSFUL people who happen to be very intelligent!
+		“We don’t have to be smarter than the rest. We have to be more disciplined than the rest.”
+		“I don’t care if you’re a genius, without discipline you will ALWAYS lose!” - Warren Buffett
+	Be humble. No one hates humble people
+	Smile until your cheeks have six packs toned muscles
+	Find your pities and insecurities. And recognize them, Everyone behaves badly because of their insecurities or pettiness
+		Accept that and try to find the root of it and forgive it
+	Think - what can I say to make the person in front of me smile or happy.
+		You don't abuse friendship for personal gains
+	consuming high vibrational foods like green, leafy vegetables, mushrooms, and seaweeds can raise vibrational frequency in humans
+	sikerhez kell kapcsolatok, szerencse, tehetség, tudás, adottságok
+	Sunlight: Most people are deficient in Vitamin-D. Sunlight is also a natural antidepressant.
+	Uncomfortable: Do something new every day
+	If you need to begin something, you have to begin it today
+	"Ha minden egyes cselekedeteddel számodra jelentős dolgot hozol létre, akkor bármit is kapsz vagy nem kapsz ezért, az életed csodálatos lesz." - Sadhguru
+	Successful people
+		They have discipline. They act with rationality. They are not moved by impulsive emotions
+		Successful people don’t believe in luck. They believe in hard work
+		tortoise wins the race, Successful people don’t gamble. They play it safe, slow, and steady
+		they will simply never quit. They fail and get up again and again and again until they win
+	getting faster at anything - practice
+	Anytime you find yourself wanting to respond to someone with the words “I know”, simply say “You're right” instead
+	You are no better than anyone else on earth, you just have different jobs
+	"Az emberek kihasználása és a dolgok szeretete az élet teljes félreértése. A dolgok valók használatra. Az emberek valók szeretetre."
+	it doesn’t matter what you do, you just have to do it very well
+	ask small questions to reach a bigger solution
+	Don’t be too sure of yourself. You’re probably wrong about a lot more than you realize.
+	Sok mindent túl lehet élni, viszont nem maradsz ugyanaz az ember
+	If you help others, you will be helped, perhaps tomorrow, perhaps in 100 years, but you will be helped. 
+		Nature must pay off the debt....It is a mathematical law and all life is mathematics." - GURDJIEFF
+	What are some common bugs in the human moral code? - Their ability to self destruct and ruin a good thing.
+	All you need is to follow your obsession. An obsession is different from a passion. A passion dies. An obsession doesn't.
+		All you need is to be ready to learn. Learning is the greatest skill in life, learning has nothing to do with getting a degree
+		Success is not a destination but a journey. Make sure you’re traveling in the right direction. Don't announce your success. People will see.
+	mindennek megvan a maga ideje és helye az életben(Biblia)
+	
 
+jó könyvek
+	André Kostolany - A befektetés művészete
+	Jesse Livermore - Hogyan kereskedjünk részvényekkel
+	Edwin. Lefevre: Egy spekulàns feljegyzései.
+	Philip A. Fisher - Közönséges részvények - rendkívüli profitok
+	Benjamin Graham - Az intelligens befektető
+	Warren Buffet jelenti - Leckék befektetőknek és vállalkozóknak
+	Soros György: A pénz alkimiàja
+	Nicolas Darvas: Hogyan nyertem a tőzsdén 2 millió dollàrt
+	Chris Camillo - Keress te is milliókat a tőzsdén
+	Babilon leggazdagabb embere
+	Pénz pszichológiája
+	Érthetően a befektetésről
+	Sikerrel a tőzsdén
+	Osztalékból szabadon
+	Gazdagabb, bölcsebb, boldogabb - William Green
+	T. Harv Eker - A milliomos elme titkai
+	Jason zweig - Agyam és a pénz
+	
 
 The 8–3 Pattern
 	A buy pattern occurs after eight successive close prices where each close price is lower than the close price three periods ago
